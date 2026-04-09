@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { randomUUID } from "crypto";
 import type { Response } from "express";
 import type { AppContext, AuthUser } from "../context.js";
 import { prisma } from "../db.js";
@@ -76,6 +77,7 @@ export const authResolvers = {
 
       const user = await prisma.user.create({
         data: {
+          id: randomUUID(),
           email: normalizedEmail,
           passwordHash,
           displayName: args.displayName,

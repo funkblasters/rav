@@ -11,20 +11,23 @@ export const statisticsResolvers = {
             where: { isPublic: true },
             select: { id: true },
           },
-        },
-        orderBy: {
-          flagsAdded: {
-            _count: "desc",
+          flagsTogether: {
+            where: { isPublic: true },
+            select: { id: true },
           },
         },
-        take: args.limit ?? undefined,
       });
-      return users.map((u) => ({
+
+      const usersWithCounts = users.map((u) => ({
         id: u.id,
         displayName: u.displayName,
         clubRole: u.clubRole,
-        flagsCount: u.flagsAdded.length,
+        flagsCount: u.flagsAdded.length + u.flagsTogether.length,
       }));
+
+      usersWithCounts.sort((a, b) => b.flagsCount - a.flagsCount);
+
+      return args.limit ? usersWithCounts.slice(0, args.limit) : usersWithCounts;
     },
   },
 };

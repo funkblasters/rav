@@ -8,13 +8,6 @@ const GET_FLAGS = gql`
       id
       name
       imageUrl
-      acquiredAt
-      addedBy {
-        displayName
-      }
-      togetherWith {
-        displayName
-      }
     }
   }
 `;
@@ -23,9 +16,6 @@ interface Flag {
   id: string;
   name: string;
   imageUrl?: string;
-  acquiredAt: string;
-  addedBy: { displayName: string };
-  togetherWith: { displayName: string }[];
 }
 
 export function FlagsPage() {
@@ -66,9 +56,7 @@ export function FlagsPage() {
             <div
               key={flag.id}
               className="group relative rounded-md overflow-hidden border bg-muted/30 aspect-[3/2] cursor-default"
-              title={`${flag.name} — ${t("flags.addedBy", { name: flag.addedBy.displayName })}${
-                flag.togetherWith.length > 0 ? ` (insieme a ${flag.togetherWith.map((u) => u.displayName).join(", ")})` : ""
-              }`}
+              title={flag.name}
             >
               {flag.imageUrl ? (
                 <img
@@ -89,14 +77,6 @@ export function FlagsPage() {
                 <span className="text-white text-[10px] font-medium text-center leading-tight line-clamp-2">
                   {flag.name}
                 </span>
-                <span className="text-white/70 text-[9px] mt-0.5">
-                  {new Date(flag.acquiredAt).toLocaleDateString()}
-                </span>
-                {flag.togetherWith.length > 0 && (
-                  <span className="text-white/70 text-[8px] mt-1 text-center line-clamp-1">
-                    {flag.togetherWith.map((u) => u.displayName).join(", ")}
-                  </span>
-                )}
               </div>
             </div>
           ))}

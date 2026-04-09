@@ -1,5 +1,5 @@
 import type { AppContext } from "../context.js";
-import { users } from "./auth.js";
+import { prisma } from "../db.js";
 
 interface Event {
   id: string;
@@ -67,6 +67,6 @@ export const eventResolvers = {
     },
   },
   Event: {
-    createdBy: (event: Event) => users.find((u) => u.id === event.createdBy) ?? null,
+    createdBy: (event: Event) => prisma.user.findUnique({ where: { id: event.createdBy } }),
   },
 };

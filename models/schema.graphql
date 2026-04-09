@@ -1,3 +1,7 @@
+### ─── Scalars ────────────────────────────────────────────────────────────────
+
+scalar DateTime
+
 ### ─── Auth ───────────────────────────────────────────────────────────────────
 
 type AuthPayload {
@@ -28,7 +32,7 @@ type User {
   role: Role!
   clubRole: ClubRole!
   cardNumber: String!
-  createdAt: String!
+  createdAt: DateTime!
 }
 
 type ContributionByContinent {
@@ -43,9 +47,9 @@ type UserProfile {
   role: Role!
   clubRole: ClubRole!
   cardNumber: String!
-  createdAt: String!
+  createdAt: DateTime!
   flagsCount: Int!
-  lastContribution: String
+  lastContribution: DateTime
   contributionsByContinent: [ContributionByContinent!]!
 }
 
@@ -60,7 +64,7 @@ type Flag {
   latitude: Float
   longitude: Float
   imageUrl: String
-  acquiredAt: String!
+  acquiredAt: DateTime!
   isPublic: Boolean!
   addedBy: User!
   description: String
@@ -72,10 +76,14 @@ type FlagPreview {
   id: ID!
   name: String!
   imageUrl: String
-  acquiredAt: String!
+  acquiredAt: DateTime!
   addedBy: User!
   description: String
   togetherWith: [User!]!
+}
+
+type FlagGeo {
+  countryCode: String!
 }
 
 ### ─── Club ───────────────────────────────────────────────────────────────────
@@ -84,7 +92,7 @@ type Event {
   id: ID!
   title: String!
   description: String
-  date: String!
+  date: DateTime!
   location: String
   createdBy: User!
 }
@@ -102,7 +110,7 @@ type Invite {
 type NewsItem {
   title: String!
   link: String!
-  pubDate: String!
+  pubDate: DateTime!
   source: String
   imageUrl: String
 }
@@ -123,6 +131,7 @@ type Query {
   events: [Event!]!
   event(id: ID!): Event
   flags: [Flag!]!
+  flagsGeo: [FlagGeo!]!
   flag(id: ID!): Flag
   lastFlag: FlagPreview
   mostWantedFlag: FlagPreview
@@ -150,7 +159,7 @@ type Mutation {
     latitude: Float
     longitude: Float
     imageUrl: String
-    acquiredAt: String!
+    acquiredAt: Int!
     isPublic: Boolean
     description: String
     continent: String
@@ -165,7 +174,7 @@ type Mutation {
 
   resetUserPassword(userId: ID!, newPassword: String!): Boolean!
 
-  setMostWanted(name: String!, imageUrl: String, acquiredAt: String!, description: String): FlagPreview!
+  setMostWanted(name: String!, imageUrl: String, acquiredAt: Int!, description: String): FlagPreview!
   clearMostWanted: Boolean!
 
   refresh: AuthPayload!

@@ -123,21 +123,25 @@ export const userResolvers = {
       const user = await prisma.user.findUnique({ where: { id: ctx.user.id } });
       if (!user) return null;
 
-      // All flags by this user (public + private) — it's their own profile
-      const userFlags = await prisma.flag.findMany({ where: { addedById: user.id } });
+      // All flags: ones added by user + ones where user is together with
+      const addedFlags = await prisma.flag.findMany({ where: { addedById: user.id } });
+      const togetherFlags = await prisma.flag.findMany({
+        where: { togetherWith: { some: { id: user.id } } },
+      });
+      const allFlags = [...addedFlags, ...togetherFlags];
 
       // Compute stats
-      const flagsCount = userFlags.length;
+      const flagsCount = allFlags.length;
       const lastContribution =
-        userFlags.length > 0
-          ? userFlags.reduce((latest, flag) =>
+        allFlags.length > 0
+          ? allFlags.reduce((latest, flag) =>
               flag.acquiredAt > latest.acquiredAt ? flag : latest
             ).acquiredAt
           : null;
 
       // Group contributions by continent
       const continentMap = new Map<string, number>();
-      userFlags.forEach((flag) => {
+      allFlags.forEach((flag) => {
         const continent = flag.continent ?? getContinent(flag.countryCode);
         continentMap.set(continent, (continentMap.get(continent) ?? 0) + 1);
       });
@@ -153,7 +157,7 @@ export const userResolvers = {
         role: user.role,
         clubRole: user.clubRole,
         cardNumber: user.cardNumber,
-        createdAt: user.createdAt.toISOString(),
+        createdAt: user.createdAt,
         flagsCount,
         lastContribution,
         contributionsByContinent,

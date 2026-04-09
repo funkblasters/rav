@@ -32,8 +32,8 @@
     "flagNews": "Latest News",
     "flagNewsSubtitle": "the latest thrilling news from the flag world",
     "newsFetchError": "Could not load news.",
-    "statistics": "Stats",
-    "statisticsSubtitle": "Our esteemed contributors",
+    "statistics": "Ranking",
+    "statisticsSubtitle": "Ranking",
     "viewStatistics": "View statistics",
     "flagsAcquired": "Flags acquired",
     "maps": {

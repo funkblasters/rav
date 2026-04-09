@@ -21,7 +21,7 @@ const SET_MOST_WANTED = gql`
   mutation SetMostWanted(
     $name: String!
     $imageUrl: String
-    $acquiredAt: String!
+    $acquiredAt: Int!
     $description: String
   ) {
     setMostWanted(
@@ -74,7 +74,7 @@ export function MostWantedAdmin() {
       variables: {
         name: form.name,
         imageUrl: form.imageUrl.trim() || undefined,
-        acquiredAt: form.acquiredAt,
+        acquiredAt: Math.floor(new Date(form.acquiredAt).getTime() / 1000),
         description: form.description.trim() || undefined,
       },
     });

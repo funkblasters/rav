@@ -50,10 +50,10 @@ export function StatsPage() {
   const secretFlags = myFlags.filter((f) => !f.isPublic);
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t("myFlags.title")}</CardTitle>
-        <CardDescription>
+    <Card className="flex flex-col h-auto sm:h-96 lg:h-[calc(100vh-120px)] lg:w-1/3 overflow-hidden">
+      <CardHeader className="pb-2 shrink-0">
+        <CardTitle className="text-base font-semibold">{t("myFlags.title")}</CardTitle>
+        <CardDescription className="text-xs">
           {loading
             ? t("common.loading")
             : t("myFlags.description_one", {
@@ -62,7 +62,7 @@ export function StatsPage() {
               })}
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-6 flex-1 min-h-0 overflow-y-auto">
 
         {/* Secret flags */}
         {secretFlags.length > 0 && (

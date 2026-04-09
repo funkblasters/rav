@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@apollo/server": "^5.0.0",
-    "@prisma/client": "^7.7.0",
+    "@prisma/client": "^6.19.3",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
@@ -23,7 +23,7 @@
     "fast-xml-parser": "^4.5.0",
     "graphql": "^16.9.0",
     "jsonwebtoken": "^9.0.2",
-    "prisma": "^7.7.0"
+    "prisma": "^6.19.3"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

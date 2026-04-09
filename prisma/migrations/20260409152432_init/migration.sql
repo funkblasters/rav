@@ -6,7 +6,7 @@ CREATE TYPE "ClubRole" AS ENUM ('CHAIRMAN', 'VICE_CHAIRMAN', 'HONORARY_CHAIRMAN'
 
 -- CreateTable
 CREATE TABLE "users" (
-    "id" TEXT NOT NULL,
+    "id" UUID NOT NULL,
     "email" TEXT NOT NULL,
     "displayName" TEXT NOT NULL,
     "passwordHash" TEXT NOT NULL,
@@ -20,7 +20,7 @@ CREATE TABLE "users" (
 
 -- CreateTable
 CREATE TABLE "flags" (
-    "id" TEXT NOT NULL,
+    "id" UUID NOT NULL,
     "name" TEXT NOT NULL,
     "countryCode" TEXT NOT NULL DEFAULT 'XX',
     "subdivisionCode" TEXT,
@@ -28,32 +28,34 @@ CREATE TABLE "flags" (
     "latitude" DOUBLE PRECISION,
     "longitude" DOUBLE PRECISION,
     "imageUrl" TEXT,
-    "acquiredAt" TEXT NOT NULL,
+    "acquiredAt" TIMESTAMP(3) NOT NULL,
     "isPublic" BOOLEAN NOT NULL DEFAULT true,
     "description" TEXT,
     "continent" TEXT,
-    "addedById" TEXT NOT NULL,
+    "addedById" UUID NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "flags_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "_FlagToUser" (
-    "A" TEXT NOT NULL,
-    "B" TEXT NOT NULL
-);
-
--- CreateTable
 CREATE TABLE "invites" (
-    "id" TEXT NOT NULL,
+    "id" UUID NOT NULL,
     "email" TEXT NOT NULL,
     "clubRole" "ClubRole" NOT NULL,
     "cardNumber" TEXT,
-    "createdById" TEXT NOT NULL,
+    "createdById" UUID NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "invites_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "_TogetherWith" (
+    "A" UUID NOT NULL,
+    "B" UUID NOT NULL,
+
+    CONSTRAINT "_TogetherWith_AB_pkey" PRIMARY KEY ("A","B")
 );
 
 -- CreateIndex
@@ -66,19 +68,16 @@ CREATE UNIQUE INDEX "users_cardNumber_key" ON "users"("cardNumber");
 CREATE UNIQUE INDEX "invites_email_key" ON "invites"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "_FlagToUser_AB_unique" ON "_FlagToUser"("A", "B");
-
--- CreateIndex
-CREATE INDEX "_FlagToUser_B_index" ON "_FlagToUser"("B");
+CREATE INDEX "_TogetherWith_B_index" ON "_TogetherWith"("B");
 
 -- AddForeignKey
 ALTER TABLE "flags" ADD CONSTRAINT "flags_addedById_fkey" FOREIGN KEY ("addedById") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "_FlagToUser" ADD CONSTRAINT "_FlagToUser_A_fkey" FOREIGN KEY ("A") REFERENCES "flags"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "_FlagToUser" ADD CONSTRAINT "_FlagToUser_B_fkey" FOREIGN KEY ("B") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "invites" ADD CONSTRAINT "invites_createdById_fkey" FOREIGN KEY ("createdById") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_TogetherWith" ADD CONSTRAINT "_TogetherWith_A_fkey" FOREIGN KEY ("A") REFERENCES "flags"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_TogetherWith" ADD CONSTRAINT "_TogetherWith_B_fkey" FOREIGN KEY ("B") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;

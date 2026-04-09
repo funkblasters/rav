@@ -6,7 +6,29 @@ import { newsResolvers } from "./news.js";
 import { statisticsResolvers } from "./statistics.js";
 import { userResolvers } from "./user.js";
 
+const dateTimeScalar = {
+  serialize: (value: unknown): string => {
+    if (value instanceof Date) {
+      return value.toISOString();
+    }
+    if (typeof value === "string") {
+      return value;
+    }
+    throw new Error(`Cannot serialize non-date value: ${value}`);
+  },
+  parseValue: (value: unknown): Date => {
+    if (typeof value === "string") {
+      return new Date(value);
+    }
+    if (typeof value === "number") {
+      return new Date(value);
+    }
+    throw new Error(`Cannot parse non-string/number value: ${value}`);
+  },
+};
+
 export const resolvers = {
+  DateTime: dateTimeScalar,
   Query: {
     ...authResolvers.Query,
     ...inviteResolvers.Query,

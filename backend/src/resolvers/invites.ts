@@ -1,3 +1,4 @@
+import { randomUUID } from "crypto";
 import type { AppContext } from "../context.js";
 import { prisma } from "../db.js";
 
@@ -21,7 +22,7 @@ export const inviteResolvers = {
       return prisma.invite.upsert({
         where: { email },
         update: { clubRole: args.clubRole, cardNumber: args.cardNumber },
-        create: { email, clubRole: args.clubRole, cardNumber: args.cardNumber, createdById: ctx.user.id },
+        create: { id: randomUUID(), email, clubRole: args.clubRole, cardNumber: args.cardNumber, createdById: ctx.user.id },
       });
     },
     removeInvite: async (_: unknown, args: { email: string }, ctx: AppContext) => {
