@@ -1,4 +1,5 @@
-import { useQuery, gql } from "@apollo/client";
+import { useQuery, gql, useApolloClient } from "@apollo/client";
+import { useEffect } from "react";
 import { LastFlagAdded } from "@/components/dashboard/LastFlagAdded";
 import { MostWantedFlag } from "@/components/dashboard/MostWantedFlag";
 import { FlagNews } from "@/components/dashboard/FlagNews";
@@ -67,7 +68,27 @@ const FLAGS_GEO = gql`
 
 export function DashboardPage() {
   const { t } = useTranslation();
-  const { data } = useQuery(FLAGS_GEO);
+  const client = useApolloClient();
+  const { data, refetch } = useQuery(FLAGS_GEO);
+
+  // Refetch all dashboard queries on mount and window focus
+  useEffect(() => {
+    refetch();
+    // Refetch other dashboard queries
+    client.refetchQueries({
+      include: ["LastFlag", "MostWantedFlag", "FlagNews", "Statistics", "TopMembers", "MyProfile", "GetFlags"],
+    });
+
+    const handleFocus = () => {
+      refetch();
+      client.refetchQueries({
+        include: ["LastFlag", "MostWantedFlag", "FlagNews", "Statistics", "TopMembers", "MyProfile", "GetFlags"],
+      });
+    };
+
+    window.addEventListener("focus", handleFocus);
+    return () => window.removeEventListener("focus", handleFocus);
+  }, [refetch, client]);
 
   // Map ISO alpha-2 country codes to numeric IDs for highlighting
   const countryNumericIds = new Set<string>(

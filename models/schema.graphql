@@ -69,6 +69,7 @@ type Flag {
   addedBy: User!
   description: String
   continent: String
+  publishedAt: DateTime
   togetherWith: [User!]!
 }
 
@@ -77,6 +78,7 @@ type FlagPreview {
   name: String!
   imageUrl: String
   acquiredAt: DateTime!
+  publishedAt: DateTime
   addedBy: User!
   description: String
   togetherWith: [User!]!

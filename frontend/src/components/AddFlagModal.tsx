@@ -6,15 +6,107 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/context/AuthContext";
-import flagsData from "@/lib/flagsData.json";
+import flagsCompleteData from "@/lib/flags_complete.json";
 
 interface FlagEntry {
   name: string;
   imageUrl: string | null;
   description: string | null;
   continent: string | null;
-  countryCode?: string;
+  countryCode: string;
+  isNational: boolean;
 }
+
+// Mapping of country names to ISO 3166-1 alpha-2 codes
+const COUNTRY_NAME_TO_CODE: Record<string, string> = {
+  "Italy": "IT", "France": "FR", "Spain": "ES", "Germany": "DE", "United Kingdom": "GB",
+  "Portugal": "PT", "Netherlands": "NL", "Belgium": "BE", "Switzerland": "CH", "Austria": "AT",
+  "Sweden": "SE", "Norway": "NO", "Denmark": "DK", "Finland": "FI", "Poland": "PL",
+  "Czech Republic": "CZ", "Hungary": "HU", "Romania": "RO", "Greece": "GR", "Ireland": "IE",
+  "Iceland": "IS", "Luxembourg": "LU", "Malta": "MT", "Cyprus": "CY", "Slovenia": "SI",
+  "Croatia": "HR", "Bosnia and Herzegovina": "BA", "Serbia": "RS", "Montenegro": "ME",
+  "North Macedonia": "MK", "Bulgaria": "BG", "Albania": "AL", "Kosovo": "XK", "Slovakia": "SK",
+  "Lithuania": "LT", "Latvia": "LV", "Estonia": "EE", "Belarus": "BY", "Ukraine": "UA",
+  "Moldova": "MD", "Georgia": "GE", "Armenia": "AM", "Azerbaijan": "AZ", "Kazakhstan": "KZ",
+  "Uzbekistan": "UZ", "Turkmenistan": "TM", "Tajikistan": "TJ", "Kyrgyzstan": "KG",
+  "Japan": "JP", "China": "CN", "India": "IN", "Pakistan": "PK", "Bangladesh": "BD",
+  "Sri Lanka": "LK", "Nepal": "NP", "Bhutan": "BT", "Thailand": "TH", "Vietnam": "VN",
+  "Cambodia": "KH", "Laos": "LA", "Myanmar": "MM", "Malaysia": "MY", "Singapore": "SG",
+  "Indonesia": "ID", "Philippines": "PH", "South Korea": "KR", "North Korea": "KP",
+  "Mongolia": "MN", "Taiwan": "TW", "Hong Kong": "HK", "Macau": "MO", "Iran": "IR",
+  "Iraq": "IQ", "Syria": "SY", "Lebanon": "LB", "Israel": "IL", "Palestine": "PS",
+  "Jordan": "JO", "Saudi Arabia": "SA", "Yemen": "YE", "Oman": "OM",
+  "United Arab Emirates": "AE", "Qatar": "QA", "Bahrain": "BH", "Kuwait": "KW",
+  "Turkey": "TR", "Afghanistan": "AF", "Brunei": "BN", "Timor-Leste": "TL",
+  "East Timor": "TL", "Maldives": "MV", "United States": "US", "USA": "US",
+  "Canada": "CA", "Mexico": "MX", "Brazil": "BR", "Argentina": "AR", "Chile": "CL",
+  "Colombia": "CO", "Peru": "PE", "Venezuela": "VE", "Ecuador": "EC", "Bolivia": "BO",
+  "Paraguay": "PY", "Uruguay": "UY", "Suriname": "SR", "Guyana": "GY", "Panama": "PA",
+  "Costa Rica": "CR", "Guatemala": "GT", "Honduras": "HN", "El Salvador": "SV",
+  "Nicaragua": "NI", "Belize": "BZ", "Jamaica": "JM", "Trinidad and Tobago": "TT",
+  "Bahamas": "BS", "Barbados": "BB", "Saint Lucia": "LC", "Grenada": "GD",
+  "Antigua and Barbuda": "AG", "Dominica": "DM", "Dominican Republic": "DO",
+  "Haiti": "HT", "Cuba": "CU", "Puerto Rico": "PR", "South Africa": "ZA",
+  "Egypt": "EG", "Nigeria": "NG", "Ethiopia": "ET", "Kenya": "KE", "Uganda": "UG",
+  "Tanzania": "TZ", "Rwanda": "RW", "Burundi": "BI", "Zimbabwe": "ZW", "Zambia": "ZM",
+  "Botswana": "BW", "Namibia": "NA", "Angola": "AO", "Mozambique": "MZ", "Malawi": "MW",
+  "Madagascar": "MG", "Mauritius": "MU", "Seychelles": "SC", "Ghana": "GH",
+  "Ivory Coast": "CI", "Côte d'Ivoire": "CI", "Senegal": "SN", "Mali": "ML",
+  "Mauritania": "MR", "Tunisia": "TN", "Algeria": "DZ", "Libya": "LY", "Sudan": "SD",
+  "South Sudan": "SS", "Cameroon": "CM", "Gabon": "GA", "Congo": "CG",
+  "Democratic Republic of the Congo": "CD", "DRC": "CD", "Central African Republic": "CF",
+  "Benin": "BJ", "Togo": "TG", "Liberia": "LR", "Sierra Leone": "SL", "Guinea": "GN",
+  "Guinea-Bissau": "GW", "Gambia": "GM", "Burkina Faso": "BF", "Niger": "NE",
+  "Chad": "TD", "Djibouti": "DJ", "Somalia": "SO", "Eritrea": "ER", "Eswatini": "SZ",
+  "Swaziland": "SZ", "Lesotho": "LS", "Cape Verde": "CV", "Comoros": "KM",
+  "Equatorial Guinea": "GQ", "São Tomé and Príncipe": "ST", "Australia": "AU",
+  "New Zealand": "NZ", "Fiji": "FJ", "Papua New Guinea": "PG", "Solomon Islands": "SB",
+  "Vanuatu": "VU", "Samoa": "WS", "Kiribati": "KI", "Micronesia": "FM", "Palau": "PW",
+  "Marshall Islands": "MH", "Nauru": "NR", "Tuvalu": "TV", "Republic of the Congo": "CG",
+};
+
+// Flatten the nested flags structure at runtime
+function flattenFlags(data: typeof flagsCompleteData): FlagEntry[] {
+  const flattened: FlagEntry[] = [];
+
+  Object.values(data.continents).forEach((continent) => {
+    Object.entries(continent).forEach(([countryName, countryData]) => {
+      const countryCode = COUNTRY_NAME_TO_CODE[countryName] || countryName;
+
+      // Add national flag
+      const national = (countryData as any).national;
+      if (national) {
+        flattened.push({
+          name: national.name.trim(),
+          imageUrl: national.link_flag || null,
+          description: national.description || null,
+          continent: null,
+          countryCode,
+          isNational: true,
+        });
+      }
+
+      // Add subdivisions
+      const subdivisions = (countryData as any).subdivisions;
+      if (subdivisions && Array.isArray(subdivisions)) {
+        subdivisions.forEach((subdivision: any) => {
+          flattened.push({
+            name: subdivision.name.trim(),
+            imageUrl: subdivision.link_flag || null,
+            description: subdivision.description || null,
+            continent: null,
+            countryCode,
+            isNational: false,
+          });
+        });
+      }
+    });
+  });
+
+  return flattened;
+}
+
+const allFlags = flattenFlags(flagsCompleteData);
 
 // Italian translations of flag names
 const FLAG_NAME_ITALIAN: Record<string, string> = {
@@ -65,44 +157,6 @@ const FLAG_NAME_ITALIAN: Record<string, string> = {
   "Micronesia": "Micronesia", "Palau": "Palau", "Marshall Islands": "Isole Marshall", "Nauru": "Nauru", "Tuvalu": "Tuvalu",
 };
 
-// Comprehensive map of flag names to ISO 3166-1 alpha-2 country codes
-const FLAG_NAME_TO_CODE: Record<string, string> = {
-  // Europe
-  "Italy": "IT", "France": "FR", "Spain": "ES", "Germany": "DE", "United Kingdom": "GB", "England": "GB", "Scotland": "GB", "Wales": "GB", "Northern Ireland": "GB",
-  "Portugal": "PT", "Netherlands": "NL", "Belgium": "BE", "Switzerland": "CH", "Austria": "AT", "Sweden": "SE", "Norway": "NO", "Denmark": "DK", "Finland": "FI",
-  "Poland": "PL", "Czech Republic": "CZ", "Czechia": "CZ", "Hungary": "HU", "Romania": "RO", "Greece": "GR", "Ireland": "IE", "Iceland": "IS", "Luxembourg": "LU",
-  "Malta": "MT", "Cyprus": "CY", "Slovenia": "SI", "Croatia": "HR", "Bosnia and Herzegovina": "BA", "Serbia": "RS", "Montenegro": "ME", "North Macedonia": "MK",
-  "Bulgaria": "BG", "Albania": "AL", "Kosovo": "XK", "Slovakia": "SK", "Lithuania": "LT", "Latvia": "LV", "Estonia": "EE", "Belarus": "BY", "Ukraine": "UA",
-  "Moldova": "MD", "Georgia": "GE", "Armenia": "AM", "Azerbaijan": "AZ", "Kazakhstan": "KZ", "Uzbekistan": "UZ", "Turkmenistan": "TM", "Tajikistan": "TJ", "Kyrgyzstan": "KG",
-
-  // Asia
-  "Japan": "JP", "China": "CN", "India": "IN", "Pakistan": "PK", "Bangladesh": "BD", "Sri Lanka": "LK", "Nepal": "NP", "Bhutan": "BT", "Thailand": "TH",
-  "Vietnam": "VN", "Cambodia": "KH", "Laos": "LA", "Myanmar": "MM", "Malaysia": "MY", "Singapore": "SG", "Indonesia": "ID", "Philippines": "PH", "South Korea": "KR",
-  "North Korea": "KP", "Mongolia": "MN", "Taiwan": "TW", "Hong Kong": "HK", "Macau": "MO", "Iran": "IR", "Iraq": "IQ", "Syria": "SY", "Lebanon": "LB",
-  "Israel": "IL", "Palestine": "PS", "Jordan": "JO", "Saudi Arabia": "SA", "Yemen": "YE", "Oman": "OM", "United Arab Emirates": "AE", "Qatar": "QA", "Bahrain": "BH",
-  "Kuwait": "KW", "Turkey": "TR", "Afghanistan": "AF", "Turkmenistan": "TM", "Thailand": "TH", "Brunei": "BN", "Timor-Leste": "TL", "East Timor": "TL", "Maldives": "MV",
-
-  // Americas
-  "United States": "US", "USA": "US", "Canada": "CA", "Mexico": "MX", "Brazil": "BR", "Argentina": "AR", "Chile": "CL", "Colombia": "CO", "Peru": "PE",
-  "Venezuela": "VE", "Ecuador": "EC", "Bolivia": "BO", "Paraguay": "PY", "Uruguay": "UY", "Suriname": "SR", "Guyana": "GY", "Panama": "PA", "Costa Rica": "CR",
-  "Guatemala": "GT", "Honduras": "HN", "El Salvador": "SV", "Nicaragua": "NI", "Belize": "BZ", "Jamaica": "JM", "Trinidad and Tobago": "TT", "Bahamas": "BS",
-  "Barbados": "BB", "Saint Lucia": "LC", "Grenada": "GD", "Antigua and Barbuda": "AG", "Dominica": "DM", "Dominican Republic": "DO", "Haiti": "HT", "Cuba": "CU",
-  "Puerto Rico": "PR",
-
-  // Africa
-  "South Africa": "ZA", "Egypt": "EG", "Nigeria": "NG", "Ethiopia": "ET", "Kenya": "KE", "Uganda": "UG", "Tanzania": "TZ", "Rwanda": "RW", "Burundi": "BI",
-  "Zimbabwe": "ZW", "Zambia": "ZM", "Botswana": "BW", "Namibia": "NA", "Angola": "AO", "Mozambique": "MZ", "Malawi": "MW", "Madagascar": "MG",
-  "Mauritius": "MU", "Seychelles": "SC", "Ghana": "GH", "Ivory Coast": "CI", "Côte d'Ivoire": "CI", "Senegal": "SN", "Mali": "ML", "Mauritania": "MR",
-  "Tunisia": "TN", "Algeria": "DZ", "Libya": "LY", "Sudan": "SD", "South Sudan": "SS", "Cameroon": "CM", "Gabon": "GA", "Congo": "CG", "Democratic Republic of the Congo": "CD",
-  "DRC": "CD", "Central African Republic": "CF", "Benin": "BJ", "Togo": "TG", "Liberia": "LR", "Sierra Leone": "SL", "Guinea": "GN", "Guinea-Bissau": "GW",
-  "Gambia": "GM", "Burkina Faso": "BF", "Niger": "NE", "Chad": "TD", "Djibouti": "DJ", "Somalia": "SO", "Eritrea": "ER", "Eswatini": "SZ", "Swaziland": "SZ",
-  "Lesotho": "LS", "Mauritius": "MU", "Cape Verde": "CV", "Comoros": "KM", "Equatorial Guinea": "GQ", "São Tomé and Príncipe": "ST",
-
-  // Oceania
-  "Australia": "AU", "New Zealand": "NZ", "Fiji": "FJ", "Papua New Guinea": "PG", "Solomon Islands": "SB", "Vanuatu": "VU", "Samoa": "WS", "Kiribati": "KI",
-  "Micronesia": "FM", "Palau": "PW", "Marshall Islands": "MH", "Nauru": "NR", "Tuvalu": "TV",
-};
-
 const GET_USERS = gql`
   query GetUsersForPicker {
     users {
@@ -117,6 +171,7 @@ const GET_MY_FLAGS = gql`
     myFlags {
       name
       countryCode
+      subdivisionCode
     }
   }
 `;
@@ -125,6 +180,7 @@ const ADD_FLAG = gql`
   mutation AddFlag(
     $name: String!
     $countryCode: String
+    $subdivisionCode: String
     $imageUrl: String
     $acquiredAt: Int!
     $isPublic: Boolean
@@ -136,6 +192,7 @@ const ADD_FLAG = gql`
     addFlag(
       name: $name
       countryCode: $countryCode
+      subdivisionCode: $subdivisionCode
       imageUrl: $imageUrl
       acquiredAt: $acquiredAt
       isPublic: $isPublic
@@ -161,8 +218,6 @@ const ADD_FLAG = gql`
   }
 `;
 
-const allFlags = flagsData as FlagEntry[];
-
 interface Props {
   onClose: () => void;
 }
@@ -184,6 +239,7 @@ export function AddFlagModal({ onClose }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const togetherWithRef = useRef<HTMLDivElement>(null);
+  const dateInputRef = useRef<HTMLInputElement>(null);
 
   const { data: usersData } = useQuery(GET_USERS);
   const { data: myFlagsData } = useQuery(GET_MY_FLAGS);
@@ -208,6 +264,8 @@ export function AddFlagModal({ onClose }: Props) {
     setSelected(flag);
     setQuery(flag.name);
     setShowSuggestions(false);
+    // Auto-focus on date field after selection
+    setTimeout(() => dateInputRef.current?.focus(), 0);
   };
 
   const handleQueryChange = (val: string) => {
@@ -253,15 +311,24 @@ export function AddFlagModal({ onClose }: Props) {
     return () => document.removeEventListener("keydown", handler);
   }, [onClose]);
 
-  const userCountryCodes = new Set((myFlagsData?.myFlags ?? []).map((f: { countryCode: string }) => f.countryCode));
+  const userFlags = myFlagsData?.myFlags ?? [];
+  const userFlagKeys = new Set(
+    userFlags.map((f: { countryCode: string; subdivisionCode?: string }) =>
+      `${f.countryCode}|${f.subdivisionCode ?? ""}`
+    )
+  );
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const name = query.trim();
-    if (!name || !date) return;
+    if (!selected || !date) return;
 
-    const countryCode = FLAG_NAME_TO_CODE[name] ?? "XX";
-    if (userCountryCodes.has(countryCode)) {
+    const countryCode = selected.countryCode;
+    // If it's a national flag, no subdivision code; otherwise use the flag name
+    const subdivisionCode = selected.isNational ? null : selected.name;
+
+    // Check if user already has this exact country/subdivision combination
+    const flagKey = `${countryCode}|${subdivisionCode ?? ""}`;
+    if (userFlagKeys.has(flagKey)) {
       setError("Hai già questa bandiera nella tua collezione");
       return;
     }
@@ -272,13 +339,14 @@ export function AddFlagModal({ onClose }: Props) {
     const isAddingForSelf = !targetUserId;
     addFlag({
       variables: {
-        name,
-        imageUrl: selected?.imageUrl ?? undefined,
+        name: selected.name,
+        imageUrl: selected.imageUrl ?? undefined,
         acquiredAt: Math.floor(new Date(date).getTime() / 1000),
         isPublic,
         countryCode,
-        description: selected?.description ?? undefined,
-        continent: selected?.continent ?? undefined,
+        subdivisionCode,
+        description: selected.description ?? undefined,
+        continent: selected.continent ?? undefined,
         addedByUserId: targetUserId,
         togetherWithUserIds: togetherWithUserIds.length > 0 ? togetherWithUserIds : undefined,
       },
@@ -378,6 +446,7 @@ export function AddFlagModal({ onClose }: Props) {
           <div className="space-y-1">
             <Label>Data acquisizione *</Label>
             <Input
+              ref={dateInputRef}
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}

@@ -1,6 +1,7 @@
 import { useQuery, gql } from "@apollo/client";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { QueryStateRenderer } from "@/components/QueryStateRenderer";
@@ -38,9 +39,15 @@ function getAvatarColor(name: string): string {
 export function Statistics() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { data, loading, error } = useQuery(TOP_MEMBERS);
+  const { data, loading, error, refetch } = useQuery(TOP_MEMBERS);
 
   const members = data?.topMembers ?? [];
+
+  useEffect(() => {
+    const handleFocus = () => refetch();
+    window.addEventListener("focus", handleFocus);
+    return () => window.removeEventListener("focus", handleFocus);
+  }, [refetch]);
 
   return (
     <Card className="h-full flex flex-col overflow-hidden">

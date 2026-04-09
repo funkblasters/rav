@@ -26,8 +26,8 @@ export const flagResolvers = {
     lastFlag: async (_: unknown, __: unknown, ctx: AppContext) => {
       if (!ctx.user) throw new Error("Unauthenticated");
       const flag = await prisma.flag.findFirst({
-        where: { isPublic: true },
-        orderBy: [{ acquiredAt: "desc" }, { createdAt: "desc" }],
+        where: { isPublic: true, publishedAt: { not: null } },
+        orderBy: [{ acquiredAt: "desc" }, { publishedAt: "desc" }],
         include: { togetherWith: true },
       });
       return flag;
@@ -89,18 +89,21 @@ export const flagResolvers = {
         ownerId = target.id;
       }
 
-      // Check if user already has a flag with this country code
+      // Check if user already has a flag with this exact country/subdivision combination
       const countryCode = args.countryCode ?? "XX";
+      const subdivisionCode = args.subdivisionCode ?? null;
       const existingFlag = await prisma.flag.findFirst({
         where: {
           addedById: ownerId,
           countryCode: countryCode,
+          subdivisionCode: subdivisionCode,
         },
       });
       if (existingFlag) {
         throw new Error("Hai già questa bandiera nella tua collezione");
       }
 
+      const isPublic = args.isPublic ?? true;
       return prisma.flag.create({
         data: {
           id: randomUUID(),
@@ -112,10 +115,11 @@ export const flagResolvers = {
           longitude: args.longitude,
           imageUrl: args.imageUrl,
           acquiredAt: new Date(args.acquiredAt * 1000),
-          isPublic: args.isPublic ?? true,
+          isPublic,
           description: args.description,
           continent: args.continent,
           addedById: ownerId,
+          publishedAt: isPublic ? new Date() : null,
           togetherWith: args.togetherWithUserIds?.length ? { connect: args.togetherWithUserIds.map((id) => ({ id })) } : undefined,
         },
         include: { addedBy: true, togetherWith: true },
@@ -136,7 +140,14 @@ export const flagResolvers = {
       if (!flag) throw new Error("Flag not found");
       if (flag.addedById !== ctx.user.id && ctx.user.role !== "ADMIN")
         throw new Error("Forbidden");
-      return prisma.flag.update({ where: { id: args.flagId }, data: { isPublic: true }, include: { togetherWith: true } });
+      return prisma.flag.update({
+        where: { id: args.flagId },
+        data: {
+          isPublic: true,
+          publishedAt: flag.publishedAt ?? new Date(),
+        },
+        include: { addedBy: true, togetherWith: true },
+      });
     },
     setMostWanted: async (
       _: unknown,

@@ -21,7 +21,19 @@ const MAKE_PUBLIC = gql`
   mutation MakePublic($flagId: ID!) {
     makePublic(flagId: $flagId) {
       id
+      name
+      imageUrl
+      acquiredAt
       isPublic
+      description
+      addedBy {
+        id
+        displayName
+      }
+      togetherWith {
+        id
+        displayName
+      }
     }
   }
 `;
@@ -38,11 +50,19 @@ export function StatsPage() {
   const { t } = useTranslation();
   const { data, loading, refetch } = useQuery(MY_FLAGS);
   const [makePublic, { loading: publishing }] = useMutation(MAKE_PUBLIC, {
-    refetchQueries: ["GetMyFlags", "TopMembers", "MyProfile", "LastFlag", "MostWantedFlag"],
+    refetchQueries: ["GetMyFlags", "TopMembers", "MyProfile", "LastFlag", "MostWantedFlag", "FlagsGeo", "NewsItems", "GetFlags"],
+    awaitRefetchQueries: true,
   });
 
   useEffect(() => {
     refetch();
+
+    const handleFocus = () => {
+      refetch();
+    };
+
+    window.addEventListener("focus", handleFocus);
+    return () => window.removeEventListener("focus", handleFocus);
   }, [refetch]);
 
   const myFlags: MyFlag[] = data?.myFlags ?? [];

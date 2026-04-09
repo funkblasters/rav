@@ -24,6 +24,13 @@ export function FlagsPage() {
 
   useEffect(() => {
     refetch();
+
+    const handleFocus = () => {
+      refetch();
+    };
+
+    window.addEventListener("focus", handleFocus);
+    return () => window.removeEventListener("focus", handleFocus);
   }, [refetch]);
 
   // Deduplicate flags by name, keeping first occurrence

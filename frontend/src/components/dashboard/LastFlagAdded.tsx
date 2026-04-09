@@ -1,5 +1,6 @@
 import { useQuery, gql } from "@apollo/client";
 import { useTranslation } from "react-i18next";
+import { useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { QueryStateRenderer } from "@/components/QueryStateRenderer";
 
@@ -10,6 +11,7 @@ const LAST_FLAG = gql`
       name
       imageUrl
       acquiredAt
+      publishedAt
       addedBy { displayName }
       description
     }
@@ -18,8 +20,14 @@ const LAST_FLAG = gql`
 
 export function LastFlagAdded() {
   const { t } = useTranslation();
-  const { data, loading, error } = useQuery(LAST_FLAG);
+  const { data, loading, error, refetch } = useQuery(LAST_FLAG);
   const flag = data?.lastFlag;
+
+  useEffect(() => {
+    const handleFocus = () => refetch();
+    window.addEventListener("focus", handleFocus);
+    return () => window.removeEventListener("focus", handleFocus);
+  }, [refetch]);
 
   return (
     <Card className="h-full flex flex-col overflow-hidden">

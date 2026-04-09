@@ -47,6 +47,7 @@ model Flag {
   togetherWith User[] @relation("TogetherWith")
 
   createdAt DateTime   @default(now())
+  publishedAt DateTime?
 
   @@map("flags")
 }

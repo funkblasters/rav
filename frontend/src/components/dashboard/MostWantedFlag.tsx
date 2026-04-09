@@ -1,5 +1,6 @@
 import { useQuery, gql } from "@apollo/client";
 import { useTranslation } from "react-i18next";
+import { useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { QueryStateRenderer } from "@/components/QueryStateRenderer";
 
@@ -17,8 +18,14 @@ const MOST_WANTED_FLAG = gql`
 
 export function MostWantedFlag() {
   const { t } = useTranslation();
-  const { data, loading, error } = useQuery(MOST_WANTED_FLAG);
+  const { data, loading, error, refetch } = useQuery(MOST_WANTED_FLAG);
   const flag = data?.mostWantedFlag;
+
+  useEffect(() => {
+    const handleFocus = () => refetch();
+    window.addEventListener("focus", handleFocus);
+    return () => window.removeEventListener("focus", handleFocus);
+  }, [refetch]);
 
   return (
     <Card className="h-full flex flex-col overflow-hidden">

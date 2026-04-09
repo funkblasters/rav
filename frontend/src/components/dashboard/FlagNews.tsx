@@ -1,5 +1,6 @@
 import { useQuery, gql } from "@apollo/client";
 import { useTranslation } from "react-i18next";
+import { useEffect } from "react";
 import { ExternalLink } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { QueryStateRenderer } from "@/components/QueryStateRenderer";
@@ -17,7 +18,13 @@ const NEWS_ITEMS = gql`
 
 export function FlagNews() {
   const { t } = useTranslation();
-  const { data, loading, error } = useQuery(NEWS_ITEMS);
+  const { data, loading, error, refetch } = useQuery(NEWS_ITEMS);
+
+  useEffect(() => {
+    const handleFocus = () => refetch();
+    window.addEventListener("focus", handleFocus);
+    return () => window.removeEventListener("focus", handleFocus);
+  }, [refetch]);
 
   const items: Array<{
     title: string;
