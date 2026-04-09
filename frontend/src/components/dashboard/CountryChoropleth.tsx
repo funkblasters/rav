@@ -11,7 +11,7 @@ interface Props {
 export function CountryChoropleth({ highlightedNumericIds = new Set() }: Props) {
   return (
     <div className="w-full h-full rounded overflow-hidden bg-muted/30">
-      <ComposableMap projectionConfig={{ scale: 147 }} style={{ width: "100%", height: "100%" }}>
+      <ComposableMap projectionConfig={{ scale: 180 }} style={{ width: "100%", height: "100%" }}>
         <ZoomableGroup>
           <Geographies geography={GEO_URL}>
             {({ geographies }) =>

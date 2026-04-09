@@ -91,6 +91,9 @@ export function LoginPage() {
                 {t("auth.register")}
               </Link>
             </p>
+            <p className="text-xs text-muted-foreground text-center">
+              {t("auth.forgotPassword")}
+            </p>
           </CardFooter>
         </form>
       </Card>

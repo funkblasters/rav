@@ -17,7 +17,8 @@
     "registerButton": "Crea account",
     "noAccount": "Non hai un account?",
     "hasAccount": "Hai già un account?",
-    "invalidEmail": "Inserisci un indirizzo email valido"
+    "invalidEmail": "Inserisci un indirizzo email valido",
+    "forgotPassword": "Password dimenticata? Chiedi all'amministratore di reimpostarla."
   },
   "dashboard": {
     "title": "Dashboard",
@@ -59,6 +60,20 @@
     "edit": "Modifica",
     "loading": "Caricamento...",
     "noData": "Nessun dato disponibile."
+  },
+  "myFlags": {
+    "title": "Le mie bandiere",
+    "description_one": "{{public}} pubbliche · {{secret}} segrete",
+    "secret": "Segrete",
+    "public": "Pubbliche",
+    "makePublic": "Rendi pubblica",
+    "noFlags": "Non hai ancora aggiunto bandiere."
+  },
+  "flags": {
+    "title": "Collezione",
+    "subtitle": "Tutte le bandiere acquisite dal club",
+    "noFlags": "La collezione è ancora vuota.",
+    "addedBy": "Aggiunta da {{name}}"
   },
   "profile": {
     "title": "La Tua Tessera RAV",

@@ -1,15 +1,22 @@
-import { ApolloClient, InMemoryCache, createHttpLink } from "@apollo/client";
+import {
+  ApolloClient,
+  InMemoryCache,
+  createHttpLink,
+  from,
+  gql,
+} from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
-
-// Support dev mock server: set VITE_GRAPHQL_URL env var or default to /graphql
-const graphqlUrl = import.meta.env.VITE_GRAPHQL_URL || "/graphql";
+import { onError } from "@apollo/client/link/error";
+import { fromPromise } from "@apollo/client";
+import { tokenStore } from "./tokenStore";
 
 const httpLink = createHttpLink({
-  uri: graphqlUrl,
+  uri: import.meta.env.VITE_GRAPHQL_URL || "/graphql",
+  credentials: "include", // always send cookies
 });
 
 const authLink = setContext((_, { headers }) => {
-  const token = localStorage.getItem("token");
+  const token = tokenStore.get();
   return {
     headers: {
       ...headers,
@@ -18,7 +25,78 @@ const authLink = setContext((_, { headers }) => {
   };
 });
 
+const REFRESH = gql`
+  mutation Refresh {
+    refresh {
+      token
+      user { id email displayName role }
+    }
+  }
+`;
+
+let isRefreshing = false;
+let pendingResolvers: Array<(token: string | null) => void> = [];
+
+function drainPending(token: string | null) {
+  pendingResolvers.forEach((resolve) => resolve(token));
+  pendingResolvers = [];
+}
+
+async function doRefresh(): Promise<string | null> {
+  try {
+    // Use a plain fetch so we don't go through the error link again
+    const res = await fetch(import.meta.env.VITE_GRAPHQL_URL || "/graphql", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ query: REFRESH.loc!.source.body }),
+    });
+    const json = await res.json();
+    return json?.data?.refresh?.token ?? null;
+  } catch {
+    return null;
+  }
+}
+
+const errorLink = onError(({ graphQLErrors, operation, forward }) => {
+  const isUnauthenticated = graphQLErrors?.some(
+    (e) => e.message === "Unauthenticated"
+  );
+
+  if (!isUnauthenticated) return;
+
+  if (isRefreshing) {
+    // Queue this operation until the in-flight refresh resolves
+    return fromPromise(
+      new Promise<string | null>((resolve) => pendingResolvers.push(resolve))
+    ).flatMap((token) => {
+      if (token) {
+        operation.setContext(({ headers = {} }: { headers: Record<string, string> }) => ({
+          headers: { ...headers, authorization: `Bearer ${token}` },
+        }));
+      }
+      return forward(operation);
+    });
+  }
+
+  isRefreshing = true;
+  return fromPromise(
+    doRefresh().then((token) => {
+      tokenStore.set(token);
+      drainPending(token);
+      if (!token) window.location.href = "/login";
+      return token;
+    }).finally(() => { isRefreshing = false; })
+  ).flatMap((token) => {
+    if (!token) return forward(operation);
+    operation.setContext(({ headers = {} }: { headers: Record<string, string> }) => ({
+      headers: { ...headers, authorization: `Bearer ${token}` },
+    }));
+    return forward(operation);
+  });
+});
+
 export const apolloClient = new ApolloClient({
-  link: authLink.concat(httpLink),
+  link: from([errorLink, authLink, httpLink]),
   cache: new InMemoryCache(),
 });

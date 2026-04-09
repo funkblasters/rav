@@ -1,6 +1,5 @@
 import type { AppContext } from "../context.js";
-import { users } from "./auth.js";
-import { flags } from "./flags.js";
+import { prisma } from "../db.js";
 
 // Country code to continent mapping
 const COUNTRY_TO_CONTINENT: Record<string, string> = {
@@ -118,14 +117,14 @@ function getContinent(countryCode: string): string {
 
 export const userResolvers = {
   Query: {
-    myProfile: (_: unknown, __: unknown, ctx: AppContext) => {
+    myProfile: async (_: unknown, __: unknown, ctx: AppContext) => {
       if (!ctx.user) throw new Error("Unauthenticated");
 
-      const user = users.find((u) => u.id === ctx.user!.id);
+      const user = await prisma.user.findUnique({ where: { id: ctx.user.id } });
       if (!user) return null;
 
-      // Get all flags added by this user
-      const userFlags = flags.filter((f) => f.addedBy === user.id);
+      // All flags by this user (public + private) — it's their own profile
+      const userFlags = await prisma.flag.findMany({ where: { addedById: user.id } });
 
       // Compute stats
       const flagsCount = userFlags.length;
@@ -139,7 +138,7 @@ export const userResolvers = {
       // Group contributions by continent
       const continentMap = new Map<string, number>();
       userFlags.forEach((flag) => {
-        const continent = getContinent(flag.countryCode);
+        const continent = flag.continent ?? getContinent(flag.countryCode);
         continentMap.set(continent, (continentMap.get(continent) ?? 0) + 1);
       });
 
@@ -154,7 +153,7 @@ export const userResolvers = {
         role: user.role,
         clubRole: user.clubRole,
         cardNumber: user.cardNumber,
-        createdAt: user.createdAt,
+        createdAt: user.createdAt.toISOString(),
         flagsCount,
         lastContribution,
         contributionsByContinent,

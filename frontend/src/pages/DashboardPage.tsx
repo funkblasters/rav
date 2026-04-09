@@ -74,7 +74,7 @@ export function DashboardPage() {
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
-          <div className="h-96 sm:h-[28rem] lg:h-[32rem]">
+          <div className="h-[28rem] sm:h-[36rem] lg:h-[44rem]">
             <CountryChoropleth highlightedNumericIds={countryNumericIds} />
           </div>
         </CardContent>

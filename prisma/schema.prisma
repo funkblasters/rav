@@ -1,0 +1,80 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String     @id @default(cuid())
+  email     String     @unique
+  displayName String
+  passwordHash String
+  role      Role       @default(MEMBER)
+  clubRole  ClubRole   @default(ORDINARY_ASSOCIATE)
+  cardNumber String    @unique
+  createdAt DateTime   @default(now())
+
+  flagsAdded Flag[]    @relation("AddedBy")
+  flagsTogether Flag[] @relation("TogetherWith")
+  invites   Invite[]
+
+  @@map("users")
+}
+
+model Flag {
+  id        String     @id @default(cuid())
+  name      String
+  countryCode String  @default("XX")
+  subdivisionCode String?
+  city      String?
+  latitude  Float?
+  longitude Float?
+  imageUrl  String?
+  acquiredAt String
+  isPublic  Boolean    @default(true)
+  description String?
+  continent String?
+
+  addedBy   User      @relation("AddedBy", fields: [addedById], references: [id], onDelete: Cascade)
+  addedById String
+
+  togetherWith User[] @relation("TogetherWith")
+
+  createdAt DateTime   @default(now())
+
+  @@map("flags")
+}
+
+model Invite {
+  id        String     @id @default(cuid())
+  email     String     @unique
+  clubRole  ClubRole
+  cardNumber String?
+
+  createdBy User      @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  createdById String
+
+  createdAt DateTime   @default(now())
+
+  @@map("invites")
+}
+
+enum Role {
+  ADMIN
+  MEMBER
+}
+
+enum ClubRole {
+  CHAIRMAN
+  VICE_CHAIRMAN
+  HONORARY_CHAIRMAN
+  TREASURER
+  SECRETARY
+  ORDINARY_ASSOCIATE
+}

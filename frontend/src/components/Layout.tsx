@@ -2,8 +2,8 @@ import { Link, Outlet, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { BarChart2, Flag } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-import { Button } from "@/components/ui/button";
 import { UserPanel } from "@/components/UserPanel";
+import { AddFlagButton } from "@/components/AddFlagButton";
 
 export function Layout() {
   const { t } = useTranslation();
@@ -57,6 +57,7 @@ export function Layout() {
       <main className="flex-1 container py-8">
         <Outlet />
       </main>
+      {user && !isActive("/admin") && <AddFlagButton />}
     </div>
   );
 }

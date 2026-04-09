@@ -5,12 +5,14 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { QueryStateRenderer } from "@/components/QueryStateRenderer";
 import { List, ListItem } from "@/components/ui/list";
+import { ClubRoleBadge } from "@/components/ClubRoleBadge";
 
 const TOP_MEMBERS = gql`
   query TopMembers {
     topMembers {
       id
       displayName
+      clubRole
       flagsCount
     }
   }
@@ -56,9 +58,9 @@ export function Statistics() {
             {/* Ranking List - Full width */}
             <div className="overflow-y-auto flex-1">
               <List>
-                {members.map((member, idx) => (
+                {members.map((member: { id: string; displayName: string; clubRole: string; flagsCount: number }, idx: number) => (
                   <ListItem key={member.id} className="space-x-2">
-                    {/* Rank - big bold number */}
+                    {/* Rank */}
                     <span className="flex-shrink-0 w-8 text-center text-xl font-bold text-muted-foreground">
                       {idx + 1}
                     </span>
@@ -72,10 +74,13 @@ export function Statistics() {
                       {member.displayName.charAt(0).toUpperCase()}
                     </div>
 
-                    {/* Name */}
-                    <p className="text-sm font-medium flex-1 truncate">{member.displayName}</p>
+                    {/* Name + club role */}
+                    <div className="flex-1 min-w-0 flex items-center gap-2">
+                      <p className="text-sm font-medium truncate">{member.displayName}</p>
+                      <span className="shrink-0"><ClubRoleBadge role={member.clubRole} /></span>
+                    </div>
 
-                    {/* Flags Count - big bold number */}
+                    {/* Flags Count */}
                     <span className="flex-shrink-0 text-xl font-bold">
                       {member.flagsCount}
                     </span>

@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
+import { ClubRoleBadge } from "@/components/ClubRoleBadge";
 import { Button } from "@/components/ui/button";
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -217,9 +217,7 @@ export function UserPanel() {
                   </div>
 
                   {/* Club Role Badge */}
-                  <Badge variant="secondary" className="text-xs">
-                    {t(`profile.clubRoles.${profile.clubRole}`)}
-                  </Badge>
+                  <ClubRoleBadge role={profile.clubRole} />
                 </div>
 
                 <Separator />

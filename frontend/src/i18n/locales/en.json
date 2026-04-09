@@ -17,7 +17,8 @@
     "registerButton": "Create Account",
     "noAccount": "Don't have an account?",
     "hasAccount": "Already have an account?",
-    "invalidEmail": "Please enter a valid email address"
+    "invalidEmail": "Please enter a valid email address",
+    "forgotPassword": "Forgot your password? Ask your admin to reset it."
   },
   "dashboard": {
     "title": "Dashboard",
@@ -59,6 +60,20 @@
     "edit": "Edit",
     "loading": "Loading...",
     "noData": "No data available."
+  },
+  "myFlags": {
+    "title": "My Flags",
+    "description_one": "{{public}} public · {{secret}} secret",
+    "secret": "Secret",
+    "public": "Public",
+    "makePublic": "Make public",
+    "noFlags": "You haven't added any flags yet."
+  },
+  "flags": {
+    "title": "Collection",
+    "subtitle": "All flags acquired by the club",
+    "noFlags": "No flags in the collection yet.",
+    "addedBy": "Added by {{name}}"
   },
   "profile": {
     "title": "Your RAV Card",

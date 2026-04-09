@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import type { Request, Response } from "express";
 
 export interface AuthUser {
   id: string;
@@ -8,19 +9,24 @@ export interface AuthUser {
 
 export interface AppContext {
   user: AuthUser | null;
+  res: Response;
+  refreshTokenCookie: string | undefined;
 }
 
-export function buildContext(req: { headers: Record<string, string | string[] | undefined> }): AppContext {
-  const auth = req.headers["authorization"] ?? "";
-  const token = Array.isArray(auth) ? auth[0] : auth;
+export function buildContext(req: Request, res: Response): AppContext {
+  const auth = (req.headers["authorization"] as string) ?? "";
 
-  if (!token.startsWith("Bearer ")) return { user: null };
-
-  try {
-    const secret = process.env.JWT_SECRET ?? "dev-secret";
-    const payload = jwt.verify(token.slice(7), secret) as AuthUser;
-    return { user: payload };
-  } catch {
-    return { user: null };
+  let user: AuthUser | null = null;
+  if (auth.startsWith("Bearer ")) {
+    try {
+      const secret = process.env.JWT_SECRET ?? "dev-secret";
+      user = jwt.verify(auth.slice(7), secret) as AuthUser;
+    } catch {}
   }
+
+  return {
+    user,
+    res,
+    refreshTokenCookie: req.cookies?.refreshToken,
+  };
 }

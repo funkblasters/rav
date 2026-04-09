@@ -4,12 +4,14 @@ import { apolloClient } from "@/lib/apollo";
 import { AuthProvider } from "@/context/AuthContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { AdminRoute } from "@/components/AdminRoute";
 import { Layout } from "@/components/Layout";
 import { LoginPage } from "@/pages/LoginPage";
 import { RegisterPage } from "@/pages/RegisterPage";
 import { DashboardPage } from "@/pages/DashboardPage";
 import { StatsPage } from "@/pages/StatsPage";
 import { FlagsPage } from "@/pages/FlagsPage";
+import { AdminPage } from "@/pages/AdminPage";
 
 export function App() {
   return (
@@ -32,6 +34,16 @@ export function App() {
               <Route path="stats" element={<StatsPage />} />
               <Route path="flags" element={<FlagsPage />} />
               {/* TODO: add more routes (events, members) */}
+            </Route>
+            <Route
+              path="/admin"
+              element={
+                <AdminRoute>
+                  <Layout />
+                </AdminRoute>
+              }
+            >
+              <Route index element={<AdminPage />} />
             </Route>
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

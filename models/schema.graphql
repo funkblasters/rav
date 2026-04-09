@@ -61,7 +61,11 @@ type Flag {
   longitude: Float
   imageUrl: String
   acquiredAt: String!
+  isPublic: Boolean!
   addedBy: User!
+  description: String
+  continent: String
+  togetherWith: [User!]!
 }
 
 type FlagPreview {
@@ -71,6 +75,7 @@ type FlagPreview {
   acquiredAt: String!
   addedBy: User!
   description: String
+  togetherWith: [User!]!
 }
 
 ### ─── Club ───────────────────────────────────────────────────────────────────
@@ -82,6 +87,14 @@ type Event {
   date: String!
   location: String
   createdBy: User!
+}
+
+### ─── Admin ──────────────────────────────────────────────────────────────────
+
+type Invite {
+  email: String!
+  clubRole: ClubRole!
+  cardNumber: String
 }
 
 ### ─── News ───────────────────────────────────────────────────────────────────
@@ -97,6 +110,7 @@ type NewsItem {
 type MemberStats {
   id: ID!
   displayName: String!
+  clubRole: ClubRole!
   flagsCount: Int!
 }
 
@@ -112,8 +126,10 @@ type Query {
   flag(id: ID!): Flag
   lastFlag: FlagPreview
   mostWantedFlag: FlagPreview
+  myFlags: [Flag!]!
   newsItems(limit: Int): [NewsItem!]!
   topMembers(limit: Int): [MemberStats!]!
+  invites: [Invite!]!
 }
 
 ### ─── Mutations ──────────────────────────────────────────────────────────────
@@ -128,13 +144,30 @@ type Mutation {
 
   addFlag(
     name: String!
-    countryCode: String!
+    countryCode: String
     subdivisionCode: String
     city: String
     latitude: Float
     longitude: Float
     imageUrl: String
     acquiredAt: String!
+    isPublic: Boolean
+    description: String
+    continent: String
+    addedByUserId: ID
+    togetherWithUserIds: [ID!]
   ): Flag!
   deleteFlag(id: ID!): Boolean!
+  makePublic(flagId: ID!): Flag!
+
+  addInvite(email: String!, clubRole: ClubRole!, cardNumber: String): Invite!
+  removeInvite(email: String!): Boolean!
+
+  resetUserPassword(userId: ID!, newPassword: String!): Boolean!
+
+  setMostWanted(name: String!, imageUrl: String, acquiredAt: String!, description: String): FlagPreview!
+  clearMostWanted: Boolean!
+
+  refresh: AuthPayload!
+  logout: Boolean!
 }
