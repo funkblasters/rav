@@ -1,0 +1,81 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "ranking": "Stats",
+    "flags": "Flags",
+    "events": "Events",
+    "members": "Members",
+    "logout": "Logout"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "email": "Email",
+    "password": "Password",
+    "displayName": "Display Name",
+    "loginButton": "Sign In",
+    "registerButton": "Create Account",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "invalidEmail": "Please enter a valid email address"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "lastFlag": "Latest Addition",
+    "lastFlagSubtitle": "the latest addition to the trasury",
+    "noFlagYet": "No flags added yet.",
+    "noDescription": "No description available.",
+    "addedBy": "Added by {{name}}",
+    "mostWantedFlag": "Most Wanted",
+    "mostWantedSubtitle": "the unicorn right now",
+    "flagNews": "Latest News",
+    "flagNewsSubtitle": "the latest thrilling news from the flag world",
+    "newsFetchError": "Could not load news.",
+    "statistics": "Stats",
+    "statisticsSubtitle": "Our esteemed contributors",
+    "viewStatistics": "View statistics",
+    "flagsAcquired": "Flags acquired",
+    "maps": {
+      "countries": "Countries",
+      "subdivisions": "Subdivisions",
+      "cities": "Cities"
+    }
+  },
+  "events": {
+    "title": "Events",
+    "create": "Create Event",
+    "noEvents": "No events yet.",
+    "fields": {
+      "title": "Title",
+      "description": "Description",
+      "date": "Date",
+      "location": "Location"
+    }
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "loading": "Loading...",
+    "noData": "No data available."
+  },
+  "profile": {
+    "title": "Your RAV Card",
+    "cardNumber": "Card #",
+    "memberSince": "Member since",
+    "lastContribution": "Last contribution",
+    "totalFlags": "Total flags",
+    "continentsTouched": "Continents",
+    "achievements": "Achievements",
+    "noAchievements": "Coming soon",
+    "clubRoles": {
+      "CHAIRMAN": "Chairman",
+      "VICE_CHAIRMAN": "Vice Chairman",
+      "HONORARY_CHAIRMAN": "Honorary Chairman",
+      "TREASURER": "Treasurer",
+      "SECRETARY": "Secretary",
+      "ORDINARY_ASSOCIATE": "Ordinary Associate"
+    }
+  }
+}

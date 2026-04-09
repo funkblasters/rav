@@ -1,0 +1,81 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "ranking": "Stats",
+    "flags": "Bandiere",
+    "events": "Eventi",
+    "members": "Membri",
+    "logout": "Esci"
+  },
+  "auth": {
+    "login": "Accedi",
+    "register": "Registrati",
+    "email": "Email",
+    "password": "Password",
+    "displayName": "Nome visualizzato",
+    "loginButton": "Accedi",
+    "registerButton": "Crea account",
+    "noAccount": "Non hai un account?",
+    "hasAccount": "Hai già un account?",
+    "invalidEmail": "Inserisci un indirizzo email valido"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "lastFlag": "Ultima Aggiunta",
+    "lastFlagSubtitle": "l'ultima aggiunta al tesoro",
+    "noFlagYet": "Nessuna bandiera ancora.",
+    "noDescription": "Nessuna descrizione disponibile.",
+    "addedBy": "Acquisita dallo stimato membro: {{name}}",
+    "mostWantedFlag": "Most Wanted",
+    "mostWantedSubtitle": "chi riuscirà a prenderla?",
+    "flagNews": "Ultime Notizie",
+    "flagNewsSubtitle": "le ultime entusiasmanti novità dal mondo delle bandiere",
+    "newsFetchError": "Impossibile caricare le notizie.",
+    "statistics": "Stats",
+    "statisticsSubtitle": "I nostri stimati contributori",
+    "viewStatistics": "Vedi le statistiche",
+    "flagsAcquired": "Bandiere acquisite",
+    "maps": {
+      "countries": "Nazioni",
+      "subdivisions": "Regioni",
+      "cities": "Città"
+    }
+  },
+  "events": {
+    "title": "Eventi",
+    "create": "Crea evento",
+    "noEvents": "Nessun evento.",
+    "fields": {
+      "title": "Titolo",
+      "description": "Descrizione",
+      "date": "Data",
+      "location": "Luogo"
+    }
+  },
+  "common": {
+    "save": "Salva",
+    "cancel": "Annulla",
+    "delete": "Elimina",
+    "edit": "Modifica",
+    "loading": "Caricamento...",
+    "noData": "Nessun dato disponibile."
+  },
+  "profile": {
+    "title": "La Tua Tessera RAV",
+    "cardNumber": "Carta #",
+    "memberSince": "Membro da",
+    "lastContribution": "Ultimo contributo",
+    "totalFlags": "Bandiere totali",
+    "continentsTouched": "Continenti",
+    "achievements": "Achievements",
+    "noAchievements": "Presto disponibili",
+    "clubRoles": {
+      "CHAIRMAN": "Presidente",
+      "VICE_CHAIRMAN": "Vicepresidente",
+      "HONORARY_CHAIRMAN": "Presidente Onorario",
+      "TREASURER": "Tesoriere",
+      "SECRETARY": "Segretario",
+      "ORDINARY_ASSOCIATE": "Socio Ordinario"
+    }
+  }
+}

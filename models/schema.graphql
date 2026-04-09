@@ -1,0 +1,140 @@
+### ─── Auth ───────────────────────────────────────────────────────────────────
+
+type AuthPayload {
+  token: String!
+  user: User!
+}
+
+### ─── User ───────────────────────────────────────────────────────────────────
+
+enum Role {
+  ADMIN
+  MEMBER
+}
+
+enum ClubRole {
+  CHAIRMAN
+  VICE_CHAIRMAN
+  HONORARY_CHAIRMAN
+  TREASURER
+  SECRETARY
+  ORDINARY_ASSOCIATE
+}
+
+type User {
+  id: ID!
+  email: String!
+  displayName: String!
+  role: Role!
+  clubRole: ClubRole!
+  cardNumber: String!
+  createdAt: String!
+}
+
+type ContributionByContinent {
+  continent: String!
+  count: Int!
+}
+
+type UserProfile {
+  id: ID!
+  displayName: String!
+  email: String!
+  role: Role!
+  clubRole: ClubRole!
+  cardNumber: String!
+  createdAt: String!
+  flagsCount: Int!
+  lastContribution: String
+  contributionsByContinent: [ContributionByContinent!]!
+}
+
+### ─── Flag ───────────────────────────────────────────────────────────────────
+
+type Flag {
+  id: ID!
+  name: String!
+  countryCode: String!      # ISO 3166-1 alpha-2
+  subdivisionCode: String   # ISO 3166-2 (e.g. "IT-LO")
+  city: String
+  latitude: Float
+  longitude: Float
+  imageUrl: String
+  acquiredAt: String!
+  addedBy: User!
+}
+
+type FlagPreview {
+  id: ID!
+  name: String!
+  imageUrl: String
+  acquiredAt: String!
+  addedBy: User!
+  description: String
+}
+
+### ─── Club ───────────────────────────────────────────────────────────────────
+
+type Event {
+  id: ID!
+  title: String!
+  description: String
+  date: String!
+  location: String
+  createdBy: User!
+}
+
+### ─── News ───────────────────────────────────────────────────────────────────
+
+type NewsItem {
+  title: String!
+  link: String!
+  pubDate: String!
+  source: String
+  imageUrl: String
+}
+
+type MemberStats {
+  id: ID!
+  displayName: String!
+  flagsCount: Int!
+}
+
+### ─── Queries ────────────────────────────────────────────────────────────────
+
+type Query {
+  me: User
+  users: [User!]!
+  myProfile: UserProfile
+  events: [Event!]!
+  event(id: ID!): Event
+  flags: [Flag!]!
+  flag(id: ID!): Flag
+  lastFlag: FlagPreview
+  mostWantedFlag: FlagPreview
+  newsItems(limit: Int): [NewsItem!]!
+  topMembers(limit: Int): [MemberStats!]!
+}
+
+### ─── Mutations ──────────────────────────────────────────────────────────────
+
+type Mutation {
+  login(email: String!, password: String!): AuthPayload!
+  register(email: String!, password: String!, displayName: String!): AuthPayload!
+
+  createEvent(title: String!, description: String, date: String!, location: String): Event!
+  updateEvent(id: ID!, title: String, description: String, date: String, location: String): Event!
+  deleteEvent(id: ID!): Boolean!
+
+  addFlag(
+    name: String!
+    countryCode: String!
+    subdivisionCode: String
+    city: String
+    latitude: Float
+    longitude: Float
+    imageUrl: String
+    acquiredAt: String!
+  ): Flag!
+  deleteFlag(id: ID!): Boolean!
+}
