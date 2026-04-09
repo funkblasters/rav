@@ -111,8 +111,18 @@ const COUNTRY_TO_CONTINENT: Record<string, string> = {
   XX: "Other",
 };
 
-function getContinent(countryCode: string): string {
+function getContinent(countryCode: string | null | undefined): string {
+  if (!countryCode) return "Other";
   return COUNTRY_TO_CONTINENT[countryCode] ?? "Other";
+}
+
+function getContinentFromFlag(countryCode: string | null | undefined, subdivisionCode: string | null | undefined): string {
+  if (countryCode) return getContinent(countryCode);
+  if (subdivisionCode) {
+    const extractedCountry = subdivisionCode.split("-")[0];
+    return getContinent(extractedCountry);
+  }
+  return "Other";
 }
 
 export const userResolvers = {
@@ -142,7 +152,7 @@ export const userResolvers = {
       // Group contributions by continent
       const continentMap = new Map<string, number>();
       allFlags.forEach((flag) => {
-        const continent = flag.continent ?? getContinent(flag.countryCode);
+        const continent = flag.continent ?? getContinentFromFlag(flag.countryCode, flag.subdivisionCode);
         continentMap.set(continent, (continentMap.get(continent) ?? 0) + 1);
       });
 

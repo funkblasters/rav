@@ -92,5 +92,10 @@
       "SECRETARY": "Segretario",
       "ORDINARY_ASSOCIATE": "Socio Ordinario"
     }
+  },
+  "stats": {
+    "continents": "Continenti Toccati",
+    "flagsTotal": "bandiere totali",
+    "collectingActivity": "Attività di Raccolta"
   }
 }

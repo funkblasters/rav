@@ -92,5 +92,10 @@
       "SECRETARY": "Secretary",
       "ORDINARY_ASSOCIATE": "Ordinary Associate"
     }
+  },
+  "stats": {
+    "continents": "Continents Touched",
+    "flagsTotal": "flags total",
+    "collectingActivity": "Collecting Activity"
   }
 }
