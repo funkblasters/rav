@@ -4,8 +4,8 @@ import { fileURLToPath } from "url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-// Load the shared schema from the models folder
+// Load the schema copied locally by the prebuild/predev script
 export const typeDefs = readFileSync(
-  join(__dirname, "../../models/schema.graphql"),
+  join(__dirname, "schema.graphql"),
   "utf-8"
 );

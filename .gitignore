@@ -5,6 +5,9 @@ node_modules/
 dist/
 build/
 
+# Generated — copied from models/ by prebuild script
+backend/src/schema.graphql
+
 # Env files — never commit real secrets
 .env
 .env.local
