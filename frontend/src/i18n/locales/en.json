@@ -39,7 +39,8 @@
     "maps": {
       "countries": "Countries",
       "subdivisions": "Subdivisions",
-      "cities": "Cities"
+      "cities": "Cities",
+      "showRegionalFlags": "Show regional flags"
     }
   },
   "events": {

@@ -3,3 +3,16 @@ node = "22"
 
 [env]
 NODE_ENV = "development"
+
+[tasks.dev]
+description = "Start both frontend and backend"
+run = """
+  set -e
+  npm -w backend run dev &
+  npm -w frontend run dev &
+  wait
+"""
+
+[tasks.db-migrate]
+description = "Run initial database migration"
+run = "npm -w backend run db:migrate"

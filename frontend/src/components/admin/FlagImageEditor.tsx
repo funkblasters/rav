@@ -41,14 +41,25 @@ const UPDATE_FLAG_IMAGE = gql`
   }
 `;
 
+const UPDATE_FLAG = gql`
+  mutation UpdateFlag($id: ID!, $name: String, $imageUrl: String) {
+    updateFlag(id: $id, name: $name, imageUrl: $imageUrl) {
+      id
+      name
+      imageUrl
+    }
+  }
+`;
+
 function FlagImageRow({ flag }: { flag: Flag }) {
   const [editing, setEditing] = useState(false);
+  const [nameInput, setNameInput] = useState(flag.name);
   const [urlInput, setUrlInput] = useState(flag.imageUrl ?? "");
   const [previewUrl, setPreviewUrl] = useState(flag.imageUrl ?? "");
   const [error, setError] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const [updateImage, { loading }] = useMutation(UPDATE_FLAG_IMAGE, {
+  const [updateFlag, { loading }] = useMutation(UPDATE_FLAG, {
     onCompleted: () => { setEditing(false); setError(null); },
     onError: (e) => setError(e.message),
     refetchQueries: ["GetAllFlagsAdmin", "GetFlags", "LastFlag", "GetMyFlags"],
@@ -61,9 +72,10 @@ function FlagImageRow({ flag }: { flag: Flag }) {
   };
 
   const handleSave = () => {
-    updateImage({
+    updateFlag({
       variables: {
         id: flag.id,
+        name: nameInput.trim() || flag.name,
         imageUrl: urlInput.trim() || null,
       },
     });
@@ -71,6 +83,7 @@ function FlagImageRow({ flag }: { flag: Flag }) {
 
   const handleCancel = () => {
     setEditing(false);
+    setNameInput(flag.name);
     setUrlInput(flag.imageUrl ?? "");
     setPreviewUrl(flag.imageUrl ?? "");
     setError(null);
@@ -116,22 +129,24 @@ function FlagImageRow({ flag }: { flag: Flag }) {
       {/* Inline editor */}
       {editing && (
         <div className="pt-2 border-t space-y-3">
-          <div className="flex gap-2 items-end">
-            <div className="flex-1 space-y-1">
+          <div className="space-y-3">
+            <div className="space-y-1">
+              <Label className="text-xs">Nome bandiera</Label>
+              <Input
+                placeholder="Nome..."
+                value={nameInput}
+                onChange={(e) => setNameInput(e.target.value)}
+                autoFocus
+              />
+            </div>
+            <div className="space-y-1">
               <Label className="text-xs">URL immagine</Label>
               <Input
                 placeholder="https://..."
                 value={urlInput}
                 onChange={(e) => handleUrlChange(e.target.value)}
-                autoFocus
               />
             </div>
-            <Button size="sm" onClick={handleSave} disabled={loading}>
-              <Check size={14} />
-            </Button>
-            <Button size="sm" variant="ghost" onClick={handleCancel} disabled={loading}>
-              <X size={14} />
-            </Button>
           </div>
 
           {/* Preview */}
@@ -150,6 +165,15 @@ function FlagImageRow({ flag }: { flag: Flag }) {
                 <span className="text-xs text-muted-foreground">Nessuna immagine</span>
               </div>
             )}
+          </div>
+
+          <div className="flex gap-2 justify-end">
+            <Button size="sm" onClick={handleSave} disabled={loading}>
+              <Check size={14} />
+            </Button>
+            <Button size="sm" variant="ghost" onClick={handleCancel} disabled={loading}>
+              <X size={14} />
+            </Button>
           </div>
 
           {error && <p className="text-xs text-destructive">{error}</p>}

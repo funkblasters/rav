@@ -4,7 +4,7 @@ import { LastFlagAdded } from "@/components/dashboard/LastFlagAdded";
 import { MostWantedFlag } from "@/components/dashboard/MostWantedFlag";
 import { FlagNews } from "@/components/dashboard/FlagNews";
 import { Statistics } from "@/components/dashboard/Statistics";
-import { CountryChoropleth } from "@/components/dashboard/CountryChoropleth";
+import { DashboardCountryMap } from "@/components/dashboard/DashboardCountryMap";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { useTranslation } from "react-i18next";
 
@@ -63,6 +63,9 @@ const FLAGS_GEO = gql`
     flagsGeo {
       countryCode
     }
+    flagsGeoAll {
+      countryCode
+    }
   }
 `;
 
@@ -91,8 +94,16 @@ export function DashboardPage() {
   }, [refetch, client]);
 
   // Map ISO alpha-2 country codes to numeric IDs for highlighting
-  const countryNumericIds = new Set<string>(
+  // National flags only (default view)
+  const nationalFlagsNumericIds = new Set<string>(
     (data?.flagsGeo ?? [])
+      .map((flag: { countryCode: string }) => COUNTRY_CODE_TO_NUMERIC[flag.countryCode])
+      .filter(Boolean)
+  );
+
+  // All countries with any flags including regional (toggled view)
+  const allFlagsNumericIds = new Set<string>(
+    (data?.flagsGeoAll ?? [])
       .map((flag: { countryCode: string }) => COUNTRY_CODE_TO_NUMERIC[flag.countryCode])
       .filter(Boolean)
   );
@@ -114,7 +125,10 @@ export function DashboardPage() {
         </CardHeader>
         <CardContent className="p-0">
           <div className="h-[28rem] sm:h-[36rem] lg:h-[44rem]">
-            <CountryChoropleth highlightedNumericIds={countryNumericIds} />
+            <DashboardCountryMap
+              nationalFlagsNumericIds={nationalFlagsNumericIds}
+              allFlagsNumericIds={allFlagsNumericIds}
+            />
           </div>
         </CardContent>
       </Card>

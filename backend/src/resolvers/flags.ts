@@ -19,6 +19,13 @@ export const flagResolvers = {
         select: { countryCode: true },
       });
     },
+    flagsGeoAll: async (_: unknown, __: unknown, ctx: AppContext) => {
+      if (!ctx.user) throw new Error("Unauthenticated");
+      return prisma.flag.findMany({
+        where: { isPublic: true },
+        select: { countryCode: true },
+      });
+    },
     flag: async (_: unknown, args: { id: string }, ctx: AppContext) => {
       if (!ctx.user) throw new Error("Unauthenticated");
       const flag = await prisma.flag.findUnique({ where: { id: args.id }, include: { togetherWith: true } });
@@ -140,6 +147,25 @@ export const flagResolvers = {
       return prisma.flag.update({
         where: { id: args.id },
         data: { imageUrl: args.imageUrl ?? null },
+        include: { addedBy: true, togetherWith: true },
+      });
+    },
+    updateFlag: async (
+      _: unknown,
+      args: { id: string; name?: string; imageUrl?: string },
+      ctx: AppContext
+    ) => {
+      if (ctx.user?.role !== "ADMIN") throw new Error("Forbidden");
+      const flag = await prisma.flag.findUnique({ where: { id: args.id } });
+      if (!flag) throw new Error("Flag not found");
+
+      const updateData: { name?: string; imageUrl?: string | null } = {};
+      if (args.name !== undefined) updateData.name = args.name;
+      if (args.imageUrl !== undefined) updateData.imageUrl = args.imageUrl ?? null;
+
+      return prisma.flag.update({
+        where: { id: args.id },
+        data: updateData,
         include: { addedBy: true, togetherWith: true },
       });
     },

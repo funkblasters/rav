@@ -135,6 +135,7 @@ type Query {
   flags: [Flag!]!
   allFlags: [Flag!]!
   flagsGeo: [FlagGeo!]!
+  flagsGeoAll: [FlagGeo!]!
   flag(id: ID!): Flag
   lastFlag: FlagPreview
   mostWantedFlag: FlagPreview
@@ -172,6 +173,7 @@ type Mutation {
   deleteFlag(id: ID!): Boolean!
   makePublic(flagId: ID!): Flag!
   updateFlagImageUrl(id: ID!, imageUrl: String): Flag!
+  updateFlag(id: ID!, name: String, imageUrl: String): Flag!
 
   addInvite(email: String!, clubRole: ClubRole!, cardNumber: String): Invite!
   removeInvite(email: String!): Boolean!

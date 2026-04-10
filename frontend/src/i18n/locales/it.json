@@ -39,7 +39,8 @@
     "maps": {
       "countries": "Nazioni",
       "subdivisions": "Regioni",
-      "cities": "Città"
+      "cities": "Città",
+      "showRegionalFlags": "Mostra bandiere regionali"
     }
   },
   "events": {
