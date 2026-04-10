@@ -7700,5 +7700,57 @@
         "subdivisions": []
       }
     }
+  },
+  "lgbtFlags": {
+    "Aromantic": {
+      "name": "Aromantic Flag",
+      "link_flag": "https://upload.wikimedia.org/wikipedia/commons/a/ad/Aromantic_Pride_Flag.svg",
+      "description": "Represents people who experience little to no romantic attraction"
+    },
+    "Asexual": {
+      "name": "Asexual Flag",
+      "link_flag": "https://upload.wikimedia.org/wikipedia/commons/9/9e/Asexual_Pride_Flag.svg",
+      "description": "Represents people who experience little to no sexual attraction"
+    },
+    "Bear Brotherhood": {
+      "name": "Bear Brotherhood Flag",
+      "link_flag": "https://upload.wikimedia.org/wikipedia/commons/c/c2/Bear_Brotherhood_flag.svg",
+      "description": "Represents a subculture within the gay community"
+    },
+    "Bisexual": {
+      "name": "Bisexual Flag",
+      "link_flag": "https://upload.wikimedia.org/wikipedia/commons/2/2a/Bisexual_Pride_Flag.svg",
+      "description": "Represents people attracted to multiple genders"
+    },
+    "Gay Pride": {
+      "name": "Gay Pride Flag",
+      "link_flag": "https://upload.wikimedia.org/wikipedia/commons/4/48/Gay_Pride_Flag.svg",
+      "description": "Represents LGBTQ+ pride, visibility, and celebration"
+    },
+    "Intersex": {
+      "name": "Intersex Flag",
+      "link_flag": "https://upload.wikimedia.org/wikipedia/commons/3/38/Intersex_Pride_Flag.svg",
+      "description": "Represents people with intersex variations"
+    },
+    "Lesbian": {
+      "name": "Lesbian Flag",
+      "link_flag": "https://upload.wikimedia.org/wikipedia/commons/8/84/Lesbian_Pride_pink_flag.svg",
+      "description": "Represents women attracted to women"
+    },
+    "Nonbinary": {
+      "name": "Nonbinary Flag",
+      "link_flag": "https://upload.wikimedia.org/wikipedia/commons/7/75/Nonbinary_flag.svg",
+      "description": "Represents people whose gender identity exists outside the male-female binary"
+    },
+    "Pansexual": {
+      "name": "Pansexual Flag",
+      "link_flag": "https://upload.wikimedia.org/wikipedia/commons/a/a2/Pansexuality_Pride_Flag.svg",
+      "description": "Represents people attracted to others regardless of gender"
+    },
+    "Transgender": {
+      "name": "Transgender Flag",
+      "link_flag": "https://upload.wikimedia.org/wikipedia/commons/b/b0/Transgender_Pride_flag.svg",
+      "description": "Represents people whose gender identity differs from their sex assigned at birth"
+    }
   }
 }

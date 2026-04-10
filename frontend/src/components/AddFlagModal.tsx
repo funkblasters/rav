@@ -69,7 +69,7 @@ const COUNTRY_NAME_TO_CODE: Record<string, string> = {
 function flattenFlags(data: typeof flagsCompleteData): FlagEntry[] {
   const flattened: FlagEntry[] = [];
 
-  Object.values(data.continents).forEach((continent) => {
+  Object.entries(data.continents).forEach(([continentName, continent]) => {
     Object.entries(continent).forEach(([countryName, countryData]) => {
       const countryCode = COUNTRY_NAME_TO_CODE[countryName] || countryName;
 
@@ -80,7 +80,7 @@ function flattenFlags(data: typeof flagsCompleteData): FlagEntry[] {
           name: national.name.trim(),
           imageUrl: national.link_flag || null,
           description: national.description || null,
-          continent: null,
+          continent: continentName,
           countryCode,
           isNational: true,
         });
@@ -94,7 +94,7 @@ function flattenFlags(data: typeof flagsCompleteData): FlagEntry[] {
             name: subdivision.name.trim(),
             imageUrl: subdivision.link_flag || null,
             description: subdivision.description || null,
-            continent: null,
+            continent: continentName,
             countryCode,
             isNational: false,
           });
@@ -103,13 +103,52 @@ function flattenFlags(data: typeof flagsCompleteData): FlagEntry[] {
     });
   });
 
+  // Add LGBT flags
+  const lgbtFlags = (data as any).lgbtFlags;
+  if (lgbtFlags) {
+    Object.values(lgbtFlags).forEach((flag: any) => {
+      flattened.push({
+        name: flag.name.trim(),
+        imageUrl: flag.link_flag || null,
+        description: flag.description || null,
+        continent: null,
+        countryCode: "LG",
+        isNational: true,
+      });
+    });
+  }
+
   return flattened;
 }
 
 const allFlags = flattenFlags(flagsCompleteData);
 
+// Keywords for searching flags (enables searching by broader terms)
+const FLAG_KEYWORDS: Record<string, string[]> = {
+  "Aromantic Flag": ["aromantic", "aromantico", "aro"],
+  "Asexual Flag": ["asexual", "asessuale", "ace", "aces"],
+  "Bear Brotherhood Flag": ["bear", "orso", "brotherhood", "fraternità"],
+  "Bisexual Flag": ["bisexual", "bisessuale", "bi"],
+  "Gay Pride Flag": ["gay", "pride", "orgoglio", "lgbt", "lgbtq"],
+  "Intersex Flag": ["intersex", "intersessuale"],
+  "Lesbian Flag": ["lesbian", "lesbica", "wlw"],
+  "Nonbinary Flag": ["nonbinary", "non-binary", "non binario", "nb", "enby"],
+  "Pansexual Flag": ["pansexual", "pansessuale", "pan"],
+  "Transgender Flag": ["transgender", "trans", "transgender", "mtf", "ftm"],
+};
+
 // Italian translations of flag names
 const FLAG_NAME_ITALIAN: Record<string, string> = {
+  "Aromantic Flag": "Bandiera Aromantica",
+  "Asexual Flag": "Bandiera Asessuale",
+  "Bear Brotherhood Flag": "Bandiera Bear Brotherhood",
+  "Bisexual Flag": "Bandiera Bisessuale",
+  "Gay Pride Flag": "Bandiera Pride Gay",
+  "Intersex Flag": "Bandiera Intersessuale",
+  "Lesbian Flag": "Bandiera Lesbica",
+  "Nonbinary Flag": "Bandiera Non Binaria",
+  "Pansexual Flag": "Bandiera Pansessuale",
+  "Transgender Flag": "Bandiera Transgender",
   "Italy": "Italia", "France": "Francia", "Spain": "Spagna", "Germany": "Germania", "United Kingdom": "Regno Unito",
   "England": "Inghilterra", "Scotland": "Scozia", "Wales": "Galles", "Northern Ireland": "Irlanda del Nord",
   "Portugal": "Portogallo", "Netherlands": "Paesi Bassi", "Belgium": "Belgio", "Switzerland": "Svizzera", "Austria": "Austria",
@@ -252,10 +291,12 @@ export function AddFlagModal({ onClose }: Props) {
   const suggestions = query.length >= 2
     ? allFlags
         .filter((f) => {
-          const englishMatch = f.name.toLowerCase().includes(query.toLowerCase());
+          const lowerQuery = query.toLowerCase();
+          const englishMatch = f.name.toLowerCase().includes(lowerQuery);
           const italianName = FLAG_NAME_ITALIAN[f.name];
-          const italianMatch = italianName && italianName.toLowerCase().includes(query.toLowerCase());
-          return englishMatch || italianMatch;
+          const italianMatch = italianName && italianName.toLowerCase().includes(lowerQuery);
+          const keywordsMatch = FLAG_KEYWORDS[f.name]?.some((kw) => kw.includes(lowerQuery) || lowerQuery.includes(kw));
+          return englishMatch || italianMatch || keywordsMatch;
         })
         .slice(0, 8)
     : [];
