@@ -1,6 +1,7 @@
 import { useQuery, gql } from "@apollo/client";
 import { useTranslation } from "react-i18next";
 import { useEffect, useRef, useState } from "react";
+import { Input } from "@/components/ui/input";
 
 const GET_FLAGS = gql`
   query GetFlags {
@@ -44,7 +45,14 @@ export function FlagsPage() {
 
   const [proportional, setProportional] = useState(false);
   const [cellHeight, setCellHeight] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [tappedFlagId, setTappedFlagId] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Filter flags by search query
+  const filteredFlags = flags.filter((flag) =>
+    flag.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   useEffect(() => {
     const el = containerRef.current;
@@ -63,7 +71,7 @@ export function FlagsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex items-start justify-between gap-4 flex-col sm:flex-row">
         <div>
           <h1 className="text-2xl font-bold">{t("flags.title")}</h1>
           <p className="text-muted-foreground text-sm">{t("flags.subtitle")}</p>
@@ -88,22 +96,38 @@ export function FlagsPage() {
         </div>
       </div>
 
+      {/* Search Input */}
+      <div>
+        <Input
+          placeholder="Search flags..."
+          value={searchQuery}
+          onChange={(e) => {
+            setSearchQuery(e.target.value);
+            setTappedFlagId(null);
+          }}
+          className="w-full sm:w-64"
+        />
+      </div>
+
       {loading ? (
         <div ref={containerRef} className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
           {Array.from({ length: 24 }).map((_, i) => (
             <div key={i} className="aspect-[3/2] rounded-md bg-muted animate-pulse" />
           ))}
         </div>
-      ) : flags.length === 0 ? (
-        <p className="text-sm text-muted-foreground">{t("flags.noFlags")}</p>
+      ) : filteredFlags.length === 0 ? (
+        <p className="text-sm text-muted-foreground">
+          {searchQuery ? "No flags match your search." : t("flags.noFlags")}
+        </p>
       ) : proportional ? (
         <div ref={containerRef} className="flex flex-wrap gap-3">
-          {flags.map((flag) => (
+          {filteredFlags.map((flag) => (
             <div
               key={flag.id}
-              className="group relative overflow-hidden shrink-0 cursor-default"
+              className="group relative overflow-hidden shrink-0 cursor-default touch-manipulation"
               style={{ height: cellHeight || undefined }}
               title={flag.name}
+              onClick={() => setTappedFlagId(tappedFlagId === flag.id ? null : flag.id)}
             >
               {flag.imageUrl ? (
                 <img
@@ -119,7 +143,11 @@ export function FlagsPage() {
                   </span>
                 </div>
               )}
-              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-1">
+              <div
+                className={`absolute inset-0 bg-black/60 flex flex-col items-center justify-center p-1 transition-opacity ${
+                  tappedFlagId === flag.id ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                }`}
+              >
                 <span className="text-white text-[10px] font-medium text-center leading-tight line-clamp-2">
                   {flag.name}
                 </span>
@@ -129,11 +157,12 @@ export function FlagsPage() {
         </div>
       ) : (
         <div ref={containerRef} className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
-          {flags.map((flag) => (
+          {filteredFlags.map((flag) => (
             <div
               key={flag.id}
-              className="group relative rounded-md overflow-hidden border bg-muted/30 aspect-[3/2] cursor-default"
+              className="group relative rounded-md overflow-hidden border bg-muted/30 aspect-[3/2] cursor-default touch-manipulation"
               title={flag.name}
+              onClick={() => setTappedFlagId(tappedFlagId === flag.id ? null : flag.id)}
             >
               {flag.imageUrl ? (
                 <img
@@ -149,7 +178,11 @@ export function FlagsPage() {
                   </span>
                 </div>
               )}
-              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-1">
+              <div
+                className={`absolute inset-0 bg-black/60 flex flex-col items-center justify-center p-1 transition-opacity ${
+                  tappedFlagId === flag.id ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                }`}
+              >
                 <span className="text-white text-[10px] font-medium text-center leading-tight line-clamp-2">
                   {flag.name}
                 </span>

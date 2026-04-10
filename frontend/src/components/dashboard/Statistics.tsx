@@ -69,7 +69,7 @@ export function Statistics() {
                   <ListItem key={member.id} className="space-x-2">
                     {/* Rank */}
                     <span className="flex-shrink-0 w-8 text-center text-xl font-bold text-muted-foreground">
-                      {idx + 1}
+                      #{idx + 1}
                     </span>
 
                     {/* Initial Avatar */}
@@ -81,16 +81,19 @@ export function Statistics() {
                       {member.displayName.charAt(0).toUpperCase()}
                     </div>
 
-                    {/* Name + club role */}
+                    {/* Name + club role (mobile: name only, desktop: both) */}
                     <div className="flex-1 min-w-0 flex items-center gap-2">
                       <p className="text-sm font-medium truncate">{member.displayName}</p>
-                      <span className="shrink-0"><ClubRoleBadge role={member.clubRole} collapsible /></span>
+                      <span className="shrink-0 hidden lg:inline"><ClubRoleBadge role={member.clubRole} collapsible /></span>
                     </div>
 
-                    {/* Flags Count */}
-                    <span className="flex-shrink-0 text-xl font-bold">
-                      {member.flagsCount}
-                    </span>
+                    {/* Flags Count + Badge (mobile: right aligned with min width for alignment) */}
+                    <div className="flex items-center gap-2 flex-shrink-0 ml-auto lg:ml-0 lg:w-20">
+                      <span className="lg:hidden"><ClubRoleBadge role={member.clubRole} collapsible /></span>
+                      <span className="text-xl font-bold text-right lg:text-left">
+                        {member.flagsCount}
+                      </span>
+                    </div>
                   </ListItem>
                 ))}
               </List>

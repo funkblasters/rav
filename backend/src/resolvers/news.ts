@@ -1,5 +1,6 @@
 import { XMLParser } from "fast-xml-parser";
 import type { AppContext } from "../context.js";
+import { prisma } from "../db.js";
 
 interface NewsItem {
   title: string;
@@ -89,6 +90,59 @@ export const newsResolvers = {
       const items = await fetchFeed();
       cache = { items, ts: now };
       return items.slice(0, limit);
+    },
+    featuredNewsItem: async (_: unknown, __: unknown, ctx: AppContext) => {
+      if (!ctx.user) throw new Error("Unauthenticated");
+      const settings = await prisma.settings.findUnique({ where: { id: "app" } });
+      if (!settings?.featuredNewsTitle) return null;
+      return {
+        title: settings.featuredNewsTitle,
+        link: settings.featuredNewsLink || "",
+        pubDate: new Date().toISOString(),
+        imageUrl: settings.featuredNewsImageUrl,
+      };
+    },
+  },
+  Mutation: {
+    setFeaturedNews: async (
+      _: unknown,
+      args: { title: string; link: string; imageUrl?: string },
+      ctx: AppContext
+    ) => {
+      if (ctx.user?.role !== "ADMIN") throw new Error("Forbidden");
+      const settings = await prisma.settings.upsert({
+        where: { id: "app" },
+        update: {
+          featuredNewsTitle: args.title,
+          featuredNewsLink: args.link,
+          featuredNewsImageUrl: args.imageUrl,
+        },
+        create: {
+          id: "app",
+          featuredNewsTitle: args.title,
+          featuredNewsLink: args.link,
+          featuredNewsImageUrl: args.imageUrl,
+        },
+      });
+      return {
+        title: settings.featuredNewsTitle!,
+        link: settings.featuredNewsLink || "",
+        pubDate: new Date().toISOString(),
+        imageUrl: settings.featuredNewsImageUrl,
+      };
+    },
+    clearFeaturedNews: async (_: unknown, __: unknown, ctx: AppContext) => {
+      if (ctx.user?.role !== "ADMIN") throw new Error("Forbidden");
+      await prisma.settings.upsert({
+        where: { id: "app" },
+        update: {
+          featuredNewsTitle: null,
+          featuredNewsLink: null,
+          featuredNewsImageUrl: null,
+        },
+        create: { id: "app" },
+      });
+      return true;
     },
   },
 };

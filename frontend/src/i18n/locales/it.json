@@ -37,10 +37,11 @@
     "viewStatistics": "Vedi le statistiche",
     "flagsAcquired": "Bandiere acquisite",
     "maps": {
-      "countries": "Nazioni",
+      "countries": "Mappa",
       "subdivisions": "Regioni",
       "cities": "Città",
-      "showRegionalFlags": "Mostra bandiere regionali"
+      "nationalFlags": "Bandiere Nazionali",
+      "allFlags": "Tutte"
     }
   },
   "events": {

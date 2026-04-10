@@ -37,10 +37,11 @@
     "viewStatistics": "View statistics",
     "flagsAcquired": "Flags acquired",
     "maps": {
-      "countries": "Countries",
+      "countries": "Map",
       "subdivisions": "Subdivisions",
       "cities": "Cities",
-      "showRegionalFlags": "Show regional flags"
+      "nationalFlags": "National Flags",
+      "allFlags": "All"
     }
   },
   "events": {

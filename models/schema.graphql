@@ -141,6 +141,7 @@ type Query {
   mostWantedFlag: FlagPreview
   myFlags: [Flag!]!
   newsItems(limit: Int): [NewsItem!]!
+  featuredNewsItem: NewsItem
   topMembers(limit: Int): [MemberStats!]!
   invites: [Invite!]!
 }
@@ -182,6 +183,9 @@ type Mutation {
 
   setMostWanted(name: String!, imageUrl: String, acquiredAt: Int!, description: String): FlagPreview!
   clearMostWanted: Boolean!
+
+  setFeaturedNews(title: String!, link: String!, imageUrl: String): NewsItem!
+  clearFeaturedNews: Boolean!
 
   refresh: AuthPayload!
   logout: Boolean!

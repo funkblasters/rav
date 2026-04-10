@@ -12,6 +12,12 @@ const NEWS_ITEMS = gql`
       link
       pubDate
       source
+      imageUrl
+    }
+    featuredNewsItem {
+      title
+      link
+      imageUrl
     }
   }
 `;
@@ -31,7 +37,10 @@ export function FlagNews() {
     link: string;
     pubDate: string;
     source?: string;
+    imageUrl?: string;
   }> = data?.newsItems ?? [];
+
+  const featured = data?.featuredNewsItem;
 
   return (
     <Card className="h-full overflow-hidden flex flex-col">
@@ -43,31 +52,58 @@ export function FlagNews() {
         <QueryStateRenderer
           loading={loading}
           error={error}
-          empty={!items.length && !loading}
+          empty={!items.length && !featured && !loading}
         >
-          <ul className="divide-y">
-            {items.map((item) => (
-              <li key={item.link}>
-                <a
-                  href={item.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex flex-col gap-1 px-4 py-3 hover:bg-accent transition-colors group"
-                >
-                  <p className="text-sm font-medium leading-snug line-clamp-2 group-hover:text-accent-foreground">
-                    {item.title}
+          <div className="divide-y flex flex-col h-full">
+            {/* Featured News Item */}
+            {featured && (
+              <a
+                href={featured.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex gap-3 p-4 hover:bg-accent transition-colors group flex-shrink-0 border-b"
+              >
+                {featured.imageUrl && (
+                  <img
+                    src={featured.imageUrl}
+                    alt={featured.title}
+                    className="w-24 h-24 object-cover rounded shrink-0"
+                  />
+                )}
+                <div className="flex flex-col justify-center min-w-0 flex-1">
+                  <p className="text-sm font-semibold leading-snug line-clamp-3 group-hover:text-accent-foreground">
+                    {featured.title}
                   </p>
-                  <div className="flex items-center justify-between">
-                    <p className="text-xs text-muted-foreground">
-                      {item.source && <span>{item.source} · </span>}
-                      {new Date(item.pubDate).toLocaleDateString()}
+                  <ExternalLink size={12} className="text-muted-foreground shrink-0 mt-2" />
+                </div>
+              </a>
+            )}
+
+            {/* Regular News Items */}
+            <ul className="divide-y flex-1 overflow-y-auto">
+              {items.map((item) => (
+                <li key={item.link}>
+                  <a
+                    href={item.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex flex-col gap-1 px-4 py-3 hover:bg-accent transition-colors group"
+                  >
+                    <p className="text-sm font-medium leading-snug line-clamp-2 group-hover:text-accent-foreground">
+                      {item.title}
                     </p>
-                    <ExternalLink size={12} className="text-muted-foreground shrink-0" />
-                  </div>
-                </a>
-              </li>
-            ))}
-          </ul>
+                    <div className="flex items-center justify-between">
+                      <p className="text-xs text-muted-foreground">
+                        {item.source && <span>{item.source} · </span>}
+                        {new Date(item.pubDate).toLocaleDateString()}
+                      </p>
+                      <ExternalLink size={12} className="text-muted-foreground shrink-0" />
+                    </div>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
         </QueryStateRenderer>
       </CardContent>
     </Card>

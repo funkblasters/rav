@@ -86,6 +86,9 @@ model Settings {
   mostWantedImageUrl String?
   mostWantedAcquiredAt DateTime?
   mostWantedDescription String?
+  featuredNewsTitle String?
+  featuredNewsLink String?
+  featuredNewsImageUrl String?
 
   @@map("settings")
 }

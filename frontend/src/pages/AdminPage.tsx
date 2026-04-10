@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { ClubRoleBadge } from "@/components/ClubRoleBadge";
 import { MostWantedAdmin } from "@/components/dashboard/MostWantedAdmin";
+import { FeaturedNewsAdmin } from "@/components/dashboard/FeaturedNewsAdmin";
 import { FlagImageEditor } from "@/components/admin/FlagImageEditor";
 
 const CLUB_ROLES = [
@@ -341,6 +342,7 @@ export function AdminPage() {
         {/* ── Right column: Flag stuff ── */}
         <div className="space-y-8">
           <MostWantedAdmin />
+          <FeaturedNewsAdmin />
           <FlagImageEditor />
         </div>
       </div>

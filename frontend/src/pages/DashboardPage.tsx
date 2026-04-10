@@ -116,6 +116,12 @@ export function DashboardPage() {
         <Statistics />
       </div>
 
+      {/* Most Wanted and News — stack on mobile, side by side on desktop */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-auto sm:h-96 lg:h-[28rem]">
+        <MostWantedFlag />
+        <FlagNews />
+      </div>
+
       {/* Country map — full width, taller */}
       <Card>
         <CardHeader className="pb-3">
@@ -132,12 +138,6 @@ export function DashboardPage() {
           </div>
         </CardContent>
       </Card>
-
-      {/* Most Wanted and News — stack on mobile, side by side on desktop */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-auto sm:h-96 lg:h-[28rem]">
-        <MostWantedFlag />
-        <FlagNews />
-      </div>
     </div>
   );
 }

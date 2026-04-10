@@ -25,7 +25,7 @@ export function DashboardCountryMap({
       <div className="flex items-center gap-3 p-4 border-b border-border/40 shrink-0">
         <Switch id="show-regional-flags" checked={showRegionalFlags} onCheckedChange={setShowRegionalFlags} />
         <Label htmlFor="show-regional-flags" className="cursor-pointer text-sm font-medium">
-          {t("dashboard.maps.showRegionalFlags")}
+          {showRegionalFlags ? t("dashboard.maps.allFlags") : t("dashboard.maps.nationalFlags")}
         </Label>
       </div>
       <div className="flex-1 overflow-hidden">
