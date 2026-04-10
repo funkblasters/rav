@@ -26,7 +26,7 @@ export function StatsPage() {
         <div className="min-h-[300px]">
           <UserFlagsChoropleth />
         </div>
-        <div className="min-h-[300px] flex-1">
+        <div className="min-h-[450px] flex-1">
           <MyFlagsList />
         </div>
       </div>

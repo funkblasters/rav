@@ -65,7 +65,7 @@
     "title": "Le mie bandiere",
     "description_one": "{{public}} pubbliche · {{secret}} segrete",
     "secret": "Segrete",
-    "public": "Pubbliche",
+    "public": "Pubblica",
     "makePublic": "Rendi pubblica",
     "noFlags": "Non hai ancora aggiunto bandiere."
   },
@@ -101,6 +101,6 @@
     "flagsTotal": "bandiere totali",
     "collectingActivity": "Attività di Raccolta",
     "yearlyActivity": "Attività Annuale",
-    "userFlagsMap": "Le Tue Bandiere Intorno al Mondo"
+    "userFlagsMap": "I Miei Contributi su Mappa"
   }
 }
