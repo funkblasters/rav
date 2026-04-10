@@ -71,6 +71,21 @@ function flattenFlags(data: typeof flagsCompleteData): FlagEntry[] {
 
   Object.entries(data.continents).forEach(([continentName, continent]) => {
     Object.entries(continent).forEach(([countryName, countryData]) => {
+      // Handle cultural flags array at continent level
+      if (countryName === "cultural" && Array.isArray(countryData)) {
+        (countryData as any[]).forEach((flag: any) => {
+          flattened.push({
+            name: flag.name.trim(),
+            imageUrl: flag.link_flag || null,
+            description: flag.description || null,
+            continent: continentName,
+            countryCode: "CULTURAL",
+            isNational: false,
+          });
+        });
+        return;
+      }
+
       const countryCode = COUNTRY_NAME_TO_CODE[countryName] || countryName;
 
       // Add national flag
@@ -113,7 +128,7 @@ function flattenFlags(data: typeof flagsCompleteData): FlagEntry[] {
         description: flag.description || null,
         continent: null,
         countryCode: "LG",
-        isNational: true,
+        isNational: false,
       });
     });
   }

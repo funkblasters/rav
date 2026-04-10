@@ -73,7 +73,8 @@
     "title": "Collection",
     "subtitle": "All flags acquired by the club",
     "noFlags": "No flags in the collection yet.",
-    "addedBy": "Added by {{name}}"
+    "addedBy": "Added by {{name}}",
+    "realProportions": "Real proportions"
   },
   "profile": {
     "title": "Your RAV Card",
