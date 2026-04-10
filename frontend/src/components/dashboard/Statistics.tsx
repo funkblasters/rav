@@ -84,7 +84,7 @@ export function Statistics() {
                     {/* Name + club role */}
                     <div className="flex-1 min-w-0 flex items-center gap-2">
                       <p className="text-sm font-medium truncate">{member.displayName}</p>
-                      <span className="shrink-0"><ClubRoleBadge role={member.clubRole} /></span>
+                      <span className="shrink-0"><ClubRoleBadge role={member.clubRole} collapsible /></span>
                     </div>
 
                     {/* Flags Count */}

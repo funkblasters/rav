@@ -8,6 +8,10 @@ export const flagResolvers = {
       if (!ctx.user) throw new Error("Unauthenticated");
       return prisma.flag.findMany({ where: { isPublic: true }, include: { togetherWith: true } });
     },
+    allFlags: async (_: unknown, __: unknown, ctx: AppContext) => {
+      if (ctx.user?.role !== "ADMIN") throw new Error("Forbidden");
+      return prisma.flag.findMany({ include: { togetherWith: true }, orderBy: { name: "asc" } });
+    },
     flagsGeo: async (_: unknown, __: unknown, ctx: AppContext) => {
       if (!ctx.user) throw new Error("Unauthenticated");
       return prisma.flag.findMany({
@@ -122,6 +126,20 @@ export const flagResolvers = {
           publishedAt: isPublic ? new Date() : null,
           togetherWith: args.togetherWithUserIds?.length ? { connect: args.togetherWithUserIds.map((id) => ({ id })) } : undefined,
         },
+        include: { addedBy: true, togetherWith: true },
+      });
+    },
+    updateFlagImageUrl: async (
+      _: unknown,
+      args: { id: string; imageUrl?: string },
+      ctx: AppContext
+    ) => {
+      if (ctx.user?.role !== "ADMIN") throw new Error("Forbidden");
+      const flag = await prisma.flag.findUnique({ where: { id: args.id } });
+      if (!flag) throw new Error("Flag not found");
+      return prisma.flag.update({
+        where: { id: args.id },
+        data: { imageUrl: args.imageUrl ?? null },
         include: { addedBy: true, togetherWith: true },
       });
     },

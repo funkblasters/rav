@@ -70,7 +70,7 @@ export function MyFlagsList() {
   const secretFlags = myFlags.filter((f) => !f.isPublic);
 
   return (
-    <Card className="flex flex-col h-auto sm:h-96 lg:h-[calc(100vh-120px)] overflow-hidden">
+    <Card className="flex flex-col h-full overflow-hidden">
       <CardHeader className="pb-2 shrink-0">
         <CardTitle className="text-base font-semibold">{t("myFlags.title")}</CardTitle>
         <CardDescription className="text-xs">

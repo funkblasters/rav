@@ -11,6 +11,7 @@ export default defineConfig({
     },
   },
   server: {
+    allowedHosts: ["saxophone-undoing-shuffling.ngrok-free.dev"],
     proxy: {
       "/graphql": {
         target: "http://localhost:4000",

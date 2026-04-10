@@ -95,8 +95,12 @@
     }
   },
   "stats": {
+    "title": "Le Mie Statistiche",
+    "subtitle": "Le tue statistiche personali di raccolta bandiere",
     "continents": "Continenti Toccati",
     "flagsTotal": "bandiere totali",
-    "collectingActivity": "Attività di Raccolta"
+    "collectingActivity": "Attività di Raccolta",
+    "yearlyActivity": "Attività Annuale",
+    "userFlagsMap": "Le Tue Bandiere Intorno al Mondo"
   }
 }

@@ -45,6 +45,7 @@ export function RegisterPage() {
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle className="text-2xl">RAV Flag Club</CardTitle>
+          <p className="text-sm text-muted-foreground mb-2">Reale Associazione Vessillologica</p>
           <CardDescription>{t("auth.register")}</CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>

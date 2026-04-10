@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { ClubRoleBadge } from "@/components/ClubRoleBadge";
 import { MostWantedAdmin } from "@/components/dashboard/MostWantedAdmin";
+import { FlagImageEditor } from "@/components/admin/FlagImageEditor";
 
 const CLUB_ROLES = [
   "ORDINARY_ASSOCIATE",
@@ -176,8 +177,9 @@ export function AdminPage() {
               ) : data?.users.length === 0 ? (
                 <p className="text-sm text-muted-foreground">No members yet.</p>
               ) : (
-                <div className="space-y-3">
-                  {data?.users.map((u: User) => (
+                <div className="overflow-x-auto md:overflow-x-visible -mx-6 px-6 md:mx-0 md:px-0">
+                  <div className="space-y-3 min-w-min md:min-w-0">
+                    {data?.users.map((u: User) => (
                     <div key={u.id} className="border rounded-lg p-3 space-y-2">
                       <div className="flex items-center justify-between gap-2 flex-wrap">
                         <div className="flex items-center gap-2 flex-wrap min-w-0">
@@ -227,7 +229,8 @@ export function AdminPage() {
                         </form>
                       )}
                     </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               )}
             </CardContent>
@@ -294,7 +297,8 @@ export function AdminPage() {
                 data?.invites.length === 0 ? (
                   <p className="text-sm text-muted-foreground">No pending invites.</p>
                 ) : (
-                  <table className="w-full text-sm">
+                  <div className="overflow-x-auto md:overflow-x-visible -mx-6 px-6 md:mx-0 md:px-0">
+                    <table className="w-full text-sm min-w-min md:min-w-0">
                     <thead>
                       <tr className="text-left text-muted-foreground border-b">
                         <th className="pb-2 font-medium">Email</th>
@@ -326,7 +330,8 @@ export function AdminPage() {
                         </tr>
                       ))}
                     </tbody>
-                  </table>
+                    </table>
+                  </div>
                 )
               )}
             </CardContent>
@@ -334,8 +339,9 @@ export function AdminPage() {
         </div>
 
         {/* ── Right column: Flag stuff ── */}
-        <div>
+        <div className="space-y-8">
           <MostWantedAdmin />
+          <FlagImageEditor />
         </div>
       </div>
     </div>

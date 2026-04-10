@@ -95,8 +95,12 @@
     }
   },
   "stats": {
+    "title": "My Stats",
+    "subtitle": "Your personal flag collecting statistics",
     "continents": "Continents Touched",
     "flagsTotal": "flags total",
-    "collectingActivity": "Collecting Activity"
+    "collectingActivity": "Collecting Activity",
+    "yearlyActivity": "Yearly Activity",
+    "userFlagsMap": "Your Flags Around the World"
   }
 }

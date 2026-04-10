@@ -1,6 +1,6 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { BarChart2, Flag } from "lucide-react";
+import { BarChart2, Flag, Settings } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { UserPanel } from "@/components/UserPanel";
 import { AddFlagButton } from "@/components/AddFlagButton";
@@ -14,7 +14,7 @@ export function Layout() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="border-b bg-card">
+      <header className="fixed top-0 left-0 right-0 z-40 border-b bg-card">
         <div className="container flex h-14 items-center justify-between">
           <nav className="flex items-center gap-1 text-sm font-medium">
             {/* RAV Brand */}
@@ -47,6 +47,21 @@ export function Layout() {
               <Flag size={18} className="flex-shrink-0" />
               <span className="hidden md:inline">Flags</span>
             </Link>
+
+            {/* Admin Nav Item - only visible for admins */}
+            {user?.role === "ADMIN" && (
+              <Link
+                to="/admin"
+                className={`flex items-center gap-2 px-2 py-1 rounded-md transition-colors ${
+                  isActive("/admin")
+                    ? "bg-accent text-accent-foreground"
+                    : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+                }`}
+              >
+                <Settings size={18} className="flex-shrink-0" />
+                <span className="hidden md:inline">Admin</span>
+              </Link>
+            )}
           </nav>
 
           <div className="flex items-center gap-2">
@@ -54,7 +69,7 @@ export function Layout() {
           </div>
         </div>
       </header>
-      <main className="flex-1 container py-8">
+      <main className="flex-1 container py-8 mt-14">
         <Outlet />
       </main>
       {user && !isActive("/admin") && <AddFlagButton />}

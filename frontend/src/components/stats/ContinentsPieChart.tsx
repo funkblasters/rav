@@ -46,11 +46,11 @@ export function ContinentsPieChart() {
 
   if (loading) {
     return (
-      <Card>
-        <CardHeader className="pb-2">
+      <Card className="flex flex-col h-full overflow-hidden">
+        <CardHeader className="pb-2 shrink-0">
           <CardTitle className="text-sm font-semibold">{t("stats.continents")}</CardTitle>
         </CardHeader>
-        <CardContent className="flex items-center justify-center h-[200px] text-xs text-muted-foreground">
+        <CardContent className="flex-1 min-h-0 flex items-center justify-center text-xs text-muted-foreground">
           {t("common.loading")}
         </CardContent>
       </Card>
@@ -58,15 +58,15 @@ export function ContinentsPieChart() {
   }
 
   return (
-    <Card>
-      <CardHeader className="pb-2">
+    <Card className="flex flex-col h-full overflow-hidden">
+      <CardHeader className="pb-2 shrink-0">
         <CardTitle className="text-sm font-semibold">{t("stats.continents")}</CardTitle>
         <CardDescription className="text-xs">
           {continents.reduce((sum, c) => sum + c.count, 0)} {t("stats.flagsTotal")}
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <ChartContainer config={chartConfig} className="h-[200px] w-full">
+      <CardContent className="flex-1 min-h-0">
+        <ChartContainer config={chartConfig} className="h-full w-full">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <ChartTooltip

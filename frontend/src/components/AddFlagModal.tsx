@@ -138,6 +138,20 @@ function flattenFlags(data: typeof flagsCompleteData): FlagEntry[] {
 
 const allFlags = flattenFlags(flagsCompleteData);
 
+// Derived from JSON — keeps continents/countries in sync with the data file
+const CONTINENT_KEYS: string[] = Object.keys(flagsCompleteData.continents);
+
+const COUNTRIES_BY_CONTINENT: Record<string, string[]> = {};
+Object.entries(flagsCompleteData.continents).forEach(([continent, countries]) => {
+  COUNTRIES_BY_CONTINENT[continent] = Object.keys(countries as object)
+    .filter((k) => k !== "cultural")
+    .sort();
+});
+
+function formatContinent(c: string): string {
+  return c.split(" ").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+}
+
 // Keywords for searching flags (enables searching by broader terms)
 const FLAG_KEYWORDS: Record<string, string[]> = {
   "Aromantic Flag": ["aromantic", "aromantico", "aro"],
@@ -283,6 +297,9 @@ export function AddFlagModal({ onClose }: Props) {
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<FlagEntry | null>(null);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isManualMode, setIsManualMode] = useState(false);
+  const [manualContinent, setManualContinent] = useState("");
+  const [manualCountry, setManualCountry] = useState("");
   const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [isPublic, setIsPublic] = useState(true);
   const [addedByUserId, setAddedByUserId] = useState<string>("");
@@ -327,8 +344,37 @@ export function AddFlagModal({ onClose }: Props) {
   const handleQueryChange = (val: string) => {
     setQuery(val);
     setSelected(null);
+    setIsManualMode(false);
     setShowSuggestions(true);
   };
+
+  const handleEnterManualMode = () => {
+    setSelected(null);
+    setShowSuggestions(false);
+    setIsManualMode(true);
+    setManualContinent("");
+    setManualCountry("");
+  };
+
+  const handleExitManualMode = () => {
+    setIsManualMode(false);
+    setManualContinent("");
+    setManualCountry("");
+  };
+
+  const manualEntry: FlagEntry | null =
+    isManualMode && query.trim() && manualContinent && manualCountry
+      ? {
+          name: query.trim(),
+          imageUrl: null,
+          description: null,
+          continent: manualContinent,
+          countryCode: COUNTRY_NAME_TO_CODE[manualCountry] ?? manualCountry.slice(0, 3).toUpperCase(),
+          isNational: false,
+        }
+      : null;
+
+  const effectiveSelected = selected ?? manualEntry;
 
   // Close suggestions on outside click
   useEffect(() => {
@@ -376,11 +422,11 @@ export function AddFlagModal({ onClose }: Props) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selected || !date) return;
+    if (!effectiveSelected || !date) return;
 
-    const countryCode = selected.countryCode;
+    const countryCode = effectiveSelected.countryCode;
     // If it's a national flag, no subdivision code; otherwise use the flag name
-    const subdivisionCode = selected.isNational ? null : selected.name;
+    const subdivisionCode = effectiveSelected.isNational ? null : effectiveSelected.name;
 
     // Check if user already has this exact country/subdivision combination
     const flagKey = `${countryCode}|${subdivisionCode ?? ""}`;
@@ -395,14 +441,14 @@ export function AddFlagModal({ onClose }: Props) {
     const isAddingForSelf = !targetUserId;
     addFlag({
       variables: {
-        name: selected.name,
-        imageUrl: selected.imageUrl ?? undefined,
+        name: effectiveSelected.name,
+        imageUrl: effectiveSelected.imageUrl ?? undefined,
         acquiredAt: Math.floor(new Date(date).getTime() / 1000),
         isPublic,
         countryCode,
         subdivisionCode,
-        description: selected.description ?? undefined,
-        continent: selected.continent ?? undefined,
+        description: effectiveSelected.description ?? undefined,
+        continent: effectiveSelected.continent ?? undefined,
         addedByUserId: targetUserId,
         togetherWithUserIds: togetherWithUserIds.length > 0 ? togetherWithUserIds : undefined,
       },
@@ -418,7 +464,7 @@ export function AddFlagModal({ onClose }: Props) {
     });
   };
 
-  const previewUrl = selected?.imageUrl ?? null;
+  const previewUrl = effectiveSelected?.imageUrl ?? null;
 
   return (
     <div
@@ -439,7 +485,7 @@ export function AddFlagModal({ onClose }: Props) {
         </div>
 
         {/* Body */}
-        <form onSubmit={handleSubmit} className="px-6 pt-5 pb-6 space-y-4">
+        <form onSubmit={handleSubmit} className="px-6 pt-5 pb-6 space-y-4 max-h-[calc(100vh-200px)] overflow-y-auto">
 
           {/* Flag name typeahead */}
           <div className="space-y-1">
@@ -453,7 +499,7 @@ export function AddFlagModal({ onClose }: Props) {
                 onFocus={() => query.length >= 2 && setShowSuggestions(true)}
                 autoComplete="off"
               />
-              {showSuggestions && suggestions.length > 0 && (
+              {!isManualMode && showSuggestions && suggestions.length > 0 && (
                 <div
                   ref={suggestionsRef}
                   className="absolute z-10 top-full mt-1 w-full bg-background border rounded-md shadow-md max-h-52 overflow-y-auto"
@@ -481,19 +527,75 @@ export function AddFlagModal({ onClose }: Props) {
                 </div>
               )}
             </div>
+            {!isManualMode && (
+              <button
+                type="button"
+                className="text-xs text-muted-foreground hover:text-foreground underline underline-offset-2 transition-colors"
+                onClick={handleEnterManualMode}
+              >
+                Bandiera non trovata? Aggiungi manualmente
+              </button>
+            )}
           </div>
+
+          {/* Manual mode: continent + country */}
+          {isManualMode && (
+            <div className="space-y-3 rounded-md border border-dashed p-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Inserimento manuale</span>
+                <button
+                  type="button"
+                  className="text-xs text-muted-foreground hover:text-foreground underline underline-offset-2 transition-colors"
+                  onClick={handleExitManualMode}
+                >
+                  Torna alla ricerca
+                </button>
+              </div>
+              <div className="space-y-1">
+                <Label>Continente *</Label>
+                <select
+                  value={manualContinent}
+                  onChange={(e) => { setManualContinent(e.target.value); setManualCountry(""); }}
+                  className="w-full h-9 rounded-md border border-input bg-background px-3 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
+                  required
+                >
+                  <option value="">Seleziona continente...</option>
+                  {CONTINENT_KEYS.map((c) => (
+                    <option key={c} value={c}>{formatContinent(c)}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="space-y-1">
+                <Label>Paese *</Label>
+                <select
+                  value={manualCountry}
+                  onChange={(e) => setManualCountry(e.target.value)}
+                  className="w-full h-9 rounded-md border border-input bg-background px-3 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
+                  disabled={!manualContinent}
+                  required
+                >
+                  <option value="">Seleziona paese...</option>
+                  {(COUNTRIES_BY_CONTINENT[manualContinent] ?? []).map((country) => (
+                    <option key={country} value={country}>{country}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          )}
 
           {/* Flag preview */}
           <div className="flex justify-center">
             {previewUrl ? (
               <img
                 src={previewUrl}
-                alt={selected?.name}
+                alt={effectiveSelected?.name}
                 className="h-20 max-w-[180px] object-contain rounded border"
               />
             ) : (
               <div className="h-20 w-[180px] rounded border bg-muted flex items-center justify-center">
-                <span className="text-xs text-muted-foreground">Anteprima bandiera</span>
+                <span className="text-xs text-muted-foreground">
+                  {effectiveSelected ? effectiveSelected.name : "Anteprima bandiera"}
+                </span>
               </div>
             )}
           </div>
@@ -637,7 +739,7 @@ export function AddFlagModal({ onClose }: Props) {
             <Button type="button" variant="ghost" onClick={onClose}>
               Annulla
             </Button>
-            <Button type="submit" disabled={loading || !query.trim() || !date}>
+            <Button type="submit" disabled={loading || !effectiveSelected || !date}>
               Aggiungi
             </Button>
           </div>

@@ -2,7 +2,7 @@ import { useQuery, gql } from "@apollo/client";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Sun, Moon, LogOut } from "lucide-react";
+import { Sun, Moon, LogOut, User } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -89,11 +89,11 @@ export function UserPanel() {
   return (
     <>
       <Button
-        variant="outline"
         size="sm"
         onClick={() => setOpen(true)}
-        className="max-w-[120px] truncate"
+        className="max-w-[120px] truncate gap-2"
       >
+        <User size={16} />
         {user?.displayName}
       </Button>
 
