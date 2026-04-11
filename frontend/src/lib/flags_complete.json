@@ -538,11 +538,6 @@
             "name": "The Al Qadarif State",
             "link_flag": "https://upload.wikimedia.org/wikipedia/commons/5/5a/Flag_of_Al_Qadarif_State.png",
             "description": ""
-          },
-          {
-            "name": "The Abyei Area",
-            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/2/2e/Flag_of_the_Abyei_Area.png",
-            "description": ""
           }
         ]
       },
@@ -1546,11 +1541,6 @@
             "name": "Republika Srpska",
             "link_flag": "https://upload.wikimedia.org/wikipedia/commons/6/61/Flag_of_the_Republika_Srpska.svg",
             "description": "A horizontal tricolour of red, blue, and white, very similar to the flag of the Misiones Province in Argentina, reversed flag of Russia, or the flag of Serbia without the coat of arms (with slightly differently coloured shades)."
-          },
-          {
-            "name": "Brčko District",
-            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/b/bf/Flag_of_Bosnia_and_Herzegovina.svg",
-            "description": "Uses the flag of Bosnia and Herzegovina"
           },
           {
             "name": "Una-Sana Canton",
@@ -2882,11 +2872,6 @@
             "description": "A yellow flag with a stylized red tree of life charged on the flag, a symbol of rebirth, with the three suns, a traditional emblem popular in Chuvash art."
           },
           {
-            "name": "Crimea[note 1]\n",
-            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/a/aa/Flag_of_Crimea.svg",
-            "description": "A horizontal tricolor of a thin blue stripe, a large white stripe, and thin red stripe."
-          },
-          {
             "name": "Dagestan\n",
             "link_flag": "https://upload.wikimedia.org/wikipedia/commons/c/c3/Flag_of_Dagestan.svg",
             "description": "A horizontal tricolor of green, blue, and red."
@@ -2980,11 +2965,6 @@
             "name": "Saint Petersburg\n",
             "link_flag": "https://upload.wikimedia.org/wikipedia/commons/c/ca/Flag_of_Saint_Petersburg.svg",
             "description": "A red field charged in the centre with the arms of the city, which consists of two silver anchors (a fluked anchor, and a grapnel anchor), and a gold scepter."
-          },
-          {
-            "name": "Sevastopol[note 2]\n",
-            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/1/14/Flag_of_Sevastopol.svg",
-            "description": "Seal of the city on a red field."
           },
           {
             "name": "Tatarstan\n",
@@ -5130,25 +5110,6 @@
           }
         ]
       },
-      "Georgia": {
-        "national": {
-          "name": "Georgia",
-          "link_flag": "https://upload.wikimedia.org/wikipedia/commons/0/0f/Flag_of_Georgia.svg",
-          "description": "White with red crosses"
-        },
-        "subdivisions": [
-          {
-            "name": "Abkhazia",
-            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/7/7a/Flag_of_the_Republic_of_Abkhazia.svg",
-            "description": "Seven horizontal stripes alternating green and white; in the canton, a white open hand below a semicircle of seven five-pointed stars on a red field."
-          },
-          {
-            "name": "Adjara",
-            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/a/a0/Flag_of_Adjara.svg",
-            "description": "Seven horizontal stripes alternating blue and white; in the canton, the national flag of Georgia."
-          }
-        ]
-      },
       "Indonesia": {
         "national": {
           "name": "Indonesia",
@@ -5950,145 +5911,6 @@
             "name": "Bangsamoro",
             "link_flag": "https://upload.wikimedia.org/wikipedia/commons/9/95/Flag_of_Bangsamoro.svg",
             "description": "The flag of Bangsamoro is a horizontal tricolor of green, white and red with the yellow seven-pointed star surrounded by a yellow crescent both centered on the white band and a white kris centered on the red band."
-          }
-        ]
-      },
-      "Russia": {
-        "national": {
-          "name": "Russia",
-          "link_flag": "https://upload.wikimedia.org/wikipedia/commons/f/f3/Flag_of_Russia.svg",
-          "description": "White, blue and red horizontal"
-        },
-        "subdivisions": [
-          {
-            "name": "Altai Krai",
-            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/4/4b/Flag_of_Altai_Krai.svg",
-            "description": ""
-          },
-          {
-            "name": "the Altai Republic",
-            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/f/ff/Flag_of_Altai_Republic.svg",
-            "description": ""
-          },
-          {
-            "name": "Amur Oblast",
-            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/7/7a/Flag_of_Amur_Oblast.svg",
-            "description": ""
-          },
-          {
-            "name": "the Republic of Buryatia",
-            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/6/68/Flag_of_Buryatia.svg",
-            "description": ""
-          },
-          {
-            "name": "Chelyabinsk Oblast",
-            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/c/ce/Flag_of_Chelyabinsk_Oblast.svg",
-            "description": ""
-          },
-          {
-            "name": "Chukotka Autonomous Okrug",
-            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/a/a0/Flag_of_Chukotka.svg",
-            "description": ""
-          },
-          {
-            "name": "Irkutsk Oblast",
-            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/1/14/Flag_of_Irkutsk_Oblast.svg",
-            "description": ""
-          },
-          {
-            "name": "the Jewish Autonomous Oblast",
-            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/0/0e/Flag_of_the_Jewish_Autonomous_Oblast.svg",
-            "description": ""
-          },
-          {
-            "name": "Kamchatka Krai",
-            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/a/a7/Flag_of_Kamchatka_Krai.svg",
-            "description": ""
-          },
-          {
-            "name": "Khabarovsk Krai",
-            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/4/4f/Flag_of_Khabarovsk_Krai.svg",
-            "description": ""
-          },
-          {
-            "name": "the Republic of Khakassia",
-            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/e/ec/Flag_of_Khakassia.svg",
-            "description": ""
-          },
-          {
-            "name": "Khanty–Mansi Autonomous Okrug",
-            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/7/70/Flag_of_Yugra.svg",
-            "description": ""
-          },
-          {
-            "name": "Krasnoyarsk Krai",
-            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/2/2d/Flag_of_Krasnoyarsk_Krai.svg",
-            "description": ""
-          },
-          {
-            "name": "Kurgan Oblast",
-            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/9/92/Flag_of_Kurgan_Oblast.svg",
-            "description": ""
-          },
-          {
-            "name": "Magadan Oblast",
-            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/2/29/Flag_of_Magadan_Oblast.svg",
-            "description": ""
-          },
-          {
-            "name": "Nenets Autonomous Okrug",
-            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/1/15/Flag_of_Nenets_Autonomous_District.svg",
-            "description": ""
-          },
-          {
-            "name": "Omsk Oblast",
-            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/6/60/Flag_of_Omsk_Oblast.svg",
-            "description": ""
-          },
-          {
-            "name": "Perm Krai",
-            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/b/b5/Flag_of_Perm_Krai.svg",
-            "description": ""
-          },
-          {
-            "name": "Primorsky Krai",
-            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/3/38/Flag_of_Primorsky_Krai.svg",
-            "description": ""
-          },
-          {
-            "name": "the Sakha Republic",
-            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/e/eb/Flag_of_Sakha.svg",
-            "description": ""
-          },
-          {
-            "name": "Sakhalin Oblast",
-            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/5/57/Flag_of_Sakhalin_Oblast.svg",
-            "description": ""
-          },
-          {
-            "name": "Sverdlovsk Oblast",
-            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/e/ef/Flag_of_Sverdlovsk_Oblast.svg",
-            "description": ""
-          },
-          {
-            "name": "the Tuva Republic",
-            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/7/77/Flag_of_Tuva.svg",
-            "description": ""
-          },
-          {
-            "name": "Tyumen Oblast",
-            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/4/4e/Flag_of_Tyumen_Oblast.svg",
-            "description": ""
-          },
-          {
-            "name": "Yamalo-Nenets Autonomous Okrug",
-            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/c/c7/Flag_of_Yamal-Nenets_Autonomous_District.svg",
-            "description": ""
-          },
-          {
-            "name": "Zabaykalsky Krai",
-            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/b/b8/Flag_of_Zabaykalsky_Krai.svg",
-            "description": ""
           }
         ]
       },
@@ -9994,55 +9816,6 @@
           "link_flag": "https://upload.wikimedia.org/wikipedia/commons/c/c3/Flag_of_France.svg",
           "description": "Blue, white and red vertical"
         }
-      },
-      "Indonesia": {
-        "national": {
-          "name": "Indonesia",
-          "link_flag": "https://upload.wikimedia.org/wikipedia/commons/9/9f/Flag_of_Indonesia.svg",
-          "description": "Red and white horizontal"
-        },
-        "subdivisions": [
-          {
-            "name": "Maluku",
-            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/b/b6/Flag_of_Maluku.svg",
-            "description": ""
-          },
-          {
-            "name": "North Maluku",
-            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/f/f2/Flag_of_North_Maluku.svg",
-            "description": ""
-          },
-          {
-            "name": "Central Papua",
-            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/b/bd/Flag_of_Central_Papua_Province.svg",
-            "description": ""
-          },
-          {
-            "name": "Highland Papua",
-            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/d/df/Flag_of_Highland_Papua.svg",
-            "description": ""
-          },
-          {
-            "name": "Papua",
-            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/e/ec/Flag_of_Papua_2.svg",
-            "description": ""
-          },
-          {
-            "name": "South Papua",
-            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/1/1f/Flag_of_South_Papua_Province.svg",
-            "description": ""
-          },
-          {
-            "name": "Southwest Papua",
-            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/4/43/Flag_of_Southwest_Papua.svg",
-            "description": ""
-          },
-          {
-            "name": "West Papua",
-            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/0/01/Flag_of_West_Papua_%28vectorised%29.svg",
-            "description": ""
-          }
-        ]
       },
       "Papua New Guinea": {
         "national": {
