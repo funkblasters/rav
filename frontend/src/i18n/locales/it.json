@@ -23,17 +23,17 @@
   "dashboard": {
     "title": "Dashboard",
     "lastFlag": "Ultima Aggiunta",
-    "lastFlagSubtitle": "l'ultima aggiunta al tesoro",
+    "lastFlagSubtitle": "L'ultima aggiunta al tesoro",
     "noFlagYet": "Nessuna bandiera ancora.",
     "noDescription": "Nessuna descrizione disponibile.",
     "addedBy": "Acquisita dallo stimato membro: {{name}}",
     "mostWantedFlag": "Most Wanted",
-    "mostWantedSubtitle": "chi riuscirà a prenderla?",
+    "mostWantedSubtitle": "Chi riuscirà a prenderla?",
     "flagNews": "Ultime Notizie",
-    "flagNewsSubtitle": "le ultime entusiasmanti novità dal mondo delle bandiere",
+    "flagNewsSubtitle": "Le ultime entusiasmanti novità dal mondo delle bandiere",
     "newsFetchError": "Impossibile caricare le notizie.",
     "statistics": "Classifica",
-    "statisticsSubtitle": "Classifica",
+    "statisticsSubtitle": "I nostri stimati contributori",
     "viewStatistics": "Vedi le statistiche",
     "flagsAcquired": "Bandiere acquisite",
     "maps": {
@@ -71,6 +71,10 @@
     "makePublic": "Rendi pubblica",
     "noFlags": "Non hai ancora aggiunto bandiere."
   },
+  "addFlagModal": {
+    "visibleToAll": "Visibile a tutti",
+    "onlyYou": "Segreta"
+  },
   "flags": {
     "title": "Collezione",
     "subtitle": "Tutte le bandiere acquisite dal club",
@@ -100,7 +104,7 @@
     "title": "Le Mie Statistiche",
     "subtitle": "Le tue statistiche personali di raccolta bandiere",
     "continents": "Continenti Toccati",
-    "flagsTotal": "bandiere totali",
+    "flagsTotal": "Bandiere totali",
     "collectingActivity": "Attività di Raccolta",
     "yearlyActivity": "Attività Annuale",
     "userFlagsMap": "I Miei Contributi su Mappa"

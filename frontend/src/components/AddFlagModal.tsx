@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useMutation, useQuery, gql } from "@apollo/client";
+import { useTranslation } from "react-i18next";
 import { X, Check, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -291,6 +292,7 @@ interface Props {
 }
 
 export function AddFlagModal({ onClose }: Props) {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const isAdmin = user?.role === "ADMIN";
 
@@ -527,7 +529,7 @@ export function AddFlagModal({ onClose }: Props) {
                 </div>
               )}
             </div>
-            {!isManualMode && (
+            {!isManualMode && suggestions.length === 0 && query.trim().length >= 2 && (
               <button
                 type="button"
                 className="text-xs text-muted-foreground hover:text-foreground underline underline-offset-2 transition-colors"
@@ -584,7 +586,7 @@ export function AddFlagModal({ onClose }: Props) {
           )}
 
           {/* Flag preview */}
-          <div className="flex justify-center">
+          {!isManualMode && <div className="flex justify-center">
             {previewUrl ? (
               <img
                 src={previewUrl}
@@ -598,7 +600,7 @@ export function AddFlagModal({ onClose }: Props) {
                 </span>
               </div>
             )}
-          </div>
+          </div>}
 
           {/* Date */}
           <div className="space-y-1">
@@ -726,9 +728,9 @@ export function AddFlagModal({ onClose }: Props) {
             </button>
             <span className="text-sm">
               {isPublic ? (
-                <span className="font-medium">Pubblica</span>
+                <span className="font-medium">{t("addFlagModal.visibleToAll")}</span>
               ) : (
-                <span className="text-muted-foreground">Segreta (visibile solo a te)</span>
+                <span className="text-muted-foreground">{t("addFlagModal.onlyYou")}</span>
               )}
             </span>
           </div>

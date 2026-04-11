@@ -48,6 +48,34 @@
   }
 }
 
+@keyframes shine-sweep {
+  0%   { transform: translateX(-100%) skewX(-15deg); opacity: 1; }
+  100% { transform: translateX(250%) skewX(-15deg); opacity: 1; }
+}
+
+.rank-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.rank-shine::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.18) 50%,
+    transparent 100%
+  );
+  transform: translateX(-100%) skewX(-15deg);
+  pointer-events: none;
+}
+
+.rank-shine:hover::after {
+  animation: shine-sweep 1.1s ease forwards;
+}
+
 @layer base {
   :root {
     --background: oklch(1 0 0);

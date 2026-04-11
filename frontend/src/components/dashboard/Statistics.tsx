@@ -66,9 +66,14 @@ export function Statistics() {
             <div className="overflow-y-auto flex-1">
               <List>
                 {members.map((member: { id: string; displayName: string; clubRole: string; flagsCount: number }, idx: number) => (
-                  <ListItem key={member.id} className="space-x-2">
+                  <ListItem key={member.id} className={`space-x-2 ${idx < 3 ? "rank-shine" : ""}`}>
                     {/* Rank */}
-                    <span className="flex-shrink-0 w-8 text-center text-xl font-bold text-muted-foreground">
+                    <span className={`flex-shrink-0 w-8 text-center text-xl font-bold ${
+                      idx === 0 ? "text-yellow-500" :
+                      idx === 1 ? "text-slate-400" :
+                      idx === 2 ? "text-amber-700" :
+                      "text-muted-foreground"
+                    }`}>
                       #{idx + 1}
                     </span>
 

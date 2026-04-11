@@ -23,17 +23,17 @@
   "dashboard": {
     "title": "Dashboard",
     "lastFlag": "Latest Addition",
-    "lastFlagSubtitle": "the latest addition to the trasury",
+    "lastFlagSubtitle": "The latest addition to the treasury",
     "noFlagYet": "No flags added yet.",
     "noDescription": "No description available.",
     "addedBy": "Added by {{name}}",
     "mostWantedFlag": "Most Wanted",
-    "mostWantedSubtitle": "the unicorn right now",
+    "mostWantedSubtitle": "The unicorn right now",
     "flagNews": "Latest News",
-    "flagNewsSubtitle": "the latest thrilling news from the flag world",
+    "flagNewsSubtitle": "The latest thrilling news from the flag world",
     "newsFetchError": "Could not load news.",
     "statistics": "Ranking",
-    "statisticsSubtitle": "Ranking",
+    "statisticsSubtitle": "Our esteemed contributors",
     "viewStatistics": "View statistics",
     "flagsAcquired": "Flags acquired",
     "maps": {
@@ -71,6 +71,10 @@
     "makePublic": "Make public",
     "noFlags": "You haven't added any flags yet."
   },
+  "addFlagModal": {
+    "visibleToAll": "Visible to all",
+    "onlyYou": "Only visible to you"
+  },
   "flags": {
     "title": "Collection",
     "subtitle": "All flags acquired by the club",
@@ -100,7 +104,7 @@
     "title": "My Stats",
     "subtitle": "Your personal flag collecting statistics",
     "continents": "Continents Touched",
-    "flagsTotal": "flags total",
+    "flagsTotal": "Flags total",
     "collectingActivity": "Collecting Activity",
     "yearlyActivity": "Yearly Activity",
     "userFlagsMap": "My Contributions on Map"
