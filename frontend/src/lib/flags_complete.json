@@ -2055,6 +2055,66 @@
             "name": "Provence-Alpes-Côte d'Azur\n",
             "link_flag": "https://upload.wikimedia.org/wikipedia/commons/9/94/Flag_of_Provence-Alpes-C%C3%B4te_d%27Azur.svg",
             "description": "Combining elements of the former historical entities existing over the current territory of the region: County of Provence, the Dauphiné and County of Nice."
+          },
+          {
+            "name": "French Guiana",
+            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/6/65/Flag_of_French_Guiana_%28Local%29.svg",
+            "description": ""
+          },
+          {
+            "name": "French Polynesia",
+            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/d/db/Flag_of_French_Polynesia.svg",
+            "description": ""
+          },
+          {
+            "name": "French Southern and Antarctic Lands",
+            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/a/a7/Flag_of_the_French_Southern_and_Antarctic_Lands.svg",
+            "description": ""
+          },
+          {
+            "name": "Guadeloupe",
+            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/8/8a/Flag_of_Guadeloupe_%28Local%29.svg",
+            "description": ""
+          },
+          {
+            "name": "Martinique",
+            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/2/27/Flag-of-Martinique.svg",
+            "description": ""
+          },
+          {
+            "name": "Mayotte",
+            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/4/4f/Flag_of_Mayotte_%28Local%29.svg",
+            "description": ""
+          },
+          {
+            "name": "New Caledonia",
+            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/6/66/Flag_of_FLNKS.svg",
+            "description": ""
+          },
+          {
+            "name": "Réunion",
+            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/8/8e/Proposed_flag_of_R%C3%A9union_%28VAR%29.svg",
+            "description": ""
+          },
+          {
+            "name": "Saint Barthélemy",
+            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/e/e7/Flag_of_Saint_Barth%C3%A9lemy_%28Local%29.svg",
+            "description": ""
+          },
+          {
+            "name": "Saint Martin",
+            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/3/3d/Local_flag_of_the_Collectivity_of_Saint_Martin.svg",
+            "description": ""
+          },
+          {
+            "name": "Saint Pierre and Miquelon",
+            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/7/74/Flag_of_Saint-Pierre_and_Miquelon.svg",
+            "description": ""
+          },
+          {
+            "name": "Wallis and Futuna",
+            "link_flag": "https://upload.wikimedia.org/wikipedia/commons/d/d2/Flag_of_Wallis_and_Futuna.svg",
+            "description": ""
           }
         ]
       },
@@ -10302,10 +10362,6 @@
         {
           "name": "Saibai Island",
           "link_flag": "https://upload.wikimedia.org/wikipedia/commons/0/04/Flag_of_Saibai_Island.svg"
-        },
-        {
-          "name": "New Caledonians (Kanak people)",
-          "link_flag": "https://upload.wikimedia.org/wikipedia/commons/6/66/Flag_of_FLNKS.svg"
         },
         {
           "name": "Australian South Sea Islanders",
