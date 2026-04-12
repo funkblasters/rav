@@ -7,11 +7,7 @@ export const statisticsResolvers = {
       if (!ctx.user) throw new Error("Unauthenticated");
       const users = await prisma.user.findMany({
         include: {
-          flagsAdded: {
-            where: { isPublic: true },
-            select: { id: true },
-          },
-          flagsTogether: {
+          contributedFlags: {
             where: { isPublic: true },
             select: { id: true },
           },
@@ -22,7 +18,7 @@ export const statisticsResolvers = {
         id: u.id,
         displayName: u.displayName,
         clubRole: u.clubRole,
-        flagsCount: u.flagsAdded.length + u.flagsTogether.length,
+        flagsCount: u.contributedFlags.length,
       }));
 
       usersWithCounts.sort((a, b) => b.flagsCount - a.flagsCount);

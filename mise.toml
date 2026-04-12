@@ -15,4 +15,5 @@ run = """
 
 [tasks.db-migrate]
 description = "Run initial database migration"
-run = "npm -w backend run db:migrate"
+dir = "backend"
+run = "npx prisma migrate deploy"

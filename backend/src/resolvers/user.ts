@@ -133,12 +133,10 @@ export const userResolvers = {
       const user = await prisma.user.findUnique({ where: { id: ctx.user.id } });
       if (!user) return null;
 
-      // All flags: ones added by user + ones where user is together with
-      const addedFlags = await prisma.flag.findMany({ where: { addedById: user.id } });
-      const togetherFlags = await prisma.flag.findMany({
-        where: { togetherWith: { some: { id: user.id } } },
+      // All flags where this user is a contributor
+      const allFlags = await prisma.flag.findMany({
+        where: { contributors: { some: { id: user.id } } },
       });
-      const allFlags = [...addedFlags, ...togetherFlags];
 
       // Compute stats
       const flagsCount = allFlags.length;

@@ -33,6 +33,7 @@ CREATE TABLE "flags" (
     "description" TEXT,
     "continent" TEXT,
     "addedById" UUID NOT NULL,
+    "publishedAt" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "flags_pkey" PRIMARY KEY ("id")
@@ -48,6 +49,20 @@ CREATE TABLE "invites" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "invites_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "settings" (
+    "id" TEXT NOT NULL DEFAULT 'app',
+    "mostWantedName" TEXT,
+    "mostWantedImageUrl" TEXT,
+    "mostWantedAcquiredAt" TIMESTAMP(3),
+    "mostWantedDescription" TEXT,
+    "featuredNewsTitle" TEXT,
+    "featuredNewsImageUrl" TEXT,
+    "featuredNewsLink" TEXT,
+
+    CONSTRAINT "settings_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable

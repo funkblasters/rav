@@ -12,16 +12,16 @@ datasource db {
 
 model User {
   id        String     @id @default(uuid()) @db.Uuid
-  email     String     @unique
-  displayName String
+  email        String     @unique
+  displayName  String
   passwordHash String
-  role      Role       @default(MEMBER)
-  clubRole  ClubRole   @default(ORDINARY_ASSOCIATE)
-  cardNumber String    @unique
+  role         Role       @default(MEMBER)
+  clubRole     ClubRole   @default(ORDINARY_ASSOCIATE)
+  cardNumber   String     @unique
   createdAt DateTime   @default(now())
 
-  flagsAdded Flag[]    @relation("AddedBy")
-  flagsTogether Flag[] @relation("TogetherWith")
+  flagsAdded Flag[]         @relation("AddedBy")
+  contributedFlags Flag[]   @relation("FlagContributors")
   invites   Invite[]
 
   @@map("users")
@@ -44,7 +44,7 @@ model Flag {
   addedBy   User      @relation("AddedBy", fields: [addedById], references: [id], onDelete: Cascade)
   addedById String    @db.Uuid
 
-  togetherWith User[] @relation("TogetherWith")
+  contributors User[] @relation("FlagContributors")
 
   createdAt DateTime   @default(now())
   publishedAt DateTime?

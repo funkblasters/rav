@@ -6,11 +6,11 @@ export const flagResolvers = {
   Query: {
     flags: async (_: unknown, __: unknown, ctx: AppContext) => {
       if (!ctx.user) throw new Error("Unauthenticated");
-      return prisma.flag.findMany({ where: { isPublic: true }, include: { togetherWith: true } });
+      return prisma.flag.findMany({ where: { isPublic: true }, include: { contributors: true } });
     },
     allFlags: async (_: unknown, __: unknown, ctx: AppContext) => {
       if (ctx.user?.role !== "ADMIN") throw new Error("Forbidden");
-      return prisma.flag.findMany({ include: { togetherWith: true }, orderBy: { name: "asc" } });
+      return prisma.flag.findMany({ include: { contributors: true }, orderBy: { name: "asc" } });
     },
     flagsGeo: async (_: unknown, __: unknown, ctx: AppContext) => {
       if (!ctx.user) throw new Error("Unauthenticated");
@@ -28,7 +28,7 @@ export const flagResolvers = {
     },
     flag: async (_: unknown, args: { id: string }, ctx: AppContext) => {
       if (!ctx.user) throw new Error("Unauthenticated");
-      const flag = await prisma.flag.findUnique({ where: { id: args.id }, include: { togetherWith: true } });
+      const flag = await prisma.flag.findUnique({ where: { id: args.id }, include: { contributors: true } });
       if (!flag) return null;
       if (!flag.isPublic && flag.addedById !== ctx.user.id && ctx.user.role !== "ADMIN")
         return null;
@@ -39,7 +39,7 @@ export const flagResolvers = {
       const flag = await prisma.flag.findFirst({
         where: { isPublic: true, publishedAt: { not: null } },
         orderBy: [{ acquiredAt: "desc" }, { publishedAt: "desc" }],
-        include: { togetherWith: true },
+        include: { contributors: true },
       });
       return flag;
     },
@@ -60,13 +60,8 @@ export const flagResolvers = {
     myFlags: async (_: unknown, __: unknown, ctx: AppContext) => {
       if (!ctx.user) throw new Error("Unauthenticated");
       return prisma.flag.findMany({
-        where: {
-          OR: [
-            { addedById: ctx.user.id },
-            { togetherWith: { some: { id: ctx.user.id } } },
-          ],
-        },
-        include: { togetherWith: true },
+        where: { contributors: { some: { id: ctx.user.id } } },
+        include: { contributors: true },
       });
     },
   },
@@ -131,9 +126,14 @@ export const flagResolvers = {
           continent: args.continent,
           addedById: ownerId,
           publishedAt: isPublic ? new Date() : null,
-          togetherWith: args.togetherWithUserIds?.length ? { connect: args.togetherWithUserIds.map((id) => ({ id })) } : undefined,
+          contributors: {
+            connect: [
+              { id: ownerId },
+              ...(args.togetherWithUserIds?.map((id) => ({ id })) ?? []),
+            ],
+          },
         },
-        include: { addedBy: true, togetherWith: true },
+        include: { addedBy: true, contributors: true },
       });
     },
     updateFlagImageUrl: async (
@@ -147,7 +147,7 @@ export const flagResolvers = {
       return prisma.flag.update({
         where: { id: args.id },
         data: { imageUrl: args.imageUrl ?? null },
-        include: { addedBy: true, togetherWith: true },
+        include: { addedBy: true, contributors: true },
       });
     },
     updateFlag: async (
@@ -166,7 +166,7 @@ export const flagResolvers = {
       return prisma.flag.update({
         where: { id: args.id },
         data: updateData,
-        include: { addedBy: true, togetherWith: true },
+        include: { addedBy: true, contributors: true },
       });
     },
     deleteFlag: async (_: unknown, args: { id: string }, ctx: AppContext) => {
@@ -190,7 +190,7 @@ export const flagResolvers = {
           isPublic: true,
           publishedAt: flag.publishedAt ?? new Date(),
         },
-        include: { addedBy: true, togetherWith: true },
+        include: { addedBy: true, contributors: true },
       });
     },
     setMostWanted: async (
@@ -243,7 +243,7 @@ export const flagResolvers = {
   Flag: {
     addedBy: (flag: { addedById: string }) =>
       prisma.user.findUnique({ where: { id: flag.addedById } }),
-    togetherWith: (flag: { togetherWith?: { id: string; displayName: string }[] }) =>
-      flag.togetherWith ?? [],
+    togetherWith: (flag: { addedById: string; contributors?: { id: string; displayName: string }[] }) =>
+      (flag.contributors ?? []).filter((c) => c.id !== flag.addedById),
   },
 };
