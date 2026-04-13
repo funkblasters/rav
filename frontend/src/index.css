@@ -72,8 +72,20 @@
   pointer-events: none;
 }
 
+/* Light theme shine adjustment */
+@media (prefers-color-scheme: light) {
+  .rank-shine::after {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(0, 0, 0, 0.12) 50%,
+      transparent 100%
+    );
+  }
+}
+
 .rank-shine:hover::after {
-  animation: shine-sweep 1.1s ease forwards;
+  animation: shine-sweep 2.5s ease forwards;
 }
 
 @layer base {
