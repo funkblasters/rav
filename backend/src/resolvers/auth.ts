@@ -4,9 +4,40 @@ import { randomUUID } from "crypto";
 import type { Response } from "express";
 import type { AppContext, AuthUser } from "../context.js";
 import { prisma } from "../db.js";
+import { validateEmail, validateString, validatePassword, INPUT_LIMITS } from "../validation.js";
+
+function getJWTSecret(): string {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("JWT_SECRET environment variable is required in production");
+    }
+    console.warn("⚠️ JWT_SECRET not set, using unsafe default (development only)");
+    return "dev-secret";
+  }
+  if (secret === "dev-secret" && process.env.NODE_ENV === "production") {
+    throw new Error("JWT_SECRET cannot be 'dev-secret' in production");
+  }
+  return secret;
+}
+
+function getRefreshTokenSecret(): string {
+  const secret = process.env.REFRESH_TOKEN_SECRET;
+  if (!secret) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("REFRESH_TOKEN_SECRET environment variable is required in production");
+    }
+    console.warn("⚠️ REFRESH_TOKEN_SECRET not set, using unsafe default (development only)");
+    return "dev-refresh-secret";
+  }
+  if (secret === "dev-refresh-secret" && process.env.NODE_ENV === "production") {
+    throw new Error("REFRESH_TOKEN_SECRET cannot be 'dev-refresh-secret' in production");
+  }
+  return secret;
+}
 
 function signAccessToken(user: AuthUser): string {
-  const secret = process.env.JWT_SECRET ?? "dev-secret";
+  const secret = getJWTSecret();
   return jwt.sign(
     { id: user.id, email: user.email, role: user.role },
     secret,
@@ -15,7 +46,7 @@ function signAccessToken(user: AuthUser): string {
 }
 
 function signRefreshToken(userId: string): string {
-  const secret = process.env.REFRESH_TOKEN_SECRET ?? "dev-refresh-secret";
+  const secret = getRefreshTokenSecret();
   return jwt.sign({ id: userId }, secret, { expiresIn: "7d" });
 }
 
@@ -24,7 +55,7 @@ function setRefreshCookie(res: Response, token: string) {
   res.cookie("refreshToken", token, {
     httpOnly: true,
     secure: isProd,
-    sameSite: isProd ? "none" : "lax",
+    sameSite: isProd ? "strict" : "lax",  // Changed from "none" to "strict"
     maxAge: 7 * 24 * 60 * 60 * 1000,
     path: "/",
   });
@@ -35,7 +66,7 @@ function clearRefreshCookie(res: Response) {
   res.clearCookie("refreshToken", {
     httpOnly: true,
     secure: isProd,
-    sameSite: isProd ? "none" : "lax",
+    sameSite: isProd ? "strict" : "lax",  // Changed from "none" to "strict"
     path: "/",
   });
 }
@@ -46,10 +77,6 @@ export const authResolvers = {
       if (!ctx.user) return null;
       return prisma.user.findUnique({ where: { id: ctx.user.id } });
     },
-    users: async (_: unknown, __: unknown, ctx: AppContext) => {
-      if (!ctx.user) throw new Error("Unauthenticated");
-      return prisma.user.findMany();
-    },
   },
   Mutation: {
     register: async (
@@ -57,7 +84,10 @@ export const authResolvers = {
       args: { email: string; password: string; displayName: string },
       ctx: AppContext
     ) => {
-      const normalizedEmail = args.email.trim().toLowerCase();
+      // Validate inputs
+      const normalizedEmail = validateEmail(args.email);
+      validatePassword(args.password);
+      validateString(args.displayName, INPUT_LIMITS.displayName, "displayName", true);
 
       const existingUser = await prisma.user.findUnique({ where: { email: normalizedEmail } });
 
@@ -137,7 +167,9 @@ export const authResolvers = {
       args: { email: string; password: string },
       ctx: AppContext
     ) => {
-      const normalizedEmail = args.email.trim().toLowerCase();
+      // Validate inputs
+      const normalizedEmail = validateEmail(args.email);
+      validateString(args.password, INPUT_LIMITS.password, "password", true);
       const user = await prisma.user.findUnique({ where: { email: normalizedEmail } });
       // Use the same error for all failure cases to avoid leaking account existence
       if (!user || user.status !== "REGISTERED" || !user.passwordHash) {
@@ -169,7 +201,7 @@ export const authResolvers = {
 
       let payload: { id: string };
       try {
-        const secret = process.env.REFRESH_TOKEN_SECRET ?? "dev-refresh-secret";
+        const secret = getRefreshTokenSecret();
         payload = jwt.verify(token, secret) as { id: string };
       } catch {
         clearRefreshCookie(ctx.res);

@@ -2,6 +2,7 @@ import { randomUUID } from "crypto";
 import type { AppContext } from "../context.js";
 import { prisma } from "../db.js";
 import { countryNameToISOCode, subdivisionToCountryCode } from "../countryCodeMappings.js";
+import { validateString, validateOptionalFloat, INPUT_LIMITS } from "../validation.js";
 
 export const flagResolvers = {
   Query: {
@@ -88,6 +89,14 @@ export const flagResolvers = {
       ctx: AppContext
     ) => {
       if (!ctx.user) throw new Error("Unauthenticated");
+
+      // Validate inputs
+      validateString(args.name, INPUT_LIMITS.name, "name", true);
+      if (args.city) validateString(args.city, INPUT_LIMITS.city, "city");
+      if (args.description) validateString(args.description, INPUT_LIMITS.description, "description");
+      if (args.imageUrl) validateString(args.imageUrl, INPUT_LIMITS.imageUrl, "imageUrl");
+      if (args.latitude !== undefined) validateOptionalFloat(args.latitude, "latitude", -90, 90);
+      if (args.longitude !== undefined) validateOptionalFloat(args.longitude, "longitude", -180, 180);
 
       let ownerId = ctx.user.id;
       if (args.addedByUserId) {

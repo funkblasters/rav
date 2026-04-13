@@ -3,6 +3,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import multer from "multer";
 import jwt from "jsonwebtoken";
+import rateLimit from "express-rate-limit";
 import { ApolloServer, HeaderMap } from "@apollo/server";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
 import http from "http";
@@ -12,16 +13,88 @@ import { buildContext } from "./context.js";
 import { importFlags } from "./import.js";
 
 const port = Number(process.env.PORT ?? 4000);
-const frontendUrl = process.env.FRONTEND_URL ?? "http://localhost:5173";
+const frontendUrl = process.env.FRONTEND_URL;
+
+// Validate required environment variables
+if (!frontendUrl && process.env.NODE_ENV === "production") {
+  throw new Error("FRONTEND_URL must be set in production");
+}
+
+// Default to localhost in development
+const defaultFrontendUrl = frontendUrl || "http://localhost:5173";
 
 const app = express();
 const httpServer = http.createServer(app);
 
-app.use(cors({ origin: frontendUrl, credentials: true }));
+// ── CORS Configuration ──────────────────────────────────────────────────
+const allowedOrigins = [defaultFrontendUrl];
+if (process.env.ADDITIONAL_ORIGINS) {
+  allowedOrigins.push(...process.env.ADDITIONAL_ORIGINS.split(",").map(o => o.trim()));
+}
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("CORS not allowed"));
+    }
+  },
+  credentials: true,
+  methods: ["GET", "POST"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  maxAge: 86400,
+}));
+
+// ── Security Headers ────────────────────────────────────────────────────
+app.use((req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("X-XSS-Protection", "1; mode=block");
+  res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+
+  if (process.env.NODE_ENV === "production") {
+    res.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+    res.setHeader("Content-Security-Policy", "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'");
+  }
+  next();
+});
+
 app.use(cookieParser());
-app.use(express.json());
+app.use(express.json({ limit: "1mb" }));
+
+// ── Rate Limiting ──────────────────────────────────────────────────────
+const defaultLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  message: "Too many requests from this IP, please try again later",
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // limit each IP to 5 requests per windowMs
+  message: "Too many authentication attempts, please try again later",
+  skipSuccessfulRequests: false,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+app.use(defaultLimiter);
 
 // ── File upload endpoint for flag import (admin only) ──────────────────────
+// Validate Excel file format (must be ZIP with specific structure)
+function validateExcelBuffer(buffer: Buffer): boolean {
+  // Excel files are ZIP archives, first 4 bytes are ZIP signature
+  if (buffer.length < 4) return false;
+  const zipSignature = [0x50, 0x4b, 0x03, 0x04]; // PK\x03\x04
+  return buffer[0] === zipSignature[0] &&
+    buffer[1] === zipSignature[1] &&
+    buffer[2] === zipSignature[2] &&
+    buffer[3] === zipSignature[3];
+}
+
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 5 * 1024 * 1024, files: 1 }, // 5 MB max
@@ -32,18 +105,22 @@ const upload = multer({
       "application/vnd.ms-excel",
     ];
     const allowedExts = [".xlsx", ".xls"];
+
+    // Both MIME type AND extension must match (not OR)
     const hasAllowedMime = allowedMimes.includes(file.mimetype);
     const hasAllowedExt = allowedExts.some((e) => ext.endsWith(e));
-    if (hasAllowedMime || hasAllowedExt) {
+
+    if (hasAllowedExt && hasAllowedMime) {
       cb(null, true);
     } else {
-      cb(new Error("Only Excel files (.xlsx, .xls) are accepted"));
+      cb(new Error("Only Excel files (.xlsx, .xls) with correct MIME type are accepted"));
     }
   },
 });
 
 app.post(
   "/api/import-flags",
+  authLimiter,
   upload.single("file"),
   async (req: express.Request, res: express.Response) => {
     // Authenticate: require a valid ADMIN access token
@@ -52,14 +129,20 @@ app.post(
       res.status(401).json({ error: "Unauthenticated" });
       return;
     }
+
     let caller: { id: string; role: string };
     try {
-      const secret = process.env.JWT_SECRET ?? "dev-secret";
+      const secret = process.env.JWT_SECRET;
+      if (!secret) {
+        res.status(500).json({ error: "Server configuration error" });
+        return;
+      }
       caller = jwt.verify(auth.slice(7), secret) as { id: string; role: string };
     } catch {
       res.status(401).json({ error: "Invalid or expired token" });
       return;
     }
+
     if (caller.role !== "ADMIN") {
       res.status(403).json({ error: "Forbidden" });
       return;
@@ -67,6 +150,12 @@ app.post(
 
     if (!req.file) {
       res.status(400).json({ error: "No file uploaded" });
+      return;
+    }
+
+    // Validate file content
+    if (!validateExcelBuffer(req.file.buffer)) {
+      res.status(400).json({ error: "Invalid Excel file format" });
       return;
     }
 
@@ -87,7 +176,8 @@ const server = new ApolloServer({
 });
 await server.start();
 
-app.use("/graphql", async (req, res) => {
+// Apply rate limiting to GraphQL
+app.use("/graphql", authLimiter, async (req, res) => {
   const headers = new HeaderMap();
   for (const [key, value] of Object.entries(req.headers)) {
     if (value !== undefined) {

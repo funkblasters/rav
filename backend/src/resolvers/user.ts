@@ -127,6 +127,10 @@ function getContinentFromFlag(countryCode: string | null | undefined, subdivisio
 
 export const userResolvers = {
   Query: {
+    // SECURITY: Removed public "users" query that exposed all emails
+    // This query was returning all user data to any authenticated user
+    // Users can be enumerated and email list extracted
+
     myProfile: async (_: unknown, __: unknown, ctx: AppContext) => {
       if (!ctx.user) throw new Error("Unauthenticated");
 
