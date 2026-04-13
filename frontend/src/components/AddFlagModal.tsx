@@ -1,13 +1,13 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useMutation, useQuery, gql } from "@apollo/client";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 import { X, Check, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/context/AuthContext";
-import flagsCompleteData from "@/lib/flags_complete.json";
 
 interface FlagEntry {
   name: string;
@@ -75,7 +75,7 @@ const COUNTRY_NAME_TO_CODE: Record<string, string> = {
 };
 
 // Flatten the nested flags structure at runtime
-function flattenFlags(data: typeof flagsCompleteData): FlagEntry[] {
+function flattenFlags(data: any): FlagEntry[] {
   const flattened: FlagEntry[] = [];
 
   Object.entries(data.continents).forEach(([continentName, continent]) => {
@@ -145,17 +145,6 @@ function flattenFlags(data: typeof flagsCompleteData): FlagEntry[] {
   return flattened;
 }
 
-const allFlags = flattenFlags(flagsCompleteData);
-
-// Derived from JSON — keeps continents/countries in sync with the data file
-const CONTINENT_KEYS: string[] = Object.keys(flagsCompleteData.continents);
-
-const COUNTRIES_BY_CONTINENT: Record<string, string[]> = {};
-Object.entries(flagsCompleteData.continents).forEach(([continent, countries]) => {
-  COUNTRIES_BY_CONTINENT[continent] = Object.keys(countries as object)
-    .filter((k) => k !== "cultural")
-    .sort();
-});
 
 function formatContinent(c: string): string {
   return c.split(" ").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
@@ -405,6 +394,11 @@ export function AddFlagModal({ onClose }: Props) {
   const [togetherWithSearch, setTogetherWithSearch] = useState("");
   const [showTogetherWithDropdown, setShowTogetherWithDropdown] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [allFlags, setAllFlags] = useState<FlagEntry[]>([]);
+  const [continentKeys, setContinentKeys] = useState<string[]>([]);
+  const [countriesByContinent, setCountriesByContinent] = useState<Record<string, string[]>>({});
+  const [flagsLoading, setFlagsLoading] = useState(true);
+  const [showLoadingMessage, setShowLoadingMessage] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const togetherWithRef = useRef<HTMLDivElement>(null);
@@ -413,8 +407,48 @@ export function AddFlagModal({ onClose }: Props) {
   const { data: usersData } = useQuery(GET_USERS);
   const { data: myFlagsData } = useQuery(GET_MY_FLAGS);
 
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setShowLoadingMessage(true);
+    }, 500);
+
+    fetch("/flags_complete.json")
+      .then((res) => res.json())
+      .then((data) => {
+        const flags = flattenFlags(data);
+        setAllFlags(flags);
+
+        const continents = Object.keys(data.continents);
+        setContinentKeys(continents);
+
+        const countries: Record<string, string[]> = {};
+        Object.entries(data.continents).forEach(([continent, countryObj]) => {
+          countries[continent] = Object.keys(countryObj as object)
+            .filter((k) => k !== "cultural")
+            .sort();
+        });
+        setCountriesByContinent(countries);
+        setFlagsLoading(false);
+        setShowLoadingMessage(false);
+        clearTimeout(timeoutId);
+      })
+      .catch((err) => {
+        console.error("Failed to load flags data:", err);
+        setFlagsLoading(false);
+        setShowLoadingMessage(false);
+        clearTimeout(timeoutId);
+      });
+
+    return () => clearTimeout(timeoutId);
+  }, []);
+
   const [addFlag, { loading }] = useMutation(ADD_FLAG, {
-    onCompleted: () => onClose(),
+    onCompleted: () => {
+      toast.success(t("addFlagModal.success.title"), {
+        description: t("addFlagModal.success.message", { user: user?.displayName }),
+      });
+      onClose();
+    },
     onError: (e) => setError(e.message),
   });
 
@@ -625,19 +659,24 @@ export function AddFlagModal({ onClose }: Props) {
                 </div>
               )}
             </div>
-            {!isManualMode && suggestions.length === 0 && query.trim().length >= 2 && (
-              <button
-                type="button"
-                className="text-xs text-muted-foreground hover:text-foreground underline underline-offset-2 transition-colors"
-                onClick={handleEnterManualMode}
-              >
-                Bandiera non trovata? Aggiungi manualmente
-              </button>
-            )}
+            <div className="h-5">
+              {!isManualMode && suggestions.length === 0 && query.trim().length >= 2 && !flagsLoading && (
+                <button
+                  type="button"
+                  className="text-xs text-muted-foreground hover:text-foreground underline underline-offset-2 transition-colors"
+                  onClick={handleEnterManualMode}
+                >
+                  Bandiera non trovata? Aggiungi manualmente
+                </button>
+              )}
+              {showLoadingMessage && flagsLoading && (
+                <p className="text-xs text-muted-foreground">Caricamento bandiere...</p>
+              )}
+            </div>
           </div>
 
           {/* Manual mode: continent + country */}
-          {isManualMode && (
+          {isManualMode && !flagsLoading && (
             <div className="space-y-3 rounded-md border border-dashed p-3">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Inserimento manuale</span>
@@ -658,7 +697,7 @@ export function AddFlagModal({ onClose }: Props) {
                   required
                 >
                   <option value="">Seleziona continente...</option>
-                  {CONTINENT_KEYS.map((c) => (
+                  {continentKeys.map((c) => (
                     <option key={c} value={c}>{formatContinent(c)}</option>
                   ))}
                 </select>
@@ -673,7 +712,7 @@ export function AddFlagModal({ onClose }: Props) {
                   required
                 >
                   <option value="">Seleziona paese...</option>
-                  {(COUNTRIES_BY_CONTINENT[manualContinent] ?? []).map((country) => (
+                  {(countriesByContinent[manualContinent] ?? []).map((country) => (
                     <option key={country} value={country}>{country}</option>
                   ))}
                 </select>

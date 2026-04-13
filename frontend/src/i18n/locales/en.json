@@ -73,7 +73,11 @@
   },
   "addFlagModal": {
     "visibleToAll": "Visible to all",
-    "onlyYou": "Only visible to you"
+    "onlyYou": "Only visible to you",
+    "success": {
+      "title": "Success",
+      "message": "Thank you esteemed {{user}}, but thank you Al, above all."
+    }
   },
   "flags": {
     "title": "Collection",

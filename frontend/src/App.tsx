@@ -1,8 +1,9 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ApolloProvider } from "@apollo/client";
+import { Toaster } from "sonner";
 import { apolloClient } from "@/lib/apollo";
 import { AuthProvider } from "@/context/AuthContext";
-import { ThemeProvider } from "@/context/ThemeContext";
+import { ThemeProvider, useTheme } from "@/context/ThemeContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { AdminRoute } from "@/components/AdminRoute";
 import { Layout } from "@/components/Layout";
@@ -13,9 +14,10 @@ import { StatsPage } from "@/pages/StatsPage";
 import { FlagsPage } from "@/pages/FlagsPage";
 import { AdminPage } from "@/pages/AdminPage";
 
-export function App() {
+function AppContent() {
+  const { theme } = useTheme();
+
   return (
-    <ThemeProvider>
     <ApolloProvider client={apolloClient}>
       <AuthProvider>
         <BrowserRouter>
@@ -47,9 +49,21 @@ export function App() {
             </Route>
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
+          <Toaster
+            position="top-center"
+            duration={6000}
+            theme={theme === "dark" ? "light" : "dark"}
+          />
         </BrowserRouter>
       </AuthProvider>
     </ApolloProvider>
+  );
+}
+
+export function App() {
+  return (
+    <ThemeProvider>
+      <AppContent />
     </ThemeProvider>
   );
 }

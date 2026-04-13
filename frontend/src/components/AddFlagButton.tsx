@@ -1,5 +1,5 @@
-import { useState, lazy, Suspense, useTransition, useEffect } from "react";
-import { Plus, Loader2 } from "lucide-react";
+import { useState, lazy, Suspense, useEffect } from "react";
+import { Plus } from "lucide-react";
 
 const AddFlagModal = lazy(() =>
   import("./AddFlagModal").then((m) => ({ default: m.AddFlagModal }))
@@ -8,7 +8,6 @@ const AddFlagModal = lazy(() =>
 export function AddFlagButton() {
   const [open, setOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
-  const [isPending, startTransition] = useTransition();
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -19,9 +18,7 @@ export function AddFlagButton() {
   }, []);
 
   const handleClick = () => {
-    startTransition(() => {
-      setOpen(true);
-    });
+    setOpen(true);
   };
 
   return (
@@ -31,7 +28,6 @@ export function AddFlagButton() {
         onMouseEnter={() => !isMobile && setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         aria-label="Aggiungi bandiera"
-        disabled={isPending}
         className="fixed bottom-6 right-6 z-40 rounded-full bg-primary text-primary-foreground shadow-lg hover:bg-primary/90 h-16 overflow-hidden flex items-center"
         style={{
           width: isMobile || !isHovered ? "64px" : "200px",
@@ -39,10 +35,7 @@ export function AddFlagButton() {
         }}
       >
         <div className="flex items-center justify-center flex-shrink-0 w-16 h-16">
-          {isPending
-            ? <Loader2 size={32} className="animate-spin" />
-            : <Plus size={32} />
-          }
+          <Plus size={32} />
         </div>
         <span
           className="hidden md:block whitespace-nowrap text-sm font-medium pl-2 pr-6"
@@ -51,7 +44,7 @@ export function AddFlagButton() {
             transition: "opacity 700ms ease-out",
           }}
         >
-          {isPending ? "Caricamento..." : "Aggiungi bandiera"}
+          Aggiungi bandiera
         </span>
       </button>
 

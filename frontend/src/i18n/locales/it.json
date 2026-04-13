@@ -73,7 +73,11 @@
   },
   "addFlagModal": {
     "visibleToAll": "Visibile a tutti",
-    "onlyYou": "Segreta"
+    "onlyYou": "Segreta",
+    "success": {
+      "title": "Evviva",
+      "message": "Grazie stimato {{user}}, ma soprattutto un grazie speciale ad Al."
+    }
   },
   "flags": {
     "title": "Collezione",
