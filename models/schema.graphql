@@ -25,14 +25,21 @@ enum ClubRole {
   ORDINARY_ASSOCIATE
 }
 
+enum UserStatus {
+  REGISTERED
+  PENDING
+  EXTERNAL
+}
+
 type User {
   id: ID!
-  email: String!
+  email: String
   displayName: String!
   role: Role!
   clubRole: ClubRole!
-  cardNumber: String!
+  cardNumber: String
   createdAt: DateTime!
+  status: UserStatus!
 }
 
 type ContributionByContinent {
@@ -43,10 +50,10 @@ type ContributionByContinent {
 type UserProfile {
   id: ID!
   displayName: String!
-  email: String!
+  email: String
   role: Role!
   clubRole: ClubRole!
-  cardNumber: String!
+  cardNumber: String
   createdAt: DateTime!
   flagsCount: Int!
   lastContribution: DateTime
@@ -66,6 +73,7 @@ type Flag {
   imageUrl: String
   acquiredAt: DateTime!
   isPublic: Boolean!
+  isVariant: Boolean!
   addedBy: User!
   description: String
   continent: String
@@ -107,6 +115,27 @@ type Invite {
   cardNumber: String
 }
 
+type ImportFlagError {
+  row: Int!
+  flagName: String!
+  reason: String!
+}
+
+type ImportFlagsResult {
+  flagsImported: Int!
+  usersCreated: Int!
+  errors: [ImportFlagError!]!
+}
+
+type FailedImport {
+  id: ID!
+  row: Int!
+  flagName: String!
+  reason: String!
+  rawData: String!
+  createdAt: DateTime!
+}
+
 ### ─── News ───────────────────────────────────────────────────────────────────
 
 type NewsItem {
@@ -144,6 +173,7 @@ type Query {
   featuredNewsItem: NewsItem
   topMembers(limit: Int): [MemberStats!]!
   invites: [Invite!]!
+  failedImports: [FailedImport!]!
 }
 
 ### ─── Mutations ──────────────────────────────────────────────────────────────
@@ -180,6 +210,9 @@ type Mutation {
   removeInvite(email: String!): Boolean!
 
   resetUserPassword(userId: ID!, newPassword: String!): Boolean!
+  assignExternalEmail(userId: ID!, email: String!): User!
+  clearFailedImport(id: ID!): Boolean!
+  clearAllFailedImports: Boolean!
 
   setMostWanted(name: String!, imageUrl: String, acquiredAt: Int!, description: String): FlagPreview!
   clearMostWanted: Boolean!

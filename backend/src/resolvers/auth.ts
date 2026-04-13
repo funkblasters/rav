@@ -59,21 +59,57 @@ export const authResolvers = {
     ) => {
       const normalizedEmail = args.email.trim().toLowerCase();
 
-      const userCount = await prisma.user.count();
-      const isFirst = userCount === 0;
+      const existingUser = await prisma.user.findUnique({ where: { email: normalizedEmail } });
+
+      if (existingUser?.status === "REGISTERED") {
+        throw new Error("Email already in use");
+      }
+
+      // Count only REGISTERED users to determine isFirst
+      const registeredCount = await prisma.user.count({ where: { status: "REGISTERED" } });
+      const isFirst = registeredCount === 0;
 
       const invite = await prisma.invite.findUnique({ where: { email: normalizedEmail } });
+
+      const passwordHash = await bcrypt.hash(args.password, 10);
+
+      // PENDING user exists: convert to REGISTERED
+      if (existingUser?.status === "PENDING" || existingUser?.status === "EXTERNAL") {
+        if (!isFirst && !invite) {
+          throw new Error("Registration is not open for this email address");
+        }
+        const cardNumber =
+          existingUser.cardNumber ??
+          invite?.cardNumber ??
+          "RAV-" + String(registeredCount + 1).padStart(4, "0");
+
+        const user = await prisma.user.update({
+          where: { id: existingUser.id },
+          data: {
+            passwordHash,
+            status: "REGISTERED",
+            displayName: args.displayName,
+            role: isFirst ? "ADMIN" : "MEMBER",
+            clubRole: isFirst ? "CHAIRMAN" : (invite?.clubRole ?? existingUser.clubRole),
+            cardNumber,
+          },
+        });
+
+        if (invite) {
+          await prisma.invite.delete({ where: { email: normalizedEmail } });
+        }
+
+        setRefreshCookie(ctx.res, signRefreshToken(user.id));
+        return { token: signAccessToken({ id: user.id, email: normalizedEmail, role: user.role }), user };
+      }
+
+      // Brand-new user
       if (!isFirst && !invite) {
         throw new Error("Registration is not open for this email address");
       }
 
-      const existingUser = await prisma.user.findUnique({ where: { email: normalizedEmail } });
-      if (existingUser) {
-        throw new Error("Email already in use");
-      }
-
-      const passwordHash = await bcrypt.hash(args.password, 10);
-      const cardNumber = invite?.cardNumber ?? "RAV-" + String(userCount + 1).padStart(4, "0");
+      const cardNumber =
+        invite?.cardNumber ?? "RAV-" + String(registeredCount + 1).padStart(4, "0");
 
       const user = await prisma.user.create({
         data: {
@@ -81,6 +117,7 @@ export const authResolvers = {
           email: normalizedEmail,
           passwordHash,
           displayName: args.displayName,
+          status: "REGISTERED",
           role: isFirst ? "ADMIN" : "MEMBER",
           clubRole: isFirst ? "CHAIRMAN" : (invite?.clubRole ?? "ORDINARY_ASSOCIATE"),
           cardNumber,
@@ -92,7 +129,7 @@ export const authResolvers = {
       }
 
       setRefreshCookie(ctx.res, signRefreshToken(user.id));
-      return { token: signAccessToken(user), user };
+      return { token: signAccessToken({ id: user.id, email: normalizedEmail, role: user.role }), user };
     },
 
     login: async (
@@ -102,12 +139,15 @@ export const authResolvers = {
     ) => {
       const normalizedEmail = args.email.trim().toLowerCase();
       const user = await prisma.user.findUnique({ where: { email: normalizedEmail } });
-      if (!user) throw new Error("Invalid credentials");
+      // Use the same error for all failure cases to avoid leaking account existence
+      if (!user || user.status !== "REGISTERED" || !user.passwordHash) {
+        throw new Error("Invalid credentials");
+      }
       const valid = await bcrypt.compare(args.password, user.passwordHash);
       if (!valid) throw new Error("Invalid credentials");
 
       setRefreshCookie(ctx.res, signRefreshToken(user.id));
-      return { token: signAccessToken(user), user };
+      return { token: signAccessToken({ id: user.id, email: normalizedEmail, role: user.role }), user };
     },
 
     resetUserPassword: async (
@@ -117,7 +157,7 @@ export const authResolvers = {
     ) => {
       if (ctx.user?.role !== "ADMIN") throw new Error("Forbidden");
       const user = await prisma.user.findUnique({ where: { id: args.userId } });
-      if (!user) throw new Error("User not found");
+      if (!user || user.status !== "REGISTERED") throw new Error("User not found");
       const passwordHash = await bcrypt.hash(args.newPassword, 10);
       await prisma.user.update({ where: { id: args.userId }, data: { passwordHash } });
       return true;
@@ -137,13 +177,13 @@ export const authResolvers = {
       }
 
       const user = await prisma.user.findUnique({ where: { id: payload.id } });
-      if (!user) {
+      if (!user || user.status !== "REGISTERED" || !user.email) {
         clearRefreshCookie(ctx.res);
         throw new Error("User not found");
       }
 
       setRefreshCookie(ctx.res, signRefreshToken(user.id));
-      return { token: signAccessToken(user), user };
+      return { token: signAccessToken({ id: user.id, email: user.email, role: user.role }), user };
     },
 
     logout: (_: unknown, __: unknown, ctx: AppContext) => {

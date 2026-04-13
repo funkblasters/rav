@@ -11,18 +11,19 @@ datasource db {
 }
 
 model User {
-  id        String     @id @default(uuid()) @db.Uuid
-  email        String     @unique
+  id           String     @id @default(uuid()) @db.Uuid
+  email        String?    @unique
   displayName  String
-  passwordHash String
+  passwordHash String?
+  status       UserStatus @default(REGISTERED)
   role         Role       @default(MEMBER)
   clubRole     ClubRole   @default(ORDINARY_ASSOCIATE)
-  cardNumber   String     @unique
-  createdAt DateTime   @default(now())
+  cardNumber   String?    @unique
+  createdAt    DateTime   @default(now())
 
-  flagsAdded Flag[]         @relation("AddedBy")
-  contributedFlags Flag[]   @relation("FlagContributors")
-  invites   Invite[]
+  flagsAdded       Flag[]  @relation("AddedBy")
+  contributedFlags Flag[]  @relation("FlagContributors")
+  invites          Invite[]
 
   @@map("users")
 }
@@ -38,6 +39,7 @@ model Flag {
   imageUrl  String?
   acquiredAt DateTime
   isPublic  Boolean    @default(true)
+  isVariant Boolean    @default(false)
   description String?
   continent String?
 
@@ -71,6 +73,12 @@ enum Role {
   MEMBER
 }
 
+enum UserStatus {
+  REGISTERED
+  PENDING
+  EXTERNAL
+}
+
 enum ClubRole {
   CHAIRMAN
   VICE_CHAIRMAN
@@ -78,6 +86,17 @@ enum ClubRole {
   TREASURER
   SECRETARY
   ORDINARY_ASSOCIATE
+}
+
+model FailedImport {
+  id        String   @id @default(uuid()) @db.Uuid
+  row       Int
+  flagName  String
+  reason    String
+  rawData   String   // JSON: { date, contributors, continent, isVariant }
+  createdAt DateTime @default(now())
+
+  @@map("failed_imports")
 }
 
 model Settings {

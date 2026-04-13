@@ -5,6 +5,8 @@ import { flagResolvers } from "./flags.js";
 import { newsResolvers } from "./news.js";
 import { statisticsResolvers } from "./statistics.js";
 import { userResolvers } from "./user.js";
+import { adminResolvers } from "./admin.js";
+import { failedImportsResolvers } from "./failedImports.js";
 
 const dateTimeScalar = {
   serialize: (value: unknown): string => {
@@ -30,6 +32,7 @@ const dateTimeScalar = {
 export const resolvers = {
   DateTime: dateTimeScalar,
   Query: {
+    ...failedImportsResolvers.Query,
     ...authResolvers.Query,
     ...inviteResolvers.Query,
     ...eventResolvers.Query,
@@ -44,6 +47,8 @@ export const resolvers = {
     ...eventResolvers.Mutation,
     ...flagResolvers.Mutation, // includes setMostWanted + clearMostWanted
     ...newsResolvers.Mutation, // includes setFeaturedNews + clearFeaturedNews
+    ...adminResolvers.Mutation,
+    ...failedImportsResolvers.Mutation,
   },
   Event: eventResolvers.Event,
   Flag: flagResolvers.Flag,
