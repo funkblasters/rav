@@ -7,8 +7,9 @@ import { useTranslation } from "react-i18next";
 const COUNTRY_CODE_TO_NUMERIC: Record<string, string> = {
   // Europe
   IT: "380", FR: "250", ES: "724", DE: "276", GB: "826", PT: "620", NL: "528", BE: "056", CH: "756", AT: "040",
-  SE: "752", NO: "578", DK: "208", FI: "246", PL: "616", CZ: "203", HU: "348", RO: "642", GR: "300", IE: "372",
+  SE: "752", NO: "578", DK: "208", FI: "246", PL: "616", CZ: "203", Czechia: "203", HU: "348", RO: "642", GR: "300", IE: "372",
   IS: "352", LU: "442", MT: "470", CY: "196", SI: "705", HR: "191", BA: "070", RS: "688", ME: "499", MK: "807",
+  AD: "020", LI: "438", MC: "492", SM: "674", VA: "336", RU: "643",
   BG: "100", AL: "008", XK: "999", SK: "703", LT: "440", LV: "428", EE: "233", BY: "112", UA: "804", MD: "498",
   GE: "268", AM: "051", AZ: "031",
   // Asia - East & Southeast
@@ -29,7 +30,7 @@ const COUNTRY_CODE_TO_NUMERIC: Record<string, string> = {
   SR: "740", GY: "328",
   // Americas - Caribbean
   CU: "192", DO: "214", HT: "332", JM: "388", TT: "780", BS: "044", BB: "052", LC: "662", GD: "308", AG: "028",
-  DM: "212", PR: "630",
+  DM: "212", PR: "630", KN: "659", VC: "670",
   // Africa - North
   EG: "818", LY: "434", TN: "788", DZ: "012", MA: "504",
   // Africa - West
@@ -46,7 +47,7 @@ const COUNTRY_CODE_TO_NUMERIC: Record<string, string> = {
   // Oceania - Melanesia
   FJ: "242", PG: "598", SB: "090", VU: "548",
   // Oceania - Polynesia
-  WS: "882", TO: "776", KI: "296", TV: "798",
+  WS: "882", TO: "776", KI: "296", TV: "798", PF: "258", WF: "876",
   // Oceania - Micronesia
   FM: "583", PW: "585", MH: "584", NR: "520", GU: "316",
   // Other
