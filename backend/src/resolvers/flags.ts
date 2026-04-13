@@ -186,16 +186,17 @@ export const flagResolvers = {
     },
     updateFlag: async (
       _: unknown,
-      args: { id: string; name?: string; imageUrl?: string },
+      args: { id: string; name?: string; imageUrl?: string; countryCode?: string },
       ctx: AppContext
     ) => {
       if (ctx.user?.role !== "ADMIN") throw new Error("Forbidden");
       const flag = await prisma.flag.findUnique({ where: { id: args.id } });
       if (!flag) throw new Error("Flag not found");
 
-      const updateData: { name?: string; imageUrl?: string | null } = {};
+      const updateData: { name?: string; imageUrl?: string | null; countryCode?: string } = {};
       if (args.name !== undefined) updateData.name = args.name;
       if (args.imageUrl !== undefined) updateData.imageUrl = args.imageUrl ?? null;
+      if (args.countryCode !== undefined) updateData.countryCode = args.countryCode;
 
       return prisma.flag.update({
         where: { id: args.id },

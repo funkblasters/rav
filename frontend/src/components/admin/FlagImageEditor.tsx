@@ -33,11 +33,12 @@ const GET_ALL_FLAGS = gql`
 `;
 
 const UPDATE_FLAG = gql`
-  mutation UpdateFlag($id: ID!, $name: String, $imageUrl: String) {
-    updateFlag(id: $id, name: $name, imageUrl: $imageUrl) {
+  mutation UpdateFlag($id: ID!, $name: String, $imageUrl: String, $countryCode: String) {
+    updateFlag(id: $id, name: $name, imageUrl: $imageUrl, countryCode: $countryCode) {
       id
       name
       imageUrl
+      countryCode
     }
   }
 `;
@@ -46,6 +47,7 @@ function FlagImageRow({ flag }: { flag: Flag }) {
   const [editing, setEditing] = useState(false);
   const [nameInput, setNameInput] = useState(flag.name);
   const [urlInput, setUrlInput] = useState(flag.imageUrl ?? "");
+  const [countryCodeInput, setCountryCodeInput] = useState(flag.countryCode);
   const [previewUrl, setPreviewUrl] = useState(flag.imageUrl ?? "");
   const [error, setError] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -68,6 +70,7 @@ function FlagImageRow({ flag }: { flag: Flag }) {
         id: flag.id,
         name: nameInput.trim() || flag.name,
         imageUrl: urlInput.trim() || null,
+        countryCode: countryCodeInput.trim() || flag.countryCode,
       },
     });
   };
@@ -76,6 +79,7 @@ function FlagImageRow({ flag }: { flag: Flag }) {
     setEditing(false);
     setNameInput(flag.name);
     setUrlInput(flag.imageUrl ?? "");
+    setCountryCodeInput(flag.countryCode);
     setPreviewUrl(flag.imageUrl ?? "");
     setError(null);
   };
@@ -128,6 +132,15 @@ function FlagImageRow({ flag }: { flag: Flag }) {
                 value={nameInput}
                 onChange={(e) => setNameInput(e.target.value)}
                 autoFocus
+              />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Codice Paese</Label>
+              <Input
+                placeholder="ISO 3166-1 (es. IT, FR, DE)"
+                value={countryCodeInput}
+                onChange={(e) => setCountryCodeInput(e.target.value)}
+                maxLength={2}
               />
             </div>
             <div className="space-y-1">

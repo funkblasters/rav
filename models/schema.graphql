@@ -216,7 +216,7 @@ type Mutation {
   deleteFlag(id: ID!): Boolean!
   makePublic(flagId: ID!): Flag!
   updateFlagImageUrl(id: ID!, imageUrl: String): Flag!
-  updateFlag(id: ID!, name: String, imageUrl: String): Flag!
+  updateFlag(id: ID!, name: String, imageUrl: String, countryCode: String): Flag!
 
   addInvite(email: String!, clubRole: ClubRole!, cardNumber: String): Invite!
   removeInvite(email: String!): Boolean!

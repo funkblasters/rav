@@ -9,6 +9,7 @@ const GET_FLAGS = gql`
       id
       name
       imageUrl
+      countryCode
     }
   }
 `;
@@ -17,6 +18,7 @@ interface Flag {
   id: string;
   name: string;
   imageUrl?: string;
+  countryCode: string;
 }
 
 export function FlagsPage() {
@@ -151,6 +153,9 @@ export function FlagsPage() {
                 <span className="text-white text-[10px] font-medium text-center leading-tight line-clamp-2">
                   {flag.name}
                 </span>
+                <span className="text-white text-[8px] text-center leading-tight mt-0.5">
+                  {flag.countryCode}
+                </span>
               </div>
             </div>
           ))}
@@ -185,6 +190,9 @@ export function FlagsPage() {
               >
                 <span className="text-white text-[10px] font-medium text-center leading-tight line-clamp-2">
                   {flag.name}
+                </span>
+                <span className="text-white text-[8px] text-center leading-tight mt-0.5">
+                  {flag.countryCode}
                 </span>
               </div>
             </div>
