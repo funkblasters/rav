@@ -79,7 +79,7 @@ function flattenFlags(data: any): FlagEntry[] {
   const flattened: FlagEntry[] = [];
 
   Object.entries(data.continents).forEach(([continentName, continent]) => {
-    Object.entries(continent).forEach(([countryName, countryData]) => {
+    Object.entries(continent as Record<string, unknown>).forEach(([countryName, countryData]) => {
       // Handle cultural flags array at continent level
       if (countryName === "cultural" && Array.isArray(countryData)) {
         (countryData as any[]).forEach((flag: any) => {
