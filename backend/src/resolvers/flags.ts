@@ -1,12 +1,13 @@
 import { randomUUID } from "crypto";
 import type { AppContext } from "../context.js";
 import { prisma } from "../db.js";
+import { countryNameToISOCode, subdivisionToCountryCode } from "../countryCodeMappings.js";
 
 export const flagResolvers = {
   Query: {
     flags: async (_: unknown, __: unknown, ctx: AppContext) => {
       if (!ctx.user) throw new Error("Unauthenticated");
-      return prisma.flag.findMany({ where: { isPublic: true }, include: { contributors: true } });
+      return prisma.flag.findMany({ where: { isPublic: true }, include: { contributors: true }, orderBy: { acquiredAt: "desc" } });
     },
     allFlags: async (_: unknown, __: unknown, ctx: AppContext) => {
       if (ctx.user?.role !== "ADMIN") throw new Error("Forbidden");
@@ -62,6 +63,7 @@ export const flagResolvers = {
       return prisma.flag.findMany({
         where: { contributors: { some: { id: ctx.user.id } } },
         include: { contributors: true },
+        orderBy: { acquiredAt: "desc" },
       });
     },
   },
@@ -95,9 +97,32 @@ export const flagResolvers = {
         ownerId = target.id;
       }
 
-      // Check if user already has a flag with this exact country/subdivision combination
-      const countryCode = args.countryCode ?? "XX";
-      const subdivisionCode = args.subdivisionCode ?? null;
+      // Resolve country/subdivision codes (match import logic)
+      let countryCode: string;
+      let subdivisionCode: string | null;
+
+      if (args.countryCode && args.subdivisionCode) {
+        // Both provided explicitly
+        countryCode = args.countryCode;
+        subdivisionCode = args.subdivisionCode;
+      } else if (args.countryCode) {
+        // Only country code provided
+        countryCode = args.countryCode;
+        subdivisionCode = args.subdivisionCode ?? null;
+      } else {
+        // Try to lookup from flag name (match import behavior)
+        const subdivCountryCode = subdivisionToCountryCode[args.name.trim()];
+        if (subdivCountryCode) {
+          // This is a known subdivision
+          countryCode = subdivCountryCode;
+          subdivisionCode = args.name.trim();
+        } else {
+          // Try to lookup as a country
+          countryCode = countryNameToISOCode[args.name.trim()] ?? "XX";
+          // If unknown (mapped to "XX"), use flag name as subdivision to avoid conflicts
+          subdivisionCode = countryCode === "XX" ? args.name.trim() : (args.subdivisionCode ?? null);
+        }
+      }
       const existingFlag = await prisma.flag.findFirst({
         where: {
           addedById: ownerId,
@@ -114,8 +139,8 @@ export const flagResolvers = {
         data: {
           id: randomUUID(),
           name: args.name,
-          countryCode: args.countryCode ?? "XX",
-          subdivisionCode: args.subdivisionCode,
+          countryCode,
+          subdivisionCode,
           city: args.city,
           latitude: args.latitude,
           longitude: args.longitude,
@@ -245,5 +270,7 @@ export const flagResolvers = {
       prisma.user.findUnique({ where: { id: flag.addedById } }),
     togetherWith: (flag: { addedById: string; contributors?: { id: string; displayName: string }[] }) =>
       (flag.contributors ?? []).filter((c) => c.id !== flag.addedById),
+    contributors: (flag: { contributors?: { id: string; displayName: string }[] }) =>
+      flag.contributors ?? [],
   },
 };

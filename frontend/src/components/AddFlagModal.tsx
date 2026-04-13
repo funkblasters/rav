@@ -136,7 +136,7 @@ function flattenFlags(data: typeof flagsCompleteData): FlagEntry[] {
         imageUrl: flag.link_flag || null,
         description: flag.description || null,
         continent: null,
-        countryCode: "LG",
+        countryCode: "XX",
         isNational: false,
       });
     });

@@ -79,6 +79,7 @@ type Flag {
   continent: String
   publishedAt: DateTime
   togetherWith: [User!]!
+  contributors: [User!]!
 }
 
 type FlagPreview {
@@ -90,6 +91,7 @@ type FlagPreview {
   addedBy: User!
   description: String
   togetherWith: [User!]!
+  contributors: [User!]!
 }
 
 type FlagGeo {

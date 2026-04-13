@@ -179,16 +179,6 @@ export function UserPanel() {
                   variant="ghost"
                   size="icon"
                   onClick={handleLogout}
-                  className="md:hidden"
-                  aria-label="Logout"
-                >
-                  <LogOut size={16} />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleLogout}
-                  className="hidden md:flex"
                   aria-label="Logout"
                 >
                   <LogOut size={16} />

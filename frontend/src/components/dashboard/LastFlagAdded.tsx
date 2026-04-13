@@ -12,7 +12,7 @@ const LAST_FLAG = gql`
       imageUrl
       acquiredAt
       publishedAt
-      addedBy { displayName }
+      contributors { displayName }
       description
     }
   }
@@ -62,9 +62,11 @@ export function LastFlagAdded() {
               {/* Bottom: Metadata — 1/4 of height with padding */}
               <div className="p-4 border-t space-y-2 shrink-0">
                 <p className="font-semibold text-base line-clamp-1">{flag.name}</p>
-                <p className="text-xs text-muted-foreground">
-                  {t("dashboard.addedBy", { name: flag.addedBy.displayName })}
-                </p>
+                {flag.contributors && flag.contributors.length > 0 && (
+                  <p className="text-xs text-muted-foreground">
+                    {flag.contributors.map((c: any) => c.displayName).join(", ")}
+                  </p>
+                )}
                 <p className="text-xs text-muted-foreground">
                   {new Date(flag.acquiredAt).toLocaleDateString()}
                 </p>

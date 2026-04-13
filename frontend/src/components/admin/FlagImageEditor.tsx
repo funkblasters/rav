@@ -32,15 +32,6 @@ const GET_ALL_FLAGS = gql`
   }
 `;
 
-const UPDATE_FLAG_IMAGE = gql`
-  mutation UpdateFlagImageUrl($id: ID!, $imageUrl: String) {
-    updateFlagImageUrl(id: $id, imageUrl: $imageUrl) {
-      id
-      imageUrl
-    }
-  }
-`;
-
 const UPDATE_FLAG = gql`
   mutation UpdateFlag($id: ID!, $name: String, $imageUrl: String) {
     updateFlag(id: $id, name: $name, imageUrl: $imageUrl) {

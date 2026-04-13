@@ -112,13 +112,13 @@ export function DashboardPage() {
   return (
     <div className="space-y-8">
       {/* Latest Addition and Statistics — side by side, half width each */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-auto sm:h-96 lg:h-[28rem]">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-auto sm:h-96 md:h-[32rem] lg:h-[28rem]">
         <LastFlagAdded />
         <Statistics />
       </div>
 
       {/* Most Wanted and News — stack on mobile, side by side on desktop */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-auto sm:h-96 lg:h-[28rem]">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-auto sm:h-96 md:h-[32rem] lg:h-[28rem]">
         <MostWantedFlag />
         <FlagNews />
       </div>
@@ -131,7 +131,7 @@ export function DashboardPage() {
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
-          <div className="h-[28rem] sm:h-[36rem] lg:h-[44rem]">
+          <div className="h-[28rem] sm:h-[36rem] md:h-[40rem] lg:h-[44rem]">
             <DashboardCountryMap
               nationalFlagsNumericIds={nationalFlagsNumericIds}
               allFlagsNumericIds={allFlagsNumericIds}

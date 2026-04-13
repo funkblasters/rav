@@ -59,6 +59,7 @@ const MY_FLAGS = gql`
     myFlags {
       id
       countryCode
+      subdivisionCode
     }
   }
 `;
@@ -66,6 +67,7 @@ const MY_FLAGS = gql`
 type Flag = {
   id: string;
   countryCode: string;
+  subdivisionCode: string | null;
 };
 
 export function UserFlagsChoropleth() {
@@ -74,7 +76,8 @@ export function UserFlagsChoropleth() {
 
   const flags: Flag[] = data?.myFlags ?? [];
 
-  // Get unique countries and map to numeric IDs
+  // Get unique countries — lights up for ANY flag (national or subdivision)
+  // e.g., if user has Andalusia (ES, "Andalusia"), Spain lights up
   const uniqueCountries = new Set<string>(flags.map((flag) => flag.countryCode));
   const highlightedNumericIds = new Set<string>(
     Array.from(uniqueCountries)

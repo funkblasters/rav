@@ -155,6 +155,7 @@ export const userResolvers = {
       });
 
       const contributionsByContinent = Array.from(continentMap.entries())
+        .filter(([continent]) => continent !== "Other") // Exclude LGBT/cultural flags
         .map(([continent, count]) => ({ continent, count }))
         .sort((a, b) => b.count - a.count);
 

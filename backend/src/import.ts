@@ -15,17 +15,22 @@ import { readFileSync } from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import { prisma } from "./db.js";
+import { countryNameToISOCode, subdivisionToCountryCode } from "./countryCodeMappings.js";
 
-// ── Flag image URL lookup ────────────────────────────────────────────────────
+// ── Flag data lookup (image URL) ────────────────────────────────────────────
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-let _flagImageMap: Map<string, string> | null = null;
+interface FlagMetadata {
+  imageUrl: string | null;
+}
 
-function getFlagImageMap(): Map<string, string> {
-  if (_flagImageMap) return _flagImageMap;
+let _flagDataMap: Map<string, FlagMetadata> | null = null;
 
-  const map = new Map<string, string>();
+function getFlagDataMap(): Map<string, FlagMetadata> {
+  if (_flagDataMap) return _flagDataMap;
+
+  const map = new Map<string, FlagMetadata>();
   try {
     const raw = readFileSync(
       join(__dirname, "../../frontend/src/lib/flags_complete.json"),
@@ -34,13 +39,15 @@ function getFlagImageMap(): Map<string, string> {
     const data = JSON.parse(raw);
 
     const add = (name: unknown, url: unknown) => {
-      if (typeof name === "string" && typeof url === "string" && name && url) {
-        map.set(name.trim().toLowerCase(), url);
+      if (typeof name === "string" && name) {
+        map.set(name.trim().toLowerCase(), {
+          imageUrl: (typeof url === "string" && url) ? url : null,
+        });
       }
     };
 
-    for (const continent of Object.values(data.continents ?? {})) {
-      for (const [, countryData] of Object.entries(continent as Record<string, unknown>)) {
+    for (const [continentName, continent] of Object.entries(data.continents ?? {})) {
+      for (const [countryName, countryData] of Object.entries(continent as Record<string, unknown>)) {
         if (Array.isArray(countryData)) {
           // cultural flags array
           for (const f of countryData) add(f.name, f.link_flag);
@@ -50,7 +57,11 @@ function getFlagImageMap(): Map<string, string> {
         const nat = c.national as Record<string, unknown> | undefined;
         if (nat) add(nat.name, nat.link_flag);
         const subs = c.subdivisions as Record<string, unknown>[] | undefined;
-        if (Array.isArray(subs)) for (const s of subs) add(s.name, s.link_flag);
+        if (Array.isArray(subs)) {
+          for (const s of subs) {
+            add(s.name, s.link_flag);
+          }
+        }
       }
     }
 
@@ -59,15 +70,20 @@ function getFlagImageMap(): Map<string, string> {
       add(flag.name, flag.link_flag);
     }
   } catch {
-    // JSON not found in this environment — image URLs will be null
+    // JSON not found in this environment — will use defaults
   }
 
-  _flagImageMap = map;
+  _flagDataMap = map;
   return map;
 }
 
-function lookupImageUrl(flagName: string): string | null {
-  return getFlagImageMap().get(flagName.trim().toLowerCase()) ?? null;
+function lookupFlagImageUrl(flagName: string): string | null {
+  const data = getFlagDataMap().get(flagName.trim().toLowerCase());
+  return data?.imageUrl ?? null;
+}
+
+function lookupCountryCode(countryName: string): string {
+  return countryNameToISOCode[countryName.trim()] ?? "XX";
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -352,27 +368,61 @@ export async function importFlags(buffer: Buffer): Promise<ImportFlagsResult> {
 
     const ownerId = contributorIds[0];
 
-    // Idempotency: skip if this exact flag already exists for this owner+date
-    const existing = await prisma.flag.findFirst({
-      where: { name: flagName, acquiredAt, addedById: ownerId },
-    });
-    if (existing) {
-      // Not a failure — silent skip, no DB record needed
-      errors.push({ row: rowNumber, flagName, reason: "Already exists for this owner and date (skipped)" });
-      continue;
-    }
-
+    // Match addFlag behavior: check for duplicate by countryCode + subdivisionCode + addedById
     try {
+      let countryCode: string;
+      let subdivisionCode: string | null;
+
+      // Check if this is a known subdivision first
+      const subdivCountryCode = subdivisionToCountryCode[flagName.trim()];
+      if (subdivCountryCode) {
+        // This is a subdivision flag
+        countryCode = subdivCountryCode;
+        subdivisionCode = flagName.trim(); // Use flag name as unique subdivision identifier
+      } else {
+        // Try to get country code from flag name first, only use continent as fallback
+        countryCode = lookupCountryCode(flagName);
+        if (countryCode === "XX" && continent) {
+          countryCode = lookupCountryCode(continent);
+        }
+
+        // If we couldn't find a country code (mapped to "XX"), use flag name as subdivision
+        // This prevents all unknown flags from conflicting with each other
+        if (countryCode === "XX") {
+          subdivisionCode = flagName.trim();
+        } else {
+          subdivisionCode = null;
+        }
+      }
+
+      // Check for duplicate: same country/subdivision for same user (match addFlag logic)
+      const existingFlag = await prisma.flag.findFirst({
+        where: {
+          addedById: ownerId,
+          countryCode,
+          subdivisionCode,
+        },
+      });
+      if (existingFlag) {
+        errors.push({ row: rowNumber, flagName, reason: "Already exists in collection" });
+        continue;
+      }
+
+      const imageUrl = lookupFlagImageUrl(flagName);
+      const isPublic = true;
+
       await prisma.flag.create({
         data: {
           id: randomUUID(),
           name: flagName,
+          countryCode,
+          subdivisionCode,
           acquiredAt,
-          isPublic: true,
+          isPublic,
           isVariant,
           continent: continent || null,
-          publishedAt: acquiredAt, // use acquisition date, not import date
-          imageUrl: lookupImageUrl(flagName),
+          publishedAt: isPublic ? new Date() : null, // Match addFlag behavior
+          imageUrl,
           addedById: ownerId,
           contributors: { connect: contributorIds.map((id) => ({ id })) },
         },
