@@ -89,12 +89,12 @@ export function Statistics() {
                     {/* Name + club role (mobile: name only, tablet+: both) */}
                     <div className="flex-1 min-w-0 flex items-center gap-2">
                       <p className="text-sm font-medium truncate">{member.displayName}</p>
-                      <span className="shrink-0 hidden md:inline"><ClubRoleBadge role={member.clubRole} collapsible /></span>
+                      {member.clubRole !== "ORDINARY_ASSOCIATE" && <span className="shrink-0 hidden md:inline"><ClubRoleBadge role={member.clubRole} collapsible /></span>}
                     </div>
 
                     {/* Flags Count + Badge (mobile: right aligned with min width for alignment) */}
                     <div className="flex items-center gap-2 flex-shrink-0 ml-auto md:ml-0 md:w-20">
-                      <span className="md:hidden"><ClubRoleBadge role={member.clubRole} collapsible /></span>
+                      {member.clubRole !== "ORDINARY_ASSOCIATE" && <span className="md:hidden"><ClubRoleBadge role={member.clubRole} collapsible /></span>}
                       <span className="text-xl font-bold text-right md:text-left">
                         {member.flagsCount}
                       </span>
