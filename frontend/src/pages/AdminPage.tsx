@@ -66,7 +66,7 @@ interface FailedImport {
 
 const GET_PANEL = gql`
   query GetAdminPanel {
-    users {
+    adminUsers {
       id
       email
       displayName
@@ -215,7 +215,7 @@ export function AdminPage() {
   const [clearAllFailedImports] = useMutation(CLEAR_ALL_FAILED_IMPORTS, { refetchQueries: [GET_PANEL] });
 
   // ── Derived data ────────────────────────────────────────────────────────────
-  const allUsers: User[] = data?.users ?? [];
+  const allUsers: User[] = data?.adminUsers ?? [];
   const registeredUsers = allUsers.filter((u) => u.status === "REGISTERED");
   const pendingUsers = allUsers.filter((u) => u.status === "PENDING");
   const externalUsers = allUsers.filter((u) => u.status === "EXTERNAL");

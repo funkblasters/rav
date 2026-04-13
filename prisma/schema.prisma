@@ -108,6 +108,7 @@ model Settings {
   featuredNewsTitle String?
   featuredNewsLink String?
   featuredNewsImageUrl String?
+  featuredNewsBody String?
 
   @@map("settings")
 }

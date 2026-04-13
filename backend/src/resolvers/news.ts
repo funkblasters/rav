@@ -100,13 +100,14 @@ export const newsResolvers = {
         link: settings.featuredNewsLink || "",
         pubDate: new Date().toISOString(),
         imageUrl: settings.featuredNewsImageUrl,
+        body: settings.featuredNewsBody,
       };
     },
   },
   Mutation: {
     setFeaturedNews: async (
       _: unknown,
-      args: { title: string; link: string; imageUrl?: string },
+      args: { title: string; link: string; imageUrl?: string; body?: string },
       ctx: AppContext
     ) => {
       if (ctx.user?.role !== "ADMIN") throw new Error("Forbidden");
@@ -116,12 +117,14 @@ export const newsResolvers = {
           featuredNewsTitle: args.title,
           featuredNewsLink: args.link,
           featuredNewsImageUrl: args.imageUrl,
+          featuredNewsBody: args.body,
         },
         create: {
           id: "app",
           featuredNewsTitle: args.title,
           featuredNewsLink: args.link,
           featuredNewsImageUrl: args.imageUrl,
+          featuredNewsBody: args.body,
         },
       });
       return {
@@ -129,6 +132,7 @@ export const newsResolvers = {
         link: settings.featuredNewsLink || "",
         pubDate: new Date().toISOString(),
         imageUrl: settings.featuredNewsImageUrl,
+        body: settings.featuredNewsBody,
       };
     },
     clearFeaturedNews: async (_: unknown, __: unknown, ctx: AppContext) => {

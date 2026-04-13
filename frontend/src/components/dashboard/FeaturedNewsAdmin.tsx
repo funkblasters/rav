@@ -12,16 +12,19 @@ const GET_FEATURED_NEWS = gql`
       title
       link
       imageUrl
+      body
     }
   }
 `;
 
 const SET_FEATURED_NEWS = gql`
-  mutation SetFeaturedNews($title: String!, $link: String!, $imageUrl: String) {
-    setFeaturedNews(title: $title, link: $link, imageUrl: $imageUrl) {
+  mutation SetFeaturedNews($title: String!, $link: String!, $imageUrl: String, $body: String) {
+    setFeaturedNews(title: $title, link: $link, imageUrl: $imageUrl, body: $body) {
       title
       link
+      pubDate
       imageUrl
+      body
     }
   }
 `;
@@ -32,7 +35,7 @@ const CLEAR_FEATURED_NEWS = gql`
   }
 `;
 
-const emptyForm = { title: "", link: "", imageUrl: "" };
+const emptyForm = { title: "", link: "", imageUrl: "", body: "" };
 
 export function FeaturedNewsAdmin() {
   const [form, setForm] = useState(emptyForm);
@@ -62,12 +65,13 @@ export function FeaturedNewsAdmin() {
         title: form.title,
         link: form.link,
         imageUrl: form.imageUrl.trim() || undefined,
+        body: form.body.trim() || undefined,
       },
     });
   };
 
   const field = (key: keyof typeof form) =>
-    (e: React.ChangeEvent<HTMLInputElement>) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
       setForm((f) => ({ ...f, [key]: e.target.value }));
 
   return (
@@ -97,22 +101,34 @@ export function FeaturedNewsAdmin() {
                   href={current.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xs text-blue-600 hover:underline flex items-center gap-1 mt-1"
+                  className="text-xs text-blue-600 hover:underline truncate block mt-1"
                 >
                   {current.link}
-                  <ExternalLink size={10} />
                 </a>
+                {current.body && (
+                  <p className="text-xs text-muted-foreground mt-2 line-clamp-3">{current.body}</p>
+                )}
               </div>
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-destructive hover:text-destructive shrink-0"
-              disabled={clearing}
-              onClick={() => clearFeaturedNews()}
-            >
-              Clear
-            </Button>
+            <div className="flex items-start gap-2 shrink-0">
+              <a
+                href={current.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-700"
+              >
+                <ExternalLink size={16} />
+              </a>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-destructive hover:text-destructive"
+                disabled={clearing}
+                onClick={() => clearFeaturedNews()}
+              >
+                Clear
+              </Button>
+            </div>
           </div>
         )}
 
@@ -147,6 +163,17 @@ export function FeaturedNewsAdmin() {
               placeholder="https://…"
               value={form.imageUrl}
               onChange={field("imageUrl")}
+            />
+          </div>
+          <div className="space-y-1 sm:col-span-2">
+            <Label htmlFor="fn-body">Body Text</Label>
+            <textarea
+              id="fn-body"
+              placeholder="Brief description or summary…"
+              value={form.body}
+              onChange={field("body")}
+              className="w-full px-3 py-2 text-sm border border-input rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+              rows={3}
             />
           </div>
           {error && <p className="text-xs text-destructive">{error}</p>}

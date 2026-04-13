@@ -42,6 +42,14 @@ type User {
   status: UserStatus!
 }
 
+type PublicUser {
+  id: ID!
+  displayName: String!
+  role: Role!
+  clubRole: ClubRole!
+  createdAt: DateTime!
+}
+
 type ContributionByContinent {
   continent: String!
   count: Int!
@@ -146,6 +154,7 @@ type NewsItem {
   pubDate: DateTime!
   source: String
   imageUrl: String
+  body: String
 }
 
 type MemberStats {
@@ -159,6 +168,8 @@ type MemberStats {
 
 type Query {
   me: User
+  users: [PublicUser!]!
+  adminUsers: [User!]!
   myProfile: UserProfile
   events: [Event!]!
   event(id: ID!): Event
@@ -218,7 +229,7 @@ type Mutation {
   setMostWanted(name: String!, imageUrl: String, acquiredAt: Int!, description: String): FlagPreview!
   clearMostWanted: Boolean!
 
-  setFeaturedNews(title: String!, link: String!, imageUrl: String): NewsItem!
+  setFeaturedNews(title: String!, link: String!, imageUrl: String, body: String): NewsItem!
   clearFeaturedNews: Boolean!
 
   refresh: AuthPayload!

@@ -33,7 +33,7 @@ function getFlagDataMap(): Map<string, FlagMetadata> {
   const map = new Map<string, FlagMetadata>();
   try {
     const raw = readFileSync(
-      join(__dirname, "../../frontend/src/lib/flags_complete.json"),
+      join(__dirname, "../../frontend/public/flags_complete.json"),
       "utf-8"
     );
     const data = JSON.parse(raw);

@@ -18,6 +18,7 @@ const NEWS_ITEMS = gql`
       title
       link
       imageUrl
+      body
     }
   }
 `;
@@ -57,12 +58,7 @@ export function FlagNews() {
           <div className="divide-y flex flex-col h-full">
             {/* Featured News Item */}
             {featured && (
-              <a
-                href={featured.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex gap-3 p-4 hover:bg-accent transition-colors group flex-shrink-0 border-b"
-              >
+              <div className="flex gap-3 p-4 hover:bg-accent transition-colors group flex-shrink-0 border-b">
                 {featured.imageUrl && (
                   <img
                     src={featured.imageUrl}
@@ -71,12 +67,29 @@ export function FlagNews() {
                   />
                 )}
                 <div className="flex flex-col justify-center min-w-0 flex-1">
-                  <p className="text-sm font-semibold leading-snug line-clamp-3 group-hover:text-accent-foreground">
+                  <a
+                    href={featured.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm font-semibold leading-snug line-clamp-3 group-hover:text-accent-foreground"
+                  >
                     {featured.title}
-                  </p>
-                  <ExternalLink size={12} className="text-muted-foreground shrink-0 mt-2" />
+                  </a>
+                  {featured.body && (
+                    <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                      {featured.body}
+                    </p>
+                  )}
                 </div>
-              </a>
+                <a
+                  href={featured.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-muted-foreground hover:text-accent-foreground shrink-0 flex-none flex items-start pt-1"
+                >
+                  <ExternalLink size={14} />
+                </a>
+              </div>
             )}
 
             {/* Regular News Items */}

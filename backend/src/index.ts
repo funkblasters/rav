@@ -28,16 +28,30 @@ const httpServer = http.createServer(app);
 
 // ── CORS Configuration ──────────────────────────────────────────────────
 const allowedOrigins = [defaultFrontendUrl];
-if (process.env.ADDITIONAL_ORIGINS) {
-  allowedOrigins.push(...process.env.ADDITIONAL_ORIGINS.split(",").map(o => o.trim()));
+
+// Development-only origins (ngrok, localhost tunnels, etc.)
+if (process.env.NODE_ENV === "development" && process.env.DEV_ORIGINS) {
+  const devOrigins = process.env.DEV_ORIGINS.split(",").map(o => o.trim()).filter(o => o);
+  allowedOrigins.push(...devOrigins);
+  console.log(`✅ Dev mode: Added ${devOrigins.length} dev origin(s)`);
+} else if (process.env.DEV_ORIGINS && process.env.NODE_ENV === "production") {
+  console.error("⚠️ ERROR: DEV_ORIGINS cannot be used in production!");
+  throw new Error("DEV_ORIGINS is only allowed in development mode");
 }
+
+console.log(`📋 CORS allowed origins:`, allowedOrigins);
 
 app.use(cors({
   origin: (origin, callback) => {
+    // Log incoming requests for debugging
+    if (!allowedOrigins.includes(origin || "null")) {
+      console.warn(`⚠️ CORS blocked: "${origin}" not in allowed list:`, allowedOrigins);
+    }
+
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(new Error("CORS not allowed"));
+      callback(new Error(`CORS not allowed. Origin: ${origin}`));
     }
   },
   credentials: true,
@@ -64,24 +78,16 @@ app.use(cookieParser());
 app.use(express.json({ limit: "1mb" }));
 
 // ── Rate Limiting ──────────────────────────────────────────────────────
-const defaultLimiter = rateLimit({
+// Only rate limit file uploads (high-risk operation)
+// GraphQL auth mutations are rate limited at resolver level (in-memory)
+const fileUploadLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
-  message: "Too many requests from this IP, please try again later",
-  standardHeaders: true,
-  legacyHeaders: false,
-});
-
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // limit each IP to 5 requests per windowMs
-  message: "Too many authentication attempts, please try again later",
+  max: 5, // limit each IP to 5 file uploads per windowMs
+  message: "Too many file upload attempts, please try again later",
   skipSuccessfulRequests: false,
   standardHeaders: true,
   legacyHeaders: false,
 });
-
-app.use(defaultLimiter);
 
 // ── File upload endpoint for flag import (admin only) ──────────────────────
 // Validate Excel file format (must be ZIP with specific structure)
@@ -120,7 +126,7 @@ const upload = multer({
 
 app.post(
   "/api/import-flags",
-  authLimiter,
+  fileUploadLimiter,
   upload.single("file"),
   async (req: express.Request, res: express.Response) => {
     // Authenticate: require a valid ADMIN access token
@@ -176,8 +182,8 @@ const server = new ApolloServer({
 });
 await server.start();
 
-// Apply rate limiting to GraphQL
-app.use("/graphql", authLimiter, async (req, res) => {
+// GraphQL endpoint - rate limiting handled at resolver level
+app.use("/graphql", async (req, res) => {
   const headers = new HeaderMap();
   for (const [key, value] of Object.entries(req.headers)) {
     if (value !== undefined) {

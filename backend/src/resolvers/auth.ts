@@ -5,6 +5,7 @@ import type { Response } from "express";
 import type { AppContext, AuthUser } from "../context.js";
 import { prisma } from "../db.js";
 import { validateEmail, validateString, validatePassword, INPUT_LIMITS } from "../validation.js";
+import { checkRateLimit, recordFailedAttempt, recordSuccessfulAttempt } from "../rateLimit.js";
 
 function getJWTSecret(): string {
   const secret = process.env.JWT_SECRET;
@@ -76,6 +77,29 @@ export const authResolvers = {
     me: async (_: unknown, __: unknown, ctx: AppContext) => {
       if (!ctx.user) return null;
       return prisma.user.findUnique({ where: { id: ctx.user.id } });
+    },
+    users: async (_: unknown, __: unknown, ctx: AppContext) => {
+      if (!ctx.user) throw new Error("Unauthenticated");
+      // Return all users with public profile data (no emails, no status, no sensitive info)
+      const users = await prisma.user.findMany({
+        select: {
+          id: true,
+          displayName: true,
+          role: true,
+          clubRole: true,
+          createdAt: true,
+        },
+        orderBy: { displayName: "asc" },
+      });
+      return users;
+    },
+    adminUsers: async (_: unknown, __: unknown, ctx: AppContext) => {
+      if (!ctx.user) throw new Error("Unauthenticated");
+      if (ctx.user.role !== "ADMIN") throw new Error("Forbidden");
+      // Return all user data for admin panel (includes emails, status, etc.)
+      return prisma.user.findMany({
+        orderBy: { displayName: "asc" },
+      });
     },
   },
   Mutation: {
@@ -170,13 +194,28 @@ export const authResolvers = {
       // Validate inputs
       const normalizedEmail = validateEmail(args.email);
       validateString(args.password, INPUT_LIMITS.password, "password", true);
+
+      // Check rate limit (only blocks after 5 failed attempts)
+      try {
+        checkRateLimit(normalizedEmail);
+      } catch (err) {
+        throw err;
+      }
+
       const user = await prisma.user.findUnique({ where: { email: normalizedEmail } });
       // Use the same error for all failure cases to avoid leaking account existence
       if (!user || user.status !== "REGISTERED" || !user.passwordHash) {
+        recordFailedAttempt(normalizedEmail);
         throw new Error("Invalid credentials");
       }
       const valid = await bcrypt.compare(args.password, user.passwordHash);
-      if (!valid) throw new Error("Invalid credentials");
+      if (!valid) {
+        recordFailedAttempt(normalizedEmail);
+        throw new Error("Invalid credentials");
+      }
+
+      // Success - reset rate limit counter
+      recordSuccessfulAttempt(normalizedEmail);
 
       setRefreshCookie(ctx.res, signRefreshToken(user.id));
       return { token: signAccessToken({ id: user.id, email: normalizedEmail, role: user.role }), user };

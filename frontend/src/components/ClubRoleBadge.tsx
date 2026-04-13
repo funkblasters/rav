@@ -59,7 +59,7 @@ export function ClubRoleBadge({ role, collapsible = false }: { role: ClubRole | 
   // Collapsible version (mobile only)
   if (collapsible) {
     return (
-      <div ref={badgeRef} className="relative">
+      <div ref={badgeRef} className="relative" style={{ overflow: 'visible' }}>
         {/* Circle on mobile, full badge on desktop */}
         <button
           type="button"
@@ -74,10 +74,10 @@ export function ClubRoleBadge({ role, collapsible = false }: { role: ClubRole | 
           {label.charAt(0).toUpperCase()}
         </button>
 
-        {/* Expanded overlay on mobile */}
+        {/* Expanded overlay on mobile - positioned to the left */}
         {expanded && (
-          <div className="absolute bottom-full right-0 mb-2 z-50">
-            <Badge className={`${badgeColor} text-white border-transparent whitespace-nowrap`}>
+          <div className="absolute right-full top-1/2 -translate-y-1/2 mr-2 z-50 pointer-events-auto">
+            <Badge className={`${badgeColor} text-white border-transparent whitespace-nowrap shadow-lg`}>
               {label}
             </Badge>
           </div>
