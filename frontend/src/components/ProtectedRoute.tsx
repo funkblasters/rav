@@ -5,7 +5,7 @@ import { Progress } from "@/components/ui/progress";
 import { MaritimeFlags } from "@/components/MaritimeFlags";
 
 const COLD_START_MS = 30_000;
-const SHOW_AFTER_MS = 3_000;
+const SHOW_AFTER_MS = 1_000;
 
 export function ProtectedRoute({ children }: { children: ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();
