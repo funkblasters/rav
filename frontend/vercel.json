@@ -2,6 +2,7 @@
   "ignoreCommand": "git diff HEAD^ HEAD --quiet -- .",
   "routes": [
     { "src": "/graphql", "dest": "https://rav-backend-fjv0.onrender.com/graphql" },
+    { "src": "/api/(.*)", "dest": "https://rav-backend-fjv0.onrender.com/api/$1" },
     { "handle": "filesystem" },
     { "src": "/.*", "dest": "/index.html" }
   ]
