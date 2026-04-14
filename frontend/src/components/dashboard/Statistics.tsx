@@ -8,7 +8,6 @@ import { QueryStateRenderer } from "@/components/QueryStateRenderer";
 import { List, ListItem } from "@/components/ui/list";
 import { ClubRoleBadge } from "@/components/ClubRoleBadge";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
-import { useAuth } from "@/context/AuthContext";
 
 const TOP_MEMBERS = gql`
   query TopMembers {
@@ -125,7 +124,6 @@ function MemberFlagsSheet({
 export function Statistics() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { user } = useAuth();
   const { data, loading, error, refetch } = useQuery(TOP_MEMBERS);
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
 
@@ -138,11 +136,7 @@ export function Statistics() {
   }, [refetch]);
 
   const handleMemberClick = (member: Member) => {
-    if (member.id === user?.id) {
-      navigate("/stats");
-    } else {
-      setSelectedMember(member);
-    }
+    setSelectedMember(member);
   };
 
   return (
@@ -216,7 +210,7 @@ export function Statistics() {
               {/* CTA - only on mobile/tablet */}
               <div className="flex flex-col items-center justify-center mt-4 md:hidden">
                 <Button size="lg" onClick={() => navigate("/stats")}>
-                  {t("dashboard.viewStatistics")}
+                  View personal stats!
                 </Button>
               </div>
             </div>
