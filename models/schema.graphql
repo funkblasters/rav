@@ -181,6 +181,7 @@ type Query {
   lastFlag: FlagPreview
   mostWantedFlag: FlagPreview
   myFlags: [Flag!]!
+  flagsByUser(userId: ID!): [Flag!]!
   newsItems(limit: Int): [NewsItem!]!
   featuredNewsItem: NewsItem
   topMembers(limit: Int): [MemberStats!]!

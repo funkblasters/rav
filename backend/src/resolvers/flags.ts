@@ -67,6 +67,16 @@ export const flagResolvers = {
         orderBy: { acquiredAt: "desc" },
       });
     },
+    flagsByUser: async (_: unknown, args: { userId: string }, ctx: AppContext) => {
+      if (!ctx.user) throw new Error("Unauthenticated");
+      const user = await prisma.user.findUnique({ where: { id: args.userId }, select: { id: true } });
+      if (!user) throw new Error("User not found");
+      return prisma.flag.findMany({
+        where: { isPublic: true, contributors: { some: { id: args.userId } } },
+        include: { contributors: true },
+        orderBy: { acquiredAt: "desc" },
+      });
+    },
   },
   Mutation: {
     addFlag: async (
