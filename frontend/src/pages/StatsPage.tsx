@@ -10,7 +10,7 @@ export function StatsPage() {
   return (
     <div className="flex flex-col h-screen overflow-hidden">
       {/* Page Title */}
-      <div className="px-4 py-6 shrink-0">
+      <div className="px-4 pb-4 shrink-0">
         <h1 className="text-2xl font-bold">{t("stats.title")}</h1>
         <p className="text-muted-foreground text-sm">{t("stats.subtitle")}</p>
       </div>

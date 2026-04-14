@@ -4,6 +4,7 @@ import { BarChart2, Flag, Settings } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { UserPanel } from "@/components/UserPanel";
 import { AddFlagButton } from "@/components/AddFlagButton";
+import { MaritimeFlags } from "@/components/MaritimeFlags";
 
 export function Layout() {
   const { t } = useTranslation();
@@ -65,6 +66,9 @@ export function Layout() {
           </nav>
 
           <div className="flex items-center gap-2">
+            <div className="hidden md:flex">
+              <MaritimeFlags text="GRAZIEAAL" size="sm" />
+            </div>
             {user && <UserPanel />}
           </div>
         </div>

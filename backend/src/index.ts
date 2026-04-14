@@ -184,6 +184,9 @@ await server.start();
 
 // GraphQL endpoint - rate limiting handled at resolver level
 app.use("/graphql", async (req, res) => {
+  if (process.env.NODE_ENV !== "production" && process.env.DEV_DELAY_MS) {
+    await new Promise((r) => setTimeout(r, Number(process.env.DEV_DELAY_MS)));
+  }
   const headers = new HeaderMap();
   for (const [key, value] of Object.entries(req.headers)) {
     if (value !== undefined) {

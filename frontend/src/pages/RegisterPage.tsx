@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { MaritimeFlags } from "@/components/MaritimeFlags";
 
 const REGISTER = gql`
   mutation Register($email: String!, $password: String!, $displayName: String!) {
@@ -46,6 +47,7 @@ export function RegisterPage() {
         <CardHeader>
           <CardTitle className="text-2xl">RAV Flag Club</CardTitle>
           <p className="text-sm text-muted-foreground mb-2">Reale Associazione Vessillologica</p>
+          <MaritimeFlags text="GRAZIEAAL" size="sm" />
           <CardDescription>{t("auth.register")}</CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>

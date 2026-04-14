@@ -112,15 +112,15 @@ export function DashboardPage() {
   return (
     <div className="space-y-8">
       {/* Latest Addition and Statistics — side by side, half width each */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-auto sm:h-96 md:h-[32rem] lg:h-[28rem]">
-        <LastFlagAdded />
-        <Statistics />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="h-80 sm:h-96 lg:h-[28rem]"><LastFlagAdded /></div>
+        <div className="h-80 sm:h-96 lg:h-[28rem]"><Statistics /></div>
       </div>
 
       {/* Most Wanted and News — stack on mobile, side by side on desktop */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-auto sm:h-96 md:h-[32rem] lg:h-[28rem]">
-        <MostWantedFlag />
-        <FlagNews />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="h-80 sm:h-96 lg:h-[28rem]"><MostWantedFlag /></div>
+        <div className="h-80 sm:h-96 lg:h-[28rem]"><FlagNews /></div>
       </div>
 
       {/* Country map — full width, taller */}
