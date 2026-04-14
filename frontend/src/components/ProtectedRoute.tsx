@@ -6,22 +6,38 @@ import { MaritimeFlags } from "@/components/MaritimeFlags";
 
 const COLD_START_MS = 30_000;
 const SHOW_AFTER_MS = 1_000;
+const COPY_INTERVAL_MS = 3_000;
+
+const LOADING_MESSAGES = [
+  "The server is starting up, please wait...",
+  "Forging hammer and sickle...",
+  "Painting tricolors...",
+  "Writing shahada...",
+  "Retrieving Scandinavian cross...",
+  "Seeing flag of Scotland in the sky...",
+  "Writing Ordem e Progresso...",
+];
 
 export function ProtectedRoute({ children }: { children: ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();
   const [slowLoad, setSlowLoad] = useState(false);
   const [progress, setProgress] = useState(0);
   const [letterCount, setLetterCount] = useState(1);
+  const [messageIndex, setMessageIndex] = useState(0);
 
   useEffect(() => {
     if (!isLoading) return;
 
     let letterInterval: ReturnType<typeof setInterval>;
+    let messageInterval: ReturnType<typeof setInterval>;
     const showTimer = setTimeout(() => {
       setSlowLoad(true);
       letterInterval = setInterval(() => {
         setLetterCount((c) => (c % 7) + 1);
       }, 1000);
+      messageInterval = setInterval(() => {
+        setMessageIndex((i) => (i + 1) % LOADING_MESSAGES.length);
+      }, COPY_INTERVAL_MS);
     }, SHOW_AFTER_MS);
 
     const startTime = Date.now();
@@ -35,6 +51,7 @@ export function ProtectedRoute({ children }: { children: ReactNode }) {
       clearTimeout(showTimer);
       clearInterval(interval);
       clearInterval(letterInterval);
+      clearInterval(messageInterval);
     };
   }, [isLoading]);
 
@@ -44,7 +61,7 @@ export function ProtectedRoute({ children }: { children: ReactNode }) {
       <div className="flex min-h-screen items-center justify-center px-6">
         <div className="w-full max-w-sm space-y-4">
           <p className="text-center text-sm text-muted-foreground">
-            Il server si sta avviando, attendere...
+            {LOADING_MESSAGES[messageIndex]}
           </p>
           <Progress value={progress} className="h-2" />
           <div className="flex justify-center">
