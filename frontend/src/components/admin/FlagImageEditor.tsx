@@ -33,12 +33,14 @@ const GET_ALL_FLAGS = gql`
 `;
 
 const UPDATE_FLAG = gql`
-  mutation UpdateFlag($id: ID!, $name: String, $imageUrl: String, $countryCode: String) {
-    updateFlag(id: $id, name: $name, imageUrl: $imageUrl, countryCode: $countryCode) {
+  mutation UpdateFlag($id: ID!, $name: String, $imageUrl: String, $countryCode: String, $subdivisionCode: String, $continent: String) {
+    updateFlag(id: $id, name: $name, imageUrl: $imageUrl, countryCode: $countryCode, subdivisionCode: $subdivisionCode, continent: $continent) {
       id
       name
       imageUrl
       countryCode
+      subdivisionCode
+      continent
     }
   }
 `;
@@ -48,6 +50,8 @@ function FlagImageRow({ flag }: { flag: Flag }) {
   const [nameInput, setNameInput] = useState(flag.name);
   const [urlInput, setUrlInput] = useState(flag.imageUrl ?? "");
   const [countryCodeInput, setCountryCodeInput] = useState(flag.countryCode);
+  const [subdivisionCodeInput, setSubdivisionCodeInput] = useState(flag.subdivisionCode ?? "");
+  const [continentInput, setContinentInput] = useState(flag.continent ?? "");
   const [previewUrl, setPreviewUrl] = useState(flag.imageUrl ?? "");
   const [error, setError] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -71,6 +75,8 @@ function FlagImageRow({ flag }: { flag: Flag }) {
         name: nameInput.trim() || flag.name,
         imageUrl: urlInput.trim() || null,
         countryCode: countryCodeInput.trim() || flag.countryCode,
+        subdivisionCode: subdivisionCodeInput.trim() || null,
+        continent: continentInput.trim() || null,
       },
     });
   };
@@ -80,6 +86,8 @@ function FlagImageRow({ flag }: { flag: Flag }) {
     setNameInput(flag.name);
     setUrlInput(flag.imageUrl ?? "");
     setCountryCodeInput(flag.countryCode);
+    setSubdivisionCodeInput(flag.subdivisionCode ?? "");
+    setContinentInput(flag.continent ?? "");
     setPreviewUrl(flag.imageUrl ?? "");
     setError(null);
   };
@@ -141,6 +149,22 @@ function FlagImageRow({ flag }: { flag: Flag }) {
                 value={countryCodeInput}
                 onChange={(e) => setCountryCodeInput(e.target.value)}
                 maxLength={2}
+              />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Codice Suddivisione</Label>
+              <Input
+                placeholder="es. IT-LOM, US-CA"
+                value={subdivisionCodeInput}
+                onChange={(e) => setSubdivisionCodeInput(e.target.value)}
+              />
+            </div>
+            <div className="space-y-1">
+              <Label className="text-xs">Continente</Label>
+              <Input
+                placeholder="es. Europe, Asia, Africa…"
+                value={continentInput}
+                onChange={(e) => setContinentInput(e.target.value)}
               />
             </div>
             <div className="space-y-1">
