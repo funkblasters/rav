@@ -11,6 +11,8 @@ import { typeDefs } from "./schema.js";
 import { resolvers } from "./resolvers/index.js";
 import { buildContext } from "./context.js";
 import { importFlags } from "./import.js";
+import { prisma } from "./db.js";
+import ExcelJS from "exceljs";
 
 const port = Number(process.env.PORT ?? 4000);
 const frontendUrl = process.env.FRONTEND_URL;
@@ -172,6 +174,68 @@ app.post(
       const message = err instanceof Error ? err.message : "Import failed";
       res.status(400).json({ error: message });
     }
+  }
+);
+
+// ── Export flags endpoint (admin only) ────────────────────────────────────────
+app.get(
+  "/api/export-flags",
+  async (req: express.Request, res: express.Response) => {
+    const auth = (req.headers["authorization"] as string) ?? "";
+    if (!auth.startsWith("Bearer ")) {
+      res.status(401).json({ error: "Unauthenticated" });
+      return;
+    }
+
+    let caller: { id: string; role: string };
+    try {
+      const secret = process.env.JWT_SECRET;
+      if (!secret) { res.status(500).json({ error: "Server configuration error" }); return; }
+      caller = jwt.verify(auth.slice(7), secret) as { id: string; role: string };
+    } catch {
+      res.status(401).json({ error: "Invalid or expired token" });
+      return;
+    }
+
+    if (caller.role !== "ADMIN") {
+      res.status(403).json({ error: "Forbidden" });
+      return;
+    }
+
+    const flags = await prisma.flag.findMany({
+      include: { contributors: { select: { displayName: true } } },
+      orderBy: { acquiredAt: "asc" },
+    });
+
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet("Flags");
+
+    sheet.columns = [
+      { header: "flag",         key: "flag",         width: 40 },
+      { header: "date",         key: "date",         width: 12 },
+      { header: "contributors", key: "contributors", width: 40 },
+      { header: "continent",    key: "continent",    width: 16 },
+      { header: "is_variant",   key: "is_variant",   width: 12 },
+    ];
+
+    for (const flag of flags) {
+      const date = flag.acquiredAt.toISOString().slice(0, 10); // YYYY-MM-DD
+      const contributors = flag.contributors.map((c) => c.displayName).join(", ");
+      const isVariant = flag.subdivisionCode != null ? "TRUE" : "FALSE";
+      sheet.addRow({
+        flag: flag.name,
+        date,
+        contributors,
+        continent: flag.continent ?? "",
+        is_variant: isVariant,
+      });
+    }
+
+    const buffer = await workbook.xlsx.writeBuffer();
+    const filename = `rav-flags-${new Date().toISOString().slice(0, 10)}.xlsx`;
+    res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+    res.send(Buffer.from(buffer));
   }
 );
 

@@ -176,6 +176,10 @@ export function AdminPage() {
   const [importResult, setImportResult] = useState<ImportFlagsResult | null>(null);
   const [importError, setImportError] = useState<string | null>(null);
 
+  // export
+  const [exportLoading, setExportLoading] = useState(false);
+  const [exportError, setExportError] = useState<string | null>(null);
+
   const { data, loading, refetch } = useQuery(GET_PANEL);
 
   const [addInvite, { loading: adding }] = useMutation(ADD_INVITE, {
@@ -302,6 +306,36 @@ export function AdminPage() {
     }
   };
 
+  const handleExport = async () => {
+    const token = tokenStore.get();
+    if (!token) { setExportError("Not authenticated"); return; }
+
+    setExportLoading(true);
+    setExportError(null);
+
+    try {
+      const res = await fetch("/api/export-flags", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) {
+        const json = await res.json().catch(() => ({}));
+        setExportError((json as { error?: string }).error ?? "Export failed");
+        return;
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `rav-flags-${new Date().toISOString().slice(0, 10)}.xlsx`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      setExportError("Network error — could not reach the server");
+    } finally {
+      setExportLoading(false);
+    }
+  };
+
   // ── Render ───────────────────────────────────────────────────────────────────
   return (
     <div className="pb-6 space-y-6">
@@ -321,7 +355,7 @@ export function AdminPage() {
             )}
           </TabsTrigger>
           <TabsTrigger value="import">
-            Import
+            Files
             {failedImports.length > 0 && (
               <span className="ml-1.5 text-xs bg-destructive/20 text-destructive rounded-full px-1.5">
                 {failedImports.length}
@@ -630,6 +664,23 @@ export function AdminPage() {
                   )}
                 </div>
               )}
+            </CardContent>
+          </Card>
+
+          {/* Export card */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Export Flags</CardTitle>
+              <CardDescription>
+                Download all flag data as an <span className="font-mono text-xs">.xlsx</span> file,
+                using the same column format as the import template.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {exportError && <p className="text-sm text-destructive">{exportError}</p>}
+              <Button onClick={handleExport} disabled={exportLoading} variant="outline">
+                {exportLoading ? "Exporting…" : "Download .xlsx"}
+              </Button>
             </CardContent>
           </Card>
 
