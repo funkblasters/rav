@@ -6,6 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 
+interface Contributor {
+  id: string;
+  displayName: string;
+}
+
 interface Flag {
   id: string;
   name: string;
@@ -14,6 +19,7 @@ interface Flag {
   subdivisionCode: string | null;
   continent: string | null;
   addedBy: { displayName: string };
+  contributors: Contributor[];
 }
 
 const GET_ALL_FLAGS = gql`
@@ -28,24 +34,41 @@ const GET_ALL_FLAGS = gql`
       addedBy {
         displayName
       }
+      contributors {
+        id
+        displayName
+      }
+    }
+  }
+`;
+
+const GET_USERS = gql`
+  query GetUsersForFlagEditor {
+    users {
+      id
+      displayName
     }
   }
 `;
 
 const UPDATE_FLAG = gql`
-  mutation UpdateFlag($id: ID!, $name: String, $imageUrl: String, $countryCode: String, $subdivisionCode: String, $continent: String) {
-    updateFlag(id: $id, name: $name, imageUrl: $imageUrl, countryCode: $countryCode, subdivisionCode: $subdivisionCode, continent: $continent) {
+  mutation UpdateFlag($id: ID!, $name: String, $imageUrl: String, $countryCode: String, $subdivisionCode: String, $continent: String, $contributorIds: [ID!]) {
+    updateFlag(id: $id, name: $name, imageUrl: $imageUrl, countryCode: $countryCode, subdivisionCode: $subdivisionCode, continent: $continent, contributorIds: $contributorIds) {
       id
       name
       imageUrl
       countryCode
       subdivisionCode
       continent
+      contributors {
+        id
+        displayName
+      }
     }
   }
 `;
 
-function FlagImageRow({ flag }: { flag: Flag }) {
+function FlagImageRow({ flag, allUsers }: { flag: Flag; allUsers: Contributor[] }) {
   const [editing, setEditing] = useState(false);
   const [nameInput, setNameInput] = useState(flag.name);
   const [urlInput, setUrlInput] = useState(flag.imageUrl ?? "");
@@ -53,6 +76,9 @@ function FlagImageRow({ flag }: { flag: Flag }) {
   const [subdivisionCodeInput, setSubdivisionCodeInput] = useState(flag.subdivisionCode ?? "");
   const [continentInput, setContinentInput] = useState(flag.continent ?? "");
   const [previewUrl, setPreviewUrl] = useState(flag.imageUrl ?? "");
+  const [selectedContributorIds, setSelectedContributorIds] = useState<string[]>(
+    flag.contributors.map((c) => c.id)
+  );
   const [error, setError] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -68,7 +94,17 @@ function FlagImageRow({ flag }: { flag: Flag }) {
     debounceRef.current = setTimeout(() => setPreviewUrl(val), 400);
   };
 
+  const toggleContributor = (id: string) => {
+    setSelectedContributorIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
+  };
+
   const handleSave = () => {
+    if (selectedContributorIds.length === 0) {
+      setError("Almeno un contributore è richiesto");
+      return;
+    }
     updateFlag({
       variables: {
         id: flag.id,
@@ -77,6 +113,7 @@ function FlagImageRow({ flag }: { flag: Flag }) {
         countryCode: countryCodeInput.trim() || flag.countryCode,
         subdivisionCode: subdivisionCodeInput.trim() || null,
         continent: continentInput.trim() || null,
+        contributorIds: selectedContributorIds,
       },
     });
   };
@@ -89,6 +126,7 @@ function FlagImageRow({ flag }: { flag: Flag }) {
     setSubdivisionCodeInput(flag.subdivisionCode ?? "");
     setContinentInput(flag.continent ?? "");
     setPreviewUrl(flag.imageUrl ?? "");
+    setSelectedContributorIds(flag.contributors.map((c) => c.id));
     setError(null);
   };
 
@@ -115,7 +153,7 @@ function FlagImageRow({ flag }: { flag: Flag }) {
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium truncate">{flag.name}</p>
           <p className="text-xs text-muted-foreground truncate">
-            {flag.addedBy.displayName}
+            {flag.contributors.map((c) => c.displayName).join(", ")}
             {flag.continent && ` · ${flag.continent}`}
           </p>
         </div>
@@ -168,6 +206,31 @@ function FlagImageRow({ flag }: { flag: Flag }) {
               />
             </div>
             <div className="space-y-1">
+              <Label className="text-xs">Contributori</Label>
+              <div className="flex flex-wrap gap-1.5 p-2 border rounded-md bg-muted/30">
+                {allUsers.map((user) => {
+                  const selected = selectedContributorIds.includes(user.id);
+                  return (
+                    <button
+                      key={user.id}
+                      type="button"
+                      onClick={() => toggleContributor(user.id)}
+                      className={`px-2 py-0.5 rounded-full text-xs border transition-colors ${
+                        selected
+                          ? "bg-primary text-primary-foreground border-primary"
+                          : "bg-background text-muted-foreground border-border hover:border-primary/50"
+                      }`}
+                    >
+                      {user.displayName}
+                    </button>
+                  );
+                })}
+              </div>
+              {selectedContributorIds.length === 0 && (
+                <p className="text-xs text-destructive">Seleziona almeno un contributore</p>
+              )}
+            </div>
+            <div className="space-y-1">
               <Label className="text-xs">URL immagine</Label>
               <Input
                 placeholder="https://..."
@@ -214,8 +277,10 @@ function FlagImageRow({ flag }: { flag: Flag }) {
 export function FlagImageEditor() {
   const [search, setSearch] = useState("");
   const { data, loading } = useQuery(GET_ALL_FLAGS);
+  const { data: usersData } = useQuery(GET_USERS);
 
   const flags: Flag[] = data?.allFlags ?? [];
+  const allUsers: Contributor[] = usersData?.users ?? [];
 
   const filtered = search.trim().length >= 2
     ? flags.filter((f) =>
@@ -261,7 +326,7 @@ export function FlagImageEditor() {
         {filtered.length > 0 && (
           <div className="space-y-2 max-h-[480px] overflow-y-auto pr-1">
             {filtered.map((flag) => (
-              <FlagImageRow key={flag.id} flag={flag} />
+              <FlagImageRow key={flag.id} flag={flag} allUsers={allUsers} />
             ))}
           </div>
         )}

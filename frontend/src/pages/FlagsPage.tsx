@@ -9,16 +9,24 @@ const GET_FLAGS = gql`
       id
       name
       imageUrl
-      countryCode
+      contributors {
+        id
+        displayName
+      }
     }
   }
 `;
+
+interface Contributor {
+  id: string;
+  displayName: string;
+}
 
 interface Flag {
   id: string;
   name: string;
   imageUrl?: string;
-  countryCode: string;
+  contributors: Contributor[];
 }
 
 export function FlagsPage() {
@@ -111,8 +119,9 @@ export function FlagsPage() {
         />
       </div>
 
+      <div ref={containerRef}>
       {loading ? (
-        <div ref={containerRef} className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
+        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
           {Array.from({ length: 24 }).map((_, i) => (
             <div key={i} className="aspect-[3/2] rounded-md bg-muted animate-pulse" />
           ))}
@@ -122,7 +131,7 @@ export function FlagsPage() {
           {searchQuery ? "No flags match your search." : t("flags.noFlags")}
         </p>
       ) : proportional ? (
-        <div ref={containerRef} className="flex flex-wrap gap-3">
+        <div className="flex flex-wrap gap-3">
           {filteredFlags.map((flag) => (
             <div
               key={flag.id}
@@ -153,15 +162,17 @@ export function FlagsPage() {
                 <span className="text-white text-[10px] font-medium text-center leading-tight line-clamp-2">
                   {flag.name}
                 </span>
-                <span className="text-white text-[8px] text-center leading-tight mt-0.5">
-                  {flag.countryCode}
-                </span>
+                {flag.contributors.length > 0 && (
+                  <span className="text-white text-[10px] text-center leading-tight mt-0.5">
+                    {flag.contributors.map((c) => c.displayName).join(", ")}
+                  </span>
+                )}
               </div>
             </div>
           ))}
         </div>
       ) : (
-        <div ref={containerRef} className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
+        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
           {filteredFlags.map((flag) => (
             <div
               key={flag.id}
@@ -191,14 +202,17 @@ export function FlagsPage() {
                 <span className="text-white text-[10px] font-medium text-center leading-tight line-clamp-2">
                   {flag.name}
                 </span>
-                <span className="text-white text-[8px] text-center leading-tight mt-0.5">
-                  {flag.countryCode}
-                </span>
+                {flag.contributors.length > 0 && (
+                  <span className="text-white text-[10px] text-center leading-tight mt-0.5">
+                    {flag.contributors.map((c) => c.displayName).join(", ")}
+                  </span>
+                )}
               </div>
             </div>
           ))}
         </div>
       )}
+      </div>
     </div>
   );
 }

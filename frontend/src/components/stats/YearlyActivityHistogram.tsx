@@ -108,6 +108,7 @@ export function YearlyActivityHistogram() {
               <YAxis
                 tick={{ fontSize: 12 }}
                 className="text-muted-foreground"
+                allowDecimals={false}
               />
               <ChartTooltip
                 cursor={false}

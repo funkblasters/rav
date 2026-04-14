@@ -186,19 +186,35 @@ export const flagResolvers = {
     },
     updateFlag: async (
       _: unknown,
-      args: { id: string; name?: string; imageUrl?: string; countryCode?: string; subdivisionCode?: string; continent?: string },
+      args: { id: string; name?: string; imageUrl?: string; countryCode?: string; subdivisionCode?: string; continent?: string; contributorIds?: string[] },
       ctx: AppContext
     ) => {
       if (ctx.user?.role !== "ADMIN") throw new Error("Forbidden");
       const flag = await prisma.flag.findUnique({ where: { id: args.id } });
       if (!flag) throw new Error("Flag not found");
 
-      const updateData: { name?: string; imageUrl?: string | null; countryCode?: string; subdivisionCode?: string | null; continent?: string | null } = {};
+      const updateData: {
+        name?: string;
+        imageUrl?: string | null;
+        countryCode?: string;
+        subdivisionCode?: string | null;
+        continent?: string | null;
+        contributors?: { set: { id: string }[] };
+      } = {};
       if (args.name !== undefined) updateData.name = args.name;
       if (args.imageUrl !== undefined) updateData.imageUrl = args.imageUrl ?? null;
       if (args.countryCode !== undefined) updateData.countryCode = args.countryCode;
       if (args.subdivisionCode !== undefined) updateData.subdivisionCode = args.subdivisionCode || null;
       if (args.continent !== undefined) updateData.continent = args.continent || null;
+
+      if (args.contributorIds !== undefined) {
+        if (args.contributorIds.length === 0) throw new Error("contributorIds must not be empty");
+        if (args.contributorIds.length > 50) throw new Error("Too many contributors");
+        const uniqueIds = [...new Set(args.contributorIds)];
+        const found = await prisma.user.findMany({ where: { id: { in: uniqueIds } }, select: { id: true } });
+        if (found.length !== uniqueIds.length) throw new Error("One or more contributor IDs not found");
+        updateData.contributors = { set: uniqueIds.map((id) => ({ id })) };
+      }
 
       return prisma.flag.update({
         where: { id: args.id },

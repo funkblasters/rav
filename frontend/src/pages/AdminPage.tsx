@@ -703,9 +703,11 @@ export function AdminPage() {
 
         {/* ── FLAGS TAB ── */}
         <TabsContent value="flags" className="mt-4">
-          <div className="space-y-6 max-w-xl">
-            <MostWantedAdmin />
-            <FeaturedNewsAdmin />
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <MostWantedAdmin />
+              <FeaturedNewsAdmin />
+            </div>
             <FlagImageEditor />
           </div>
         </TabsContent>
