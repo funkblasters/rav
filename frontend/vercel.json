@@ -1,6 +1,7 @@
 {
   "ignoreCommand": "git diff HEAD^ HEAD --quiet -- frontend/",
   "routes": [
+    { "src": "/graphql", "dest": "https://rav-backend-fjv0.onrender.com/graphql" },
     { "handle": "filesystem" },
     { "src": "/.*", "dest": "/index.html" }
   ]
