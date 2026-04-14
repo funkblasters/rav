@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { LastFlagAdded } from "@/components/dashboard/LastFlagAdded";
 import { MostWantedFlag } from "@/components/dashboard/MostWantedFlag";
 import { FlagNews } from "@/components/dashboard/FlagNews";
-import { Statistics } from "@/components/dashboard/Statistics";
+import { Rankings } from "@/components/dashboard/Rankings";
 import { DashboardCountryMap } from "@/components/dashboard/DashboardCountryMap";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { useTranslation } from "react-i18next";
@@ -114,7 +114,7 @@ export function DashboardPage() {
       {/* Latest Addition and Statistics — side by side, half width each */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="h-80 sm:h-96 lg:h-[28rem]"><LastFlagAdded /></div>
-        <div className="h-[26rem] sm:h-96 lg:h-[28rem]"><Statistics /></div>
+        <div className="h-[26rem] sm:h-96 lg:h-[28rem]"><Rankings /></div>
       </div>
 
       {/* Most Wanted and News — stack on mobile, side by side on desktop */}

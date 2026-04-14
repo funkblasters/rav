@@ -87,28 +87,27 @@ export function YearlyActivityHistogram() {
           {totalFlags} {t("stats.flagsTotal")}
         </CardDescription>
       </CardHeader>
-      <CardContent className="flex-1 min-h-0">
+      <CardContent className="flex-1 min-h-0 px-2 pb-2">
         <ChartContainer config={chartConfig} className="h-full w-full">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={chartData}
-              margin={{ top: 5, right: 10, left: 0, bottom: 30 }}
+              margin={{ top: 5, right: 5, left: 0, bottom: 5 }}
             >
               <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
               <XAxis
                 dataKey="year"
-                tick={{ fontSize: 11 }}
+                tick={{ fontSize: 10 }}
                 className="text-muted-foreground"
                 type="category"
                 interval={Math.max(0, Math.floor(chartData.length / 8))}
-                angle={-45}
-                textAnchor="end"
-                height={40}
+                height={20}
               />
               <YAxis
                 tick={{ fontSize: 12 }}
                 className="text-muted-foreground"
                 allowDecimals={false}
+                width={28}
               />
               <ChartTooltip
                 cursor={false}

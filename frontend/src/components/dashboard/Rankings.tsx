@@ -121,7 +121,7 @@ function MemberFlagsSheet({
   );
 }
 
-export function Statistics() {
+export function Rankings() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { data, loading, error, refetch } = useQuery(TOP_MEMBERS);
@@ -143,7 +143,7 @@ export function Statistics() {
     <>
       <Card className="h-full flex flex-col overflow-hidden">
         <CardHeader className="pb-2 shrink-0">
-          <CardTitle className="text-base font-semibold">Stats</CardTitle>
+          <CardTitle className="text-base font-semibold">Ranking</CardTitle>
           <CardDescription>{t("dashboard.statisticsSubtitle")}</CardDescription>
         </CardHeader>
         <CardContent className="p-0 flex-1 min-h-0 overflow-hidden flex flex-col">

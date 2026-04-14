@@ -65,8 +65,8 @@ export function ContinentsPieChart() {
           {continents.reduce((sum, c) => sum + c.count, 0)} {t("stats.flagsTotal")}
         </CardDescription>
       </CardHeader>
-      <CardContent className="flex-1 min-h-0">
-        <ChartContainer config={chartConfig} className="h-full w-full">
+      <CardContent className="flex-1 min-h-0 flex flex-col gap-2 px-2 pb-2">
+        <ChartContainer config={chartConfig} className="flex-1 min-h-0 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <ChartTooltip
@@ -90,6 +90,17 @@ export function ContinentsPieChart() {
             </PieChart>
           </ResponsiveContainer>
         </ChartContainer>
+        <div className="flex flex-wrap justify-center gap-x-3 gap-y-1 shrink-0">
+          {continents.map((c, index) => (
+            <div key={c.continent} className="flex items-center gap-1">
+              <span
+                className="inline-block h-2 w-2 rounded-full shrink-0"
+                style={{ backgroundColor: COLORS[index % COLORS.length] }}
+              />
+              <span className="text-xs text-muted-foreground">{c.continent}</span>
+            </div>
+          ))}
+        </div>
       </CardContent>
     </Card>
   );
