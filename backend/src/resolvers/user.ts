@@ -168,6 +168,7 @@ export const userResolvers = {
         role: user.role,
         clubRole: user.clubRole,
         cardNumber: null,
+        avatarUrl: user.avatarUrl,
         createdAt: user.createdAt,
         flagsCount,
         lastContribution,
@@ -214,6 +215,55 @@ export const userResolvers = {
         role: user.role,
         clubRole: user.clubRole,
         cardNumber: user.cardNumber,
+        avatarUrl: user.avatarUrl,
+        createdAt: user.createdAt,
+        flagsCount,
+        lastContribution,
+        contributionsByContinent,
+      };
+    },
+  },
+
+  Mutation: {
+    updateMyAvatar: async (_: unknown, args: { avatarUrl?: string | null }, ctx: AppContext) => {
+      if (!ctx.user) throw new Error("Unauthenticated");
+
+      const user = await prisma.user.update({
+        where: { id: ctx.user.id },
+        data: { avatarUrl: args.avatarUrl ?? null },
+      });
+
+      const allFlags = await prisma.flag.findMany({
+        where: { contributors: { some: { id: user.id } } },
+      });
+
+      const flagsCount = allFlags.length;
+      const lastContribution =
+        allFlags.length > 0
+          ? allFlags.reduce((latest, flag) =>
+              flag.acquiredAt > latest.acquiredAt ? flag : latest
+            ).acquiredAt
+          : null;
+
+      const continentMap = new Map<string, number>();
+      allFlags.forEach((flag) => {
+        const continent = flag.continent ?? getContinentFromFlag(flag.countryCode, flag.subdivisionCode);
+        continentMap.set(continent, (continentMap.get(continent) ?? 0) + 1);
+      });
+
+      const contributionsByContinent = Array.from(continentMap.entries())
+        .filter(([continent]) => continent !== "Other")
+        .map(([continent, count]) => ({ continent, count }))
+        .sort((a, b) => b.count - a.count);
+
+      return {
+        id: user.id,
+        displayName: user.displayName,
+        email: user.email,
+        role: user.role,
+        clubRole: user.clubRole,
+        cardNumber: user.cardNumber,
+        avatarUrl: user.avatarUrl,
         createdAt: user.createdAt,
         flagsCount,
         lastContribution,

@@ -49,6 +49,7 @@ export const resolvers = {
     ...newsResolvers.Mutation, // includes setFeaturedNews + clearFeaturedNews
     ...adminResolvers.Mutation,
     ...failedImportsResolvers.Mutation,
+    ...userResolvers.Mutation,
   },
   Event: eventResolvers.Event,
   Flag: flagResolvers.Flag,

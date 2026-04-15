@@ -10,6 +10,7 @@ import { List, ListItem } from "@/components/ui/list";
 import { ClubRoleBadge } from "@/components/ClubRoleBadge";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { useAuth } from "@/context/AuthContext";
+import { AvatarDisplay } from "@/components/UserPanel";
 
 const TOP_MEMBERS = gql`
   query TopMembers {
@@ -18,6 +19,7 @@ const TOP_MEMBERS = gql`
       displayName
       clubRole
       flagsCount
+      avatarUrl
     }
   }
 `;
@@ -38,6 +40,7 @@ interface Member {
   displayName: string;
   clubRole: string;
   flagsCount: number;
+  avatarUrl?: string | null;
 }
 
 function MemberFlagsSheet({
@@ -172,7 +175,7 @@ export function Rankings() {
                       onClick={() => handleMemberClick(member)}
                     >
                       {/* Rank */}
-                      <span className={`flex-shrink-0 w-8 text-center text-xl font-bold ${
+                      <span className={`flex-shrink-0 w-6 text-center text-sm font-bold ${
                         idx === 0 ? "text-yellow-500" :
                         idx === 1 ? "text-slate-400" :
                         idx === 2 ? "text-amber-700" :
@@ -180,6 +183,15 @@ export function Rankings() {
                       }`}>
                         #{idx + 1}
                       </span>
+
+                      {/* Avatar */}
+                      <div className="shrink-0">
+                        <AvatarDisplay
+                          displayName={member.displayName}
+                          avatarUrl={member.avatarUrl}
+                          size="xs"
+                        />
+                      </div>
 
                       {/* Name + club role */}
                       <div className="flex-1 min-w-0 flex items-center gap-2">

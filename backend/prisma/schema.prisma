@@ -20,6 +20,7 @@ model User {
   role         Role       @default(MEMBER)
   clubRole     ClubRole   @default(ORDINARY_ASSOCIATE)
   cardNumber   String?    @unique
+  avatarUrl    String?
   createdAt    DateTime   @default(now())
 
   flagsAdded       Flag[]  @relation("AddedBy")

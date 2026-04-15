@@ -2,60 +2,69 @@ import { useParams } from "react-router-dom";
 import { useQuery, gql } from "@apollo/client";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/context/AuthContext";
+import { AvatarDisplay } from "@/components/UserPanel";
 import { MyFlagsList } from "@/components/stats/MyFlagsList";
 import { ContinentsPieChart } from "@/components/stats/ContinentsPieChart";
 import { YearlyActivityHistogram } from "@/components/stats/YearlyActivityHistogram";
 import { UserFlagsChoropleth } from "@/components/stats/UserFlagsChoropleth";
 
-const USER_DISPLAY_NAME = gql`
-  query UserDisplayName($userId: ID!) {
+const USER_PROFILE_HEADER = gql`
+  query UserProfileHeader($userId: ID!) {
     userProfile(userId: $userId) {
       id
       displayName
+      avatarUrl
     }
   }
 `;
 
-const AVATAR_COLORS = [
-  "bg-slate-400", "bg-slate-500", "bg-zinc-400", "bg-zinc-500",
-  "bg-stone-400", "bg-stone-500", "bg-neutral-400", "bg-neutral-500",
-];
-
-function getAvatarColor(name: string): string {
-  const hash = name.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
-  return AVATAR_COLORS[hash % AVATAR_COLORS.length];
-}
+const MY_PROFILE_HEADER = gql`
+  query MyProfileHeader {
+    myProfile {
+      id
+      displayName
+      avatarUrl
+    }
+  }
+`;
 
 export function StatsPage() {
   const { t } = useTranslation();
   const { userId } = useParams<{ userId?: string }>();
   const { user: currentUser } = useAuth();
 
-  const { data: userProfileData } = useQuery(USER_DISPLAY_NAME, {
+  const { data: userProfileData } = useQuery(USER_PROFILE_HEADER, {
     variables: { userId },
     skip: !userId,
   });
 
+  const { data: myProfileData } = useQuery(MY_PROFILE_HEADER, {
+    skip: !!userId,
+  });
+
   const displayName: string | undefined = userId
     ? userProfileData?.userProfile?.displayName
-    : currentUser?.displayName;
+    : (myProfileData?.myProfile?.displayName ?? currentUser?.displayName);
+
+  const avatarUrl: string | null | undefined = userId
+    ? userProfileData?.userProfile?.avatarUrl
+    : myProfileData?.myProfile?.avatarUrl;
 
   const title = userId ? (displayName ?? "…") : t("stats.title");
   const subtitle = userId
     ? (displayName !== undefined ? t("stats.userSubtitle") : "")
     : t("stats.subtitle");
 
-  const avatarColor = displayName ? getAvatarColor(displayName) : "bg-muted";
-  const avatarInitial = displayName?.charAt(0).toUpperCase() ?? "";
-
   return (
     <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
       {/* Page Title */}
       <div className="px-4 pb-4 shrink-0 grid grid-cols-[auto_1fr] gap-x-3">
-        <div
-          className={`row-span-2 w-14 h-14 rounded-full ${avatarColor} flex items-center justify-center text-2xl font-bold text-white self-center`}
-        >
-          {avatarInitial}
+        <div className="row-span-2 self-center">
+          {displayName ? (
+            <AvatarDisplay displayName={displayName} avatarUrl={avatarUrl} size="sm" />
+          ) : (
+            <div className="w-14 h-14 rounded-full bg-muted" />
+          )}
         </div>
         <h1 className="text-2xl font-bold self-end">{title}</h1>
         <p className="text-muted-foreground text-sm self-start">{subtitle}</p>

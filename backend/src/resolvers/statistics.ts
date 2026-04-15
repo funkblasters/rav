@@ -19,6 +19,7 @@ export const statisticsResolvers = {
         displayName: u.displayName,
         clubRole: u.clubRole,
         flagsCount: u.contributedFlags.length,
+        avatarUrl: u.avatarUrl,
       }));
 
       usersWithCounts.sort((a, b) => b.flagsCount - a.flagsCount);

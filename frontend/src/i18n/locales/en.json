@@ -96,6 +96,9 @@
     "continentsTouched": "Continents",
     "achievements": "Achievements",
     "noAchievements": "Coming soon",
+    "editAvatar": "Change avatar",
+    "chooseAvatar": "Choose avatar",
+    "defaultAvatar": "Default (letter)",
     "clubRoles": {
       "CHAIRMAN": "Chairman",
       "VICE_CHAIRMAN": "Vice Chairman",
