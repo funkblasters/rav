@@ -1,6 +1,8 @@
 import {
   ApolloClient,
+  ApolloLink,
   InMemoryCache,
+  Observable,
   createHttpLink,
   from,
   gql,
@@ -9,6 +11,34 @@ import { setContext } from "@apollo/client/link/context";
 import { onError } from "@apollo/client/link/error";
 import { fromPromise } from "@apollo/client";
 import { tokenStore } from "./tokenStore";
+import { slowLoadStore } from "./slowLoadStore";
+
+const SLOW_THRESHOLD_MS = 1_000;
+
+const slowLoadLink = new ApolloLink((operation, forward) => {
+  let marked = false;
+  const timer = setTimeout(() => {
+    marked = true;
+    slowLoadStore.increment();
+  }, SLOW_THRESHOLD_MS);
+
+  const cleanup = () => {
+    clearTimeout(timer);
+    if (marked) {
+      marked = false;
+      slowLoadStore.decrement();
+    }
+  };
+
+  return new Observable((observer) => {
+    const sub = forward(operation).subscribe({
+      next(value) { cleanup(); observer.next(value); },
+      error(err)  { cleanup(); observer.error(err); },
+      complete()  { cleanup(); observer.complete(); },
+    });
+    return () => { cleanup(); sub.unsubscribe(); };
+  });
+});
 
 const httpLink = createHttpLink({
   uri: import.meta.env.VITE_GRAPHQL_URL || "/graphql",
@@ -97,6 +127,6 @@ const errorLink = onError(({ graphQLErrors, operation, forward }) => {
 });
 
 export const apolloClient = new ApolloClient({
-  link: from([errorLink, authLink, httpLink]),
+  link: from([errorLink, authLink, slowLoadLink, httpLink]),
   cache: new InMemoryCache(),
 });

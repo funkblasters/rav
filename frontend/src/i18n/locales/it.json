@@ -61,7 +61,8 @@
     "delete": "Elimina",
     "edit": "Modifica",
     "loading": "Caricamento...",
-    "noData": "Nessun dato disponibile."
+    "noData": "Nessun dato disponibile.",
+    "serverWakingUp": "Il server si sta svegliando, attendere..."
   },
   "myFlags": {
     "title": "Le mie bandiere",

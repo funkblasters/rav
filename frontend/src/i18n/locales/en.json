@@ -61,7 +61,8 @@
     "delete": "Delete",
     "edit": "Edit",
     "loading": "Loading...",
-    "noData": "No data available."
+    "noData": "No data available.",
+    "serverWakingUp": "Server is waking up, please wait..."
   },
   "myFlags": {
     "title": "My Flags",

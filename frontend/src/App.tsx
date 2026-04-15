@@ -4,6 +4,7 @@ import { Toaster } from "sonner";
 import { apolloClient } from "@/lib/apollo";
 import { AuthProvider } from "@/context/AuthContext";
 import { ThemeProvider, useTheme } from "@/context/ThemeContext";
+import { SlowLoadProvider } from "@/context/SlowLoadContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { PublicRoute } from "@/components/PublicRoute";
 import { AdminRoute } from "@/components/AdminRoute";
@@ -20,6 +21,7 @@ function AppContent() {
 
   return (
     <ApolloProvider client={apolloClient}>
+      <SlowLoadProvider>
       <AuthProvider>
         <BrowserRouter>
           <Routes>
@@ -58,6 +60,7 @@ function AppContent() {
           />
         </BrowserRouter>
       </AuthProvider>
+      </SlowLoadProvider>
     </ApolloProvider>
   );
 }
