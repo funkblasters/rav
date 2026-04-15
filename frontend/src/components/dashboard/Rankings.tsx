@@ -88,7 +88,7 @@ function MemberFlagsSheet({
 
         {loading ? (
           <div className="flex-1 min-h-0 overflow-y-auto">
-            <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 p-2">
+            <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-10 gap-2 p-2">
             {Array.from({ length: 12 }).map((_, i) => (
               <div key={i} className="aspect-[3/2] rounded bg-muted animate-pulse" />
             ))}
@@ -98,7 +98,7 @@ function MemberFlagsSheet({
           <p className="p-4 text-sm text-muted-foreground">No public flags yet.</p>
         ) : (
           <div className="flex-1 min-h-0 overflow-y-auto">
-            <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 p-2">
+            <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-10 gap-2 p-2">
             {flags.map((flag) => (
               <div
                 key={flag.id}
