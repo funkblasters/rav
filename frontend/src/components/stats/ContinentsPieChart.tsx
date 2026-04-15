@@ -26,16 +26,16 @@ const USER_PROFILE_CONTINENTS = gql`
   }
 `;
 
-const COLORS = [
-  "#3b82f6", // blue
-  "#ef4444", // red
-  "#10b981", // emerald
-  "#f59e0b", // amber
-  "#8b5cf6", // violet
-  "#ec4899", // pink
-  "#14b8a6", // teal
-  "#f97316", // orange
-];
+const CONTINENT_COLORS: Record<string, string> = {
+  "africa":        "#ef4444", // red
+  "europe":        "#3b82f6", // blue
+  "north america": "#10b981", // emerald
+  "asia":          "#f59e0b", // amber
+  "oceania":       "#8b5cf6", // violet
+  "south america": "#ec4899", // pink
+};
+
+const DEFAULT_COLOR = "#14b8a6";
 
 type ContinentData = {
   continent: string;
@@ -102,19 +102,19 @@ export function ContinentsPieChart({ userId }: { userId?: string }) {
                 outerRadius={80}
                 paddingAngle={2}
               >
-                {continents.map((_, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                {continents.map((c) => (
+                  <Cell key={`cell-${c.continent}`} fill={CONTINENT_COLORS[c.continent] ?? DEFAULT_COLOR} />
                 ))}
               </Pie>
             </PieChart>
           </ResponsiveContainer>
         </ChartContainer>
         <div className="flex flex-wrap justify-center gap-x-3 gap-y-1 shrink-0">
-          {continents.map((c, index) => (
+          {continents.map((c) => (
             <div key={c.continent} className="flex items-center gap-1">
               <span
                 className="inline-block h-2 w-2 rounded-full shrink-0"
-                style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                style={{ backgroundColor: CONTINENT_COLORS[c.continent] ?? DEFAULT_COLOR }}
               />
               <span className="text-xs text-muted-foreground">{c.continent}</span>
             </div>
