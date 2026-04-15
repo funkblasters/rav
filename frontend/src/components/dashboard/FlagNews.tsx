@@ -7,7 +7,8 @@ import { QueryStateRenderer } from "@/components/QueryStateRenderer";
 
 const NEWS_ITEMS = gql`
   query NewsItems {
-    newsItems(limit: 4) {
+    newsItems {
+      id
       title
       link
       pubDate
@@ -34,6 +35,7 @@ export function FlagNews() {
   }, [refetch]);
 
   const items: Array<{
+    id: string;
     title: string;
     link: string;
     pubDate: string;
@@ -95,23 +97,34 @@ export function FlagNews() {
             {/* Regular News Items */}
             <ul className="divide-y flex-1 overflow-y-auto">
               {items.map((item) => (
-                <li key={item.link}>
+                <li key={item.id}>
                   <a
                     href={item.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex flex-col gap-1 px-4 py-3 hover:bg-accent transition-colors group"
+                    className="flex items-center gap-3 px-4 py-3 hover:bg-accent transition-colors group"
                   >
-                    <p className="text-sm font-medium leading-snug line-clamp-2 group-hover:text-accent-foreground">
-                      {item.title}
-                    </p>
-                    <div className="flex items-center justify-between">
-                      <p className="text-xs text-muted-foreground">
+                    {/* Thumbnail */}
+                    {item.imageUrl && (
+                      <img
+                        src={item.imageUrl}
+                        alt={item.title}
+                        className="w-14 h-10 object-cover rounded shrink-0"
+                      />
+                    )}
+
+                    {/* Text */}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium leading-snug line-clamp-2 group-hover:text-accent-foreground">
+                        {item.title}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-0.5">
                         {item.source && <span>{item.source} · </span>}
                         {new Date(item.pubDate).toLocaleDateString()}
                       </p>
-                      <ExternalLink size={12} className="text-muted-foreground shrink-0" />
                     </div>
+
+                    <ExternalLink size={12} className="text-muted-foreground shrink-0" />
                   </a>
                 </li>
               ))}

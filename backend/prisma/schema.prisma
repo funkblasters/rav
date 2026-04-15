@@ -100,6 +100,18 @@ model FailedImport {
   @@map("failed_imports")
 }
 
+model NewsItem {
+  id        String   @id @default(uuid()) @db.Uuid
+  title     String
+  link      String
+  imageUrl  String?
+  source    String?
+  pubDate   DateTime
+  createdAt DateTime @default(now())
+
+  @@map("news_items")
+}
+
 model Settings {
   id        String     @id @default("app")
   mostWantedName String?

@@ -1,105 +1,24 @@
-import { XMLParser } from "fast-xml-parser";
 import type { AppContext } from "../context.js";
 import { prisma } from "../db.js";
-
-interface NewsItem {
-  title: string;
-  link: string;
-  pubDate: string;
-  source?: string;
-  imageUrl?: string;
-}
-
-// 15-minute cache so we don't hammer Google News
-let cache: { items: NewsItem[]; ts: number } | null = null;
-const CACHE_TTL_MS = 15 * 60 * 1000;
-
-// Political/geopolitical flag news — new national flags, changes, disputes, referendums,
-// flag contests and competitions. Excludes sports (NFL, football, team jerseys etc.).
-// Biased toward Italian and broader international coverage.
-const FEED_URL =
-  "https://news.google.com/rss/search?q=" +
-  encodeURIComponent(
-    '(vexillology OR vexillologia OR "national flag" OR "flag change" OR "flag redesign"' +
-    ' OR "flag dispute" OR "flag referendum" OR "flag independence"' +
-    ' OR "new flag" OR "flag contest" OR "flag competition" OR "flag reveal" OR "flag design"' +
-    ' OR "bandiera" OR "nuova bandiera" OR "concorso bandiera" OR "gara bandiera"' +
-    ' OR "drapeau national" OR "bandera nacional"' +
-    ' OR "bandeira nacional")' +
-    " -NFL -NBA -soccer -football -rugby -cricket -sport -jersey -team -league"
-  ) +
-  "&hl=en&gl=IT&ceid=IT:en";
-
-const EXCLUDE_KEYWORDS = ["elon musk"];
-
-function shouldExclude(item: NewsItem): boolean {
-  const text = `${item.title} ${item.source ?? ""}`.toLowerCase();
-  return EXCLUDE_KEYWORDS.some((kw) => text.includes(kw));
-}
-
-const parser = new XMLParser({
-  ignoreAttributes: false,
-  attributeNamePrefix: "@_",
-  isArray: (name) => name === "item",
-});
-
-function cleanTitle(raw: string): string {
-  // Google News appends " - Publisher Name" to titles
-  return raw.replace(/\s*-\s*[^-]+$/, "").trim();
-}
-
-/** Extract first <img src="..."> from an HTML string */
-function extractImg(html: string): string | undefined {
-  const m = html.match(/<img[^>]+src=["']([^"']+)["']/i);
-  return m?.[1];
-}
-
-async function fetchFeed(): Promise<NewsItem[]> {
-  const res = await fetch(FEED_URL, {
-    headers: { "User-Agent": "Mozilla/5.0 (compatible; RAV-flag-club/1.0)" },
-  });
-  if (!res.ok) throw new Error(`Feed fetch failed: ${res.status}`);
-  const xml = await res.text();
-  const parsed = parser.parse(xml);
-  const rawItems: Array<Record<string, unknown>> =
-    parsed?.rss?.channel?.item ?? [];
-
-  return rawItems.map((item) => {
-    const sourceRaw = item["source"];
-    let source: string | undefined;
-    if (sourceRaw && typeof sourceRaw === "object") {
-      source = String((sourceRaw as Record<string, unknown>)["#text"] ?? "");
-    } else if (typeof sourceRaw === "string") {
-      source = sourceRaw;
-    }
-
-    // Google News sometimes embeds a thumbnail in the <description> HTML
-    const description = String(item["description"] ?? "");
-    const imageUrl = extractImg(description);
-
-    return {
-      title: cleanTitle(String(item["title"] ?? "")),
-      link: String(item["link"] ?? ""),
-      pubDate: String(item["pubDate"] ?? ""),
-      source,
-      imageUrl,
-    };
-  });
-}
 
 export const newsResolvers = {
   Query: {
     newsItems: async (_: unknown, args: { limit?: number }, ctx: AppContext) => {
       if (!ctx.user) throw new Error("Unauthenticated");
-      const limit = args.limit ?? 8;
-      const now = Date.now();
-      if (cache && now - cache.ts < CACHE_TTL_MS) {
-        return cache.items.filter((item) => !shouldExclude(item)).slice(0, limit);
-      }
-      const items = (await fetchFeed()).filter((item) => !shouldExclude(item));
-      cache = { items, ts: now };
-      return items.slice(0, limit);
+      const items = await prisma.newsItem.findMany({
+        orderBy: { pubDate: "desc" },
+        ...(args.limit ? { take: args.limit } : {}),
+      });
+      return items.map((item) => ({
+        id: item.id,
+        title: item.title,
+        link: item.link,
+        pubDate: item.pubDate.toISOString(),
+        source: item.source,
+        imageUrl: item.imageUrl,
+      }));
     },
+
     featuredNewsItem: async (_: unknown, __: unknown, ctx: AppContext) => {
       if (!ctx.user) throw new Error("Unauthenticated");
       const settings = await prisma.settings.findUnique({ where: { id: "app" } });
@@ -113,7 +32,39 @@ export const newsResolvers = {
       };
     },
   },
+
   Mutation: {
+    createNewsItem: async (
+      _: unknown,
+      args: { title: string; link: string; imageUrl?: string; source?: string; pubDate: string },
+      ctx: AppContext
+    ) => {
+      if (ctx.user?.role !== "ADMIN") throw new Error("Forbidden");
+      const item = await prisma.newsItem.create({
+        data: {
+          title: args.title,
+          link: args.link,
+          imageUrl: args.imageUrl ?? null,
+          source: args.source ?? null,
+          pubDate: new Date(args.pubDate),
+        },
+      });
+      return {
+        id: item.id,
+        title: item.title,
+        link: item.link,
+        pubDate: item.pubDate.toISOString(),
+        source: item.source,
+        imageUrl: item.imageUrl,
+      };
+    },
+
+    deleteNewsItem: async (_: unknown, args: { id: string }, ctx: AppContext) => {
+      if (ctx.user?.role !== "ADMIN") throw new Error("Forbidden");
+      await prisma.newsItem.delete({ where: { id: args.id } });
+      return true;
+    },
+
     setFeaturedNews: async (
       _: unknown,
       args: { title: string; link: string; imageUrl?: string; body?: string },
@@ -144,6 +95,7 @@ export const newsResolvers = {
         body: settings.featuredNewsBody,
       };
     },
+
     clearFeaturedNews: async (_: unknown, __: unknown, ctx: AppContext) => {
       if (ctx.user?.role !== "ADMIN") throw new Error("Forbidden");
       await prisma.settings.upsert({

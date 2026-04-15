@@ -149,6 +149,7 @@ type FailedImport {
 ### ─── News ───────────────────────────────────────────────────────────────────
 
 type NewsItem {
+  id: ID
   title: String!
   link: String!
   pubDate: DateTime!
@@ -230,6 +231,9 @@ type Mutation {
 
   setMostWanted(name: String!, imageUrl: String, acquiredAt: Int!, description: String): FlagPreview!
   clearMostWanted: Boolean!
+
+  createNewsItem(title: String!, link: String!, imageUrl: String, source: String, pubDate: String!): NewsItem!
+  deleteNewsItem(id: ID!): Boolean!
 
   setFeaturedNews(title: String!, link: String!, imageUrl: String, body: String): NewsItem!
   clearFeaturedNews: Boolean!

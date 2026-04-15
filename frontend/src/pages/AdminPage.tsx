@@ -12,6 +12,7 @@ import { MostWantedAdmin } from "@/components/dashboard/MostWantedAdmin";
 import { FeaturedNewsAdmin } from "@/components/dashboard/FeaturedNewsAdmin";
 import { FlagImageEditor } from "@/components/admin/FlagImageEditor";
 import { DeleteFlagCard } from "@/components/admin/DeleteFlagCard";
+import { NewsItemsAdmin } from "@/components/admin/NewsItemsAdmin";
 import { tokenStore } from "@/lib/tokenStore";
 
 const CLUB_ROLES = [
@@ -347,6 +348,7 @@ export function AdminPage() {
 
       <Tabs defaultValue="members">
         <TabsList>
+          <TabsTrigger value="news">News</TabsTrigger>
           <TabsTrigger value="members">
             Members
             {pendingUsers.length + externalUsers.length > 0 && (
@@ -365,6 +367,14 @@ export function AdminPage() {
           </TabsTrigger>
           <TabsTrigger value="flags">Flags</TabsTrigger>
         </TabsList>
+
+        {/* ── NEWS TAB ── */}
+        <TabsContent value="news" className="mt-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-6xl">
+            <NewsItemsAdmin />
+            <FeaturedNewsAdmin />
+          </div>
+        </TabsContent>
 
         {/* ── MEMBERS TAB ── */}
         <TabsContent value="members" className="space-y-6 mt-4">
@@ -758,7 +768,6 @@ export function AdminPage() {
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <MostWantedAdmin />
-              <FeaturedNewsAdmin />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <FlagImageEditor />
