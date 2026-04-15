@@ -14,7 +14,7 @@ export function Layout() {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="h-dvh flex flex-col overflow-hidden">
       <header className="fixed top-0 left-0 right-0 z-40 border-b bg-card">
         <div className="container flex h-14 items-center justify-between">
           <nav className="flex items-center gap-1 text-sm font-medium">
@@ -73,7 +73,7 @@ export function Layout() {
           </div>
         </div>
       </header>
-      <main className="flex-1 container py-8 mt-14">
+      <main className="flex-1 min-h-0 flex flex-col container py-8 mt-14 overflow-y-auto">
         <Outlet />
       </main>
       {user && !isActive("/admin") && <AddFlagButton />}

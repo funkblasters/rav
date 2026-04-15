@@ -14,19 +14,28 @@ interface NewsItem {
 let cache: { items: NewsItem[]; ts: number } | null = null;
 const CACHE_TTL_MS = 15 * 60 * 1000;
 
-// Political/geopolitical flag news — new national flags, changes, disputes, referendums.
-// Excludes sports (NFL, football, team jerseys etc.).
+// Political/geopolitical flag news — new national flags, changes, disputes, referendums,
+// flag contests and competitions. Excludes sports (NFL, football, team jerseys etc.).
 // Biased toward Italian and broader international coverage.
 const FEED_URL =
   "https://news.google.com/rss/search?q=" +
   encodeURIComponent(
-    '(vexillology OR "national flag" OR "flag change" OR "flag redesign"' +
+    '(vexillology OR vexillologia OR "national flag" OR "flag change" OR "flag redesign"' +
     ' OR "flag dispute" OR "flag referendum" OR "flag independence"' +
-    ' OR "new flag" OR "bandiera" OR "drapeau national" OR "bandera nacional"' +
+    ' OR "new flag" OR "flag contest" OR "flag competition" OR "flag reveal" OR "flag design"' +
+    ' OR "bandiera" OR "nuova bandiera" OR "concorso bandiera" OR "gara bandiera"' +
+    ' OR "drapeau national" OR "bandera nacional"' +
     ' OR "bandeira nacional")' +
     " -NFL -NBA -soccer -football -rugby -cricket -sport -jersey -team -league"
   ) +
   "&hl=en&gl=IT&ceid=IT:en";
+
+const EXCLUDE_KEYWORDS = ["elon musk"];
+
+function shouldExclude(item: NewsItem): boolean {
+  const text = `${item.title} ${item.source ?? ""}`.toLowerCase();
+  return EXCLUDE_KEYWORDS.some((kw) => text.includes(kw));
+}
 
 const parser = new XMLParser({
   ignoreAttributes: false,
@@ -85,9 +94,9 @@ export const newsResolvers = {
       const limit = args.limit ?? 8;
       const now = Date.now();
       if (cache && now - cache.ts < CACHE_TTL_MS) {
-        return cache.items.slice(0, limit);
+        return cache.items.filter((item) => !shouldExclude(item)).slice(0, limit);
       }
-      const items = await fetchFeed();
+      const items = (await fetchFeed()).filter((item) => !shouldExclude(item));
       cache = { items, ts: now };
       return items.slice(0, limit);
     },

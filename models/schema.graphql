@@ -171,6 +171,7 @@ type Query {
   users: [PublicUser!]!
   adminUsers: [User!]!
   myProfile: UserProfile
+  userProfile(userId: ID!): UserProfile
   events: [Event!]!
   event(id: ID!): Event
   flags: [Flag!]!

@@ -131,6 +131,50 @@ export const userResolvers = {
     // This query was returning all user data to any authenticated user
     // Users can be enumerated and email list extracted
 
+    userProfile: async (_: unknown, args: { userId: string }, ctx: AppContext) => {
+      if (!ctx.user) throw new Error("Unauthenticated");
+
+      const user = await prisma.user.findUnique({ where: { id: args.userId } });
+      if (!user) return null;
+
+      // Only count public flags for other users' profiles
+      const allFlags = await prisma.flag.findMany({
+        where: { contributors: { some: { id: user.id } }, isPublic: true },
+      });
+
+      const flagsCount = allFlags.length;
+      const lastContribution =
+        allFlags.length > 0
+          ? allFlags.reduce((latest, flag) =>
+              flag.acquiredAt > latest.acquiredAt ? flag : latest
+            ).acquiredAt
+          : null;
+
+      const continentMap = new Map<string, number>();
+      allFlags.forEach((flag) => {
+        const continent = flag.continent ?? getContinentFromFlag(flag.countryCode, flag.subdivisionCode);
+        continentMap.set(continent, (continentMap.get(continent) ?? 0) + 1);
+      });
+
+      const contributionsByContinent = Array.from(continentMap.entries())
+        .filter(([continent]) => continent !== "Other")
+        .map(([continent, count]) => ({ continent, count }))
+        .sort((a, b) => b.count - a.count);
+
+      return {
+        id: user.id,
+        displayName: user.displayName,
+        email: null,
+        role: user.role,
+        clubRole: user.clubRole,
+        cardNumber: null,
+        createdAt: user.createdAt,
+        flagsCount,
+        lastContribution,
+        contributionsByContinent,
+      };
+    },
+
     myProfile: async (_: unknown, __: unknown, ctx: AppContext) => {
       if (!ctx.user) throw new Error("Unauthenticated");
 

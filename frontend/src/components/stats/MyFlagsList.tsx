@@ -16,6 +16,17 @@ const MY_FLAGS = gql`
   }
 `;
 
+const FLAGS_BY_USER_LIST = gql`
+  query FlagsByUserList($userId: ID!) {
+    flagsByUser(userId: $userId) {
+      id
+      name
+      imageUrl
+      acquiredAt
+    }
+  }
+`;
+
 const MAKE_PUBLIC = gql`
   mutation MakePublic($flagId: ID!) {
     makePublic(flagId: $flagId) {
@@ -45,26 +56,90 @@ interface MyFlag {
   isPublic: boolean;
 }
 
-export function MyFlagsList() {
+interface UserFlag {
+  id: string;
+  name: string;
+  imageUrl?: string;
+  acquiredAt: string;
+}
+
+export function MyFlagsList({ userId, displayName }: { userId?: string; displayName?: string }) {
   const { t } = useTranslation();
-  const { data, loading, refetch } = useQuery(MY_FLAGS);
+
+  // Own flags query
+  const { data: myData, loading: myLoading, refetch } = useQuery(MY_FLAGS, { skip: !!userId });
   const [makePublic, { loading: publishing }] = useMutation(MAKE_PUBLIC, {
     refetchQueries: ["GetMyFlags", "TopMembers", "MyProfile", "LastFlag", "MostWantedFlag", "FlagsGeo", "NewsItems", "GetFlags"],
     awaitRefetchQueries: true,
   });
 
+  // Other user's flags query
+  const { data: userData, loading: userLoading } = useQuery(FLAGS_BY_USER_LIST, {
+    variables: { userId },
+    skip: !userId,
+  });
+
   useEffect(() => {
+    if (userId) return;
     refetch();
-
-    const handleFocus = () => {
-      refetch();
-    };
-
+    const handleFocus = () => refetch();
     window.addEventListener("focus", handleFocus);
     return () => window.removeEventListener("focus", handleFocus);
-  }, [refetch]);
+  }, [refetch, userId]);
 
-  const myFlags: MyFlag[] = data?.myFlags ?? [];
+  if (userId) {
+    const userFlags: UserFlag[] = userData?.flagsByUser ?? [];
+    const loading = userLoading;
+    const title = displayName ? t("stats.userFlagsList", { name: displayName }) : "…";
+
+    return (
+      <Card className="flex flex-col h-full overflow-hidden">
+        <CardHeader className="pb-2 shrink-0">
+          <CardTitle className="text-base font-semibold">{title}</CardTitle>
+          <CardDescription className="text-xs">
+            {loading ? t("common.loading") : `${userFlags.length} flag${userFlags.length !== 1 ? "s" : ""}`}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex-1 min-h-0 overflow-y-auto">
+          {loading ? (
+            <div className="grid grid-cols-3 gap-2">
+              {Array.from({ length: 9 }).map((_, i) => (
+                <div key={i} className="aspect-[3/2] rounded bg-muted animate-pulse" />
+              ))}
+            </div>
+          ) : userFlags.length === 0 ? (
+            <p className="text-sm text-muted-foreground">{t("myFlags.noFlags")}</p>
+          ) : (
+            <div className="space-y-2">
+              {userFlags.map((flag) => (
+                <div key={flag.id} className="flex items-center gap-3 p-3 border rounded-lg">
+                  {flag.imageUrl ? (
+                    <img
+                      src={flag.imageUrl}
+                      alt={flag.name}
+                      className="w-12 h-8 object-cover rounded shrink-0"
+                    />
+                  ) : (
+                    <div className="w-12 h-8 bg-muted rounded shrink-0" />
+                  )}
+                  <div className="min-w-0 flex-1">
+                    <p className="font-medium text-sm truncate">{flag.name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {new Date(flag.acquiredAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Own stats view
+  const myFlags: MyFlag[] = myData?.myFlags ?? [];
+  const loading = myLoading;
   const publicFlags = myFlags.filter((f) => f.isPublic);
   const secretFlags = myFlags.filter((f) => !f.isPublic);
 

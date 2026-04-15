@@ -13,6 +13,15 @@ const MY_FLAGS = gql`
   }
 `;
 
+const FLAGS_BY_USER_YEARLY = gql`
+  query FlagsByUserYearly($userId: ID!) {
+    flagsByUser(userId: $userId) {
+      id
+      acquiredAt
+    }
+  }
+`;
+
 type Flag = {
   id: string;
   acquiredAt: string;
@@ -30,39 +39,40 @@ const chartConfig = {
   },
 };
 
-export function YearlyActivityHistogram() {
+function buildChartData(flags: Flag[]): ChartDataPoint[] {
+  const yearCounts: Record<number, number> = {};
+  const currentYear = new Date().getFullYear();
+
+  for (let year = 2010; year <= currentYear; year++) {
+    yearCounts[year] = 0;
+  }
+
+  flags.forEach((flag) => {
+    const year = new Date(flag.acquiredAt).getFullYear();
+    if (year >= 2010) {
+      yearCounts[year]++;
+    }
+  });
+
+  const data: ChartDataPoint[] = [];
+  for (let year = 2010; year <= currentYear; year++) {
+    data.push({ year, count: yearCounts[year] });
+  }
+  return data;
+}
+
+export function YearlyActivityHistogram({ userId }: { userId?: string }) {
   const { t } = useTranslation();
-  const { data, loading } = useQuery(MY_FLAGS);
 
-  const flags: Flag[] = data?.myFlags ?? [];
+  const { data: myData, loading: myLoading } = useQuery(MY_FLAGS, { skip: !!userId });
+  const { data: userData, loading: userLoading } = useQuery(FLAGS_BY_USER_YEARLY, {
+    variables: { userId },
+    skip: !userId,
+  });
 
-  const chartData: ChartDataPoint[] = (() => {
-    const yearCounts: Record<number, number> = {};
-    const currentYear = new Date().getFullYear();
-
-    // Initialize all years from 2010 to current year
-    for (let year = 2010; year <= currentYear; year++) {
-      yearCounts[year] = 0;
-    }
-
-    // Count flags for each year
-    flags.forEach((flag) => {
-      const year = new Date(flag.acquiredAt).getFullYear();
-      if (year >= 2010) {
-        yearCounts[year]++;
-      }
-    });
-
-    // Create chart data for all years (ensures every year has a bar)
-    const data: ChartDataPoint[] = [];
-    for (let year = 2010; year <= currentYear; year++) {
-      data.push({
-        year,
-        count: yearCounts[year],
-      });
-    }
-    return data;
-  })();
+  const loading = userId ? userLoading : myLoading;
+  const flags: Flag[] = userId ? (userData?.flagsByUser ?? []) : (myData?.myFlags ?? []);
+  const chartData = buildChartData(flags);
 
   if (loading) {
     return (

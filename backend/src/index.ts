@@ -45,14 +45,10 @@ console.log(`📋 CORS allowed origins:`, allowedOrigins);
 
 app.use(cors({
   origin: (origin, callback) => {
-    // Log incoming requests for debugging
-    if (!allowedOrigins.includes(origin || "null")) {
-      console.warn(`⚠️ CORS blocked: "${origin}" not in allowed list:`, allowedOrigins);
-    }
-
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
+      console.warn(`⚠️ CORS blocked: "${origin}" not in allowed list:`, allowedOrigins);
       callback(new Error(`CORS not allowed. Origin: ${origin}`));
     }
   },

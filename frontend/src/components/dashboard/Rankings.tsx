@@ -2,12 +2,14 @@ import { useQuery, gql } from "@apollo/client";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { BarChart2, ChevronRight } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { QueryStateRenderer } from "@/components/QueryStateRenderer";
 import { List, ListItem } from "@/components/ui/list";
 import { ClubRoleBadge } from "@/components/ClubRoleBadge";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import { useAuth } from "@/context/AuthContext";
 
 const TOP_MEMBERS = gql`
   query TopMembers {
@@ -30,22 +32,6 @@ const FLAGS_BY_USER = gql`
   }
 `;
 
-// Avatar colors using shadcn neutral palette
-const AVATAR_COLORS = [
-  "bg-slate-400",
-  "bg-slate-500",
-  "bg-zinc-400",
-  "bg-zinc-500",
-  "bg-stone-400",
-  "bg-stone-500",
-  "bg-neutral-400",
-  "bg-neutral-500",
-];
-
-function getAvatarColor(name: string): string {
-  const hash = name.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
-  return AVATAR_COLORS[hash % AVATAR_COLORS.length];
-}
 
 interface Member {
   id: string;
@@ -56,11 +42,15 @@ interface Member {
 
 function MemberFlagsSheet({
   member,
+  currentUserId,
   onClose,
 }: {
   member: Member | null;
+  currentUserId: string | undefined;
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
   const { data, loading } = useQuery(FLAGS_BY_USER, {
     variables: { userId: member?.id },
     skip: !member,
@@ -68,11 +58,29 @@ function MemberFlagsSheet({
 
   const flags: { id: string; name: string; imageUrl?: string }[] = data?.flagsByUser ?? [];
 
+  const handleViewStats = () => {
+    if (member) {
+      onClose();
+      navigate(member.id === currentUserId ? "/stats" : `/stats/${member.id}`);
+    }
+  };
+
   return (
     <Sheet open={!!member} onOpenChange={(open) => { if (!open) onClose(); }}>
-      <SheetContent side="bottom" className="max-h-[75dvh] flex flex-col">
+      <SheetContent side="bottom" className="max-h-[75dvh] flex flex-col" showCloseButton={false}>
         <SheetHeader className="shrink-0 border-b pb-3">
-          <SheetTitle>{member?.displayName}</SheetTitle>
+          <div className="flex items-center gap-3">
+            <SheetTitle className="flex-1 truncate">{member?.displayName}</SheetTitle>
+            <Button
+              variant="default"
+              size="sm"
+              className="shrink-0 gap-1.5 font-bold"
+              onClick={handleViewStats}
+            >
+              <BarChart2 size={14} />
+              {t("stats.viewStats")}
+            </Button>
+          </div>
           <SheetDescription>
             {loading ? "…" : `${flags.length} flag${flags.length !== 1 ? "s" : ""}`}
           </SheetDescription>
@@ -124,6 +132,7 @@ function MemberFlagsSheet({
 export function Rankings() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { user: currentUser } = useAuth();
   const { data, loading, error, refetch } = useQuery(TOP_MEMBERS);
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
 
@@ -172,15 +181,6 @@ export function Rankings() {
                         #{idx + 1}
                       </span>
 
-                      {/* Initial Avatar */}
-                      <div
-                        className={`flex-shrink-0 w-10 h-10 rounded-full ${getAvatarColor(
-                          member.displayName
-                        )} flex items-center justify-center text-lg font-bold text-white`}
-                      >
-                        {member.displayName.charAt(0).toUpperCase()}
-                      </div>
-
                       {/* Name + club role */}
                       <div className="flex-1 min-w-0 flex items-center gap-2">
                         <p className="text-sm font-medium truncate">{member.displayName}</p>
@@ -191,16 +191,17 @@ export function Rankings() {
                         )}
                       </div>
 
-                      {/* Flags Count + Badge */}
-                      <div className="flex items-center gap-2 flex-shrink-0 ml-auto md:ml-0 md:w-20">
+                      {/* Flags Count + Badge + Chevron */}
+                      <div className="flex items-center gap-2 flex-shrink-0 ml-auto md:ml-0">
                         {member.clubRole !== "ORDINARY_ASSOCIATE" && (
                           <span className="md:hidden">
                             <ClubRoleBadge role={member.clubRole} collapsible />
                           </span>
                         )}
-                        <span className="text-xl font-bold text-right md:text-left">
+                        <span className="text-xl font-bold">
                           {member.flagsCount}
                         </span>
+                        <ChevronRight size={16} className="text-muted-foreground" />
                       </div>
                     </ListItem>
                   ))}
@@ -220,6 +221,7 @@ export function Rankings() {
 
       <MemberFlagsSheet
         member={selectedMember}
+        currentUserId={currentUser?.id}
         onClose={() => setSelectedMember(null)}
       />
     </>

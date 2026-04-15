@@ -106,11 +106,16 @@
   },
   "stats": {
     "title": "Le Mie Statistiche",
-    "subtitle": "Le tue statistiche personali di raccolta bandiere",
+    "subtitle": "Dati & Grafici",
+    "userTitle": "Statistiche di {{name}}",
+    "userSubtitle": "Dati & Grafici",
+    "viewStats": "Vedi statistiche",
     "continents": "Continenti Toccati",
     "flagsTotal": "Bandiere totali",
     "collectingActivity": "Attività di Raccolta",
     "yearlyActivity": "Attività Annuale",
-    "userFlagsMap": "I Miei Contributi su Mappa"
+    "userFlagsMap": "I Miei Contributi su Mappa",
+    "userFlagsMapOther": "Contributi su Mappa",
+    "userFlagsList": "Bandiere di {{name}}"
   }
 }

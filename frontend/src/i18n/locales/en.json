@@ -106,11 +106,16 @@
   },
   "stats": {
     "title": "My Stats",
-    "subtitle": "Your personal flag collecting statistics",
+    "subtitle": "Data & Charts",
+    "userTitle": "{{name}}'s Stats",
+    "userSubtitle": "Data & Charts",
+    "viewStats": "View stats",
     "continents": "Continents Touched",
     "flagsTotal": "Flags total",
     "collectingActivity": "Collecting Activity",
     "yearlyActivity": "Yearly Activity",
-    "userFlagsMap": "My Contributions on Map"
+    "userFlagsMap": "My Contributions on Map",
+    "userFlagsMapOther": "Contributions on Map",
+    "userFlagsList": "{{name}}'s Flags"
   }
 }

@@ -35,6 +35,7 @@ function AppContent() {
             >
               <Route index element={<DashboardPage />} />
               <Route path="stats" element={<StatsPage />} />
+              <Route path="stats/:userId" element={<StatsPage />} />
               <Route path="flags" element={<FlagsPage />} />
               {/* TODO: add more routes (events, members) */}
             </Route>

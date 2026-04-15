@@ -15,6 +15,17 @@ const MY_PROFILE = gql`
   }
 `;
 
+const USER_PROFILE_CONTINENTS = gql`
+  query UserProfileContinents($userId: ID!) {
+    userProfile(userId: $userId) {
+      contributionsByContinent {
+        continent
+        count
+      }
+    }
+  }
+`;
+
 const COLORS = [
   "#3b82f6", // blue
   "#ef4444", // red
@@ -38,11 +49,19 @@ const chartConfig = {
   },
 };
 
-export function ContinentsPieChart() {
+export function ContinentsPieChart({ userId }: { userId?: string }) {
   const { t } = useTranslation();
-  const { data, loading } = useQuery(MY_PROFILE);
 
-  const continents: ContinentData[] = data?.myProfile?.contributionsByContinent ?? [];
+  const { data: myData, loading: myLoading } = useQuery(MY_PROFILE, { skip: !!userId });
+  const { data: userData, loading: userLoading } = useQuery(USER_PROFILE_CONTINENTS, {
+    variables: { userId },
+    skip: !userId,
+  });
+
+  const loading = userId ? userLoading : myLoading;
+  const continents: ContinentData[] = userId
+    ? (userData?.userProfile?.contributionsByContinent ?? [])
+    : (myData?.myProfile?.contributionsByContinent ?? []);
 
   if (loading) {
     return (

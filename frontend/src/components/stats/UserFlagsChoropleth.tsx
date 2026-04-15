@@ -64,17 +64,33 @@ const MY_FLAGS = gql`
   }
 `;
 
+const FLAGS_BY_USER_GEO = gql`
+  query FlagsByUserGeo($userId: ID!) {
+    flagsByUser(userId: $userId) {
+      id
+      countryCode
+      subdivisionCode
+    }
+  }
+`;
+
 type Flag = {
   id: string;
   countryCode: string;
   subdivisionCode: string | null;
 };
 
-export function UserFlagsChoropleth() {
+export function UserFlagsChoropleth({ userId }: { userId?: string }) {
   const { t } = useTranslation();
-  const { data, loading } = useQuery(MY_FLAGS);
 
-  const flags: Flag[] = data?.myFlags ?? [];
+  const { data: myData, loading: myLoading } = useQuery(MY_FLAGS, { skip: !!userId });
+  const { data: userData, loading: userLoading } = useQuery(FLAGS_BY_USER_GEO, {
+    variables: { userId },
+    skip: !userId,
+  });
+
+  const loading = userId ? userLoading : myLoading;
+  const flags: Flag[] = userId ? (userData?.flagsByUser ?? []) : (myData?.myFlags ?? []);
 
   // Get unique countries — lights up for ANY flag (national or subdivision)
   // e.g., if user has Andalusia (ES, "Andalusia"), Spain lights up
@@ -85,11 +101,13 @@ export function UserFlagsChoropleth() {
       .filter(Boolean)
   );
 
+  const mapTitle = userId ? t("stats.userFlagsMapOther") : t("stats.userFlagsMap");
+
   if (loading) {
     return (
       <Card className="flex flex-col h-full overflow-hidden">
         <CardHeader className="pb-2 shrink-0">
-          <CardTitle className="text-sm font-semibold">{t("stats.userFlagsMap")}</CardTitle>
+          <CardTitle className="text-sm font-semibold">{mapTitle}</CardTitle>
         </CardHeader>
         <CardContent className="flex-1 min-h-0 flex items-center justify-center text-xs text-muted-foreground">
           {t("common.loading")}
@@ -101,7 +119,7 @@ export function UserFlagsChoropleth() {
   return (
     <Card className="flex flex-col h-full overflow-hidden">
       <CardHeader className="pb-3 shrink-0">
-        <CardTitle className="text-sm font-semibold">{t("stats.userFlagsMap")}</CardTitle>
+        <CardTitle className="text-sm font-semibold">{mapTitle}</CardTitle>
         <CardDescription className="text-xs">
           {uniqueCountries.size} countries
         </CardDescription>
