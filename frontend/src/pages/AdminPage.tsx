@@ -11,6 +11,7 @@ import { ClubRoleBadge } from "@/components/ClubRoleBadge";
 import { MostWantedAdmin } from "@/components/dashboard/MostWantedAdmin";
 import { FeaturedNewsAdmin } from "@/components/dashboard/FeaturedNewsAdmin";
 import { FlagImageEditor } from "@/components/admin/FlagImageEditor";
+import { DeleteFlagCard } from "@/components/admin/DeleteFlagCard";
 import { tokenStore } from "@/lib/tokenStore";
 
 const CLUB_ROLES = [
@@ -759,7 +760,10 @@ export function AdminPage() {
               <MostWantedAdmin />
               <FeaturedNewsAdmin />
             </div>
-            <FlagImageEditor />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <FlagImageEditor />
+              <DeleteFlagCard />
+            </div>
           </div>
         </TabsContent>
       </Tabs>

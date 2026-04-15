@@ -142,15 +142,32 @@ export const flagResolvers = {
           subdivisionCode = countryCode === "XX" ? args.name.trim() : (args.subdivisionCode ?? null);
         }
       }
+      // If a flag with the same identity already exists, add the new people as
+      // contributors to that record rather than inserting a duplicate row.
       const existingFlag = await prisma.flag.findFirst({
-        where: {
-          addedById: ownerId,
-          countryCode: countryCode,
-          subdivisionCode: subdivisionCode,
-        },
+        where: { countryCode, subdivisionCode },
+        include: { contributors: { select: { id: true } } },
       });
+
       if (existingFlag) {
-        throw new Error("Hai già questa bandiera nella tua collezione");
+        const alreadyContributor = existingFlag.contributors.some((c) => c.id === ownerId);
+        if (alreadyContributor) {
+          throw new Error("Hai già questa bandiera nella tua collezione");
+        }
+
+        const newContributorIds = [
+          ownerId,
+          ...(args.togetherWithUserIds ?? []),
+        ];
+        return prisma.flag.update({
+          where: { id: existingFlag.id },
+          data: {
+            contributors: {
+              connect: newContributorIds.map((id) => ({ id })),
+            },
+          },
+          include: { addedBy: true, contributors: true },
+        });
       }
 
       const isPublic = args.isPublic ?? true;
