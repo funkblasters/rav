@@ -63,7 +63,13 @@ export function ClubRoleBadge({ role, collapsible = false }: { role: ClubRole | 
         {/* Circle on mobile, full badge on desktop */}
         <button
           type="button"
-          onClick={() => setExpanded(!expanded)}
+          onClick={(e) => {
+            if (!expanded) {
+              e.stopPropagation();
+              setExpanded(true);
+            }
+            // if already expanded, let the click bubble up to the list item
+          }}
           className={`
             md:hidden w-6 h-6 rounded-full ${badgeColor} text-white text-xs font-bold
             flex items-center justify-center cursor-pointer transition-all hover:opacity-80
