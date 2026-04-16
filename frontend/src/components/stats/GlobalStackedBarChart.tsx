@@ -147,7 +147,7 @@ function CustomTooltip({
   active?: boolean;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   payload?: readonly any[];
-  label?: string;
+  label?: string | number;
   groups: Map<string, { contributors: Contributor[]; stripeColors: string[] }>;
 }) {
   if (!active || !payload?.length) return null;
