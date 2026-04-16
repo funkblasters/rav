@@ -1,0 +1,145 @@
+{
+  "nav": {
+    "dashboard": "Inicio",
+    "ranking": "Stats",
+    "myStats": "Mis Estadísticas",
+    "flags": "Banderas",
+    "events": "Eventos",
+    "members": "Miembros",
+    "logout": "Cerrar sesión"
+  },
+  "auth": {
+    "login": "Iniciar sesión",
+    "register": "Registrarse",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "displayName": "Nombre de usuario",
+    "loginButton": "Entrar",
+    "registerButton": "Crear cuenta",
+    "noAccount": "¿No tienes cuenta?",
+    "hasAccount": "¿Ya tienes cuenta?",
+    "invalidEmail": "Introduce un correo electrónico válido",
+    "forgotPassword": "¿Olvidaste tu contraseña? Pide al administrador que la restablezca."
+  },
+  "dashboard": {
+    "title": "Inicio",
+    "lastFlag": "Última Adición",
+    "lastFlagSubtitle": "La última incorporación al tesoro",
+    "noFlagYet": "Aún no hay banderas.",
+    "noDescription": "Sin descripción disponible.",
+    "addedBy": "Añadida por {{name}}",
+    "mostWantedFlag": "Más Buscada",
+    "mostWantedSubtitle": "El unicornio del momento",
+    "flagNews": "Últimas Noticias",
+    "flagNewsSubtitle": "Las últimas noticias del mundo vexilológico",
+    "newsFetchError": "No se pudieron cargar las noticias.",
+    "statistics": "Clasificación",
+    "statisticsSubtitle": "Nuestros estimados colaboradores",
+    "viewStatistics": "Ver estadísticas",
+    "flagsAcquired": "Banderas adquiridas",
+    "maps": {
+      "countries": "Mapa",
+      "subdivisions": "Regiones",
+      "cities": "Ciudades",
+      "nationalFlags": "Banderas Nacionales",
+      "allFlags": "Todas"
+    }
+  },
+  "events": {
+    "title": "Eventos",
+    "create": "Crear evento",
+    "noEvents": "Sin eventos aún.",
+    "fields": {
+      "title": "Título",
+      "description": "Descripción",
+      "date": "Fecha",
+      "location": "Lugar"
+    }
+  },
+  "common": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "loading": "Cargando...",
+    "noData": "Sin datos disponibles.",
+    "serverWakingUp": "El servidor se está iniciando, por favor espera..."
+  },
+  "myFlags": {
+    "title": "Mis Banderas",
+    "description_one": "{{public}} públicas · {{secret}} secretas",
+    "secret": "Secretas",
+    "public": "Pública",
+    "makePublic": "Hacer pública",
+    "noFlags": "Aún no has añadido ninguna bandera."
+  },
+  "addFlagModal": {
+    "visibleToAll": "Visible para todos",
+    "onlyYou": "Solo tú",
+    "success": {
+      "title": "Éxito",
+      "message": "Gracias estimado {{user}}, pero sobre todo gracias a Al."
+    }
+  },
+  "flags": {
+    "title": "Colección",
+    "subtitle": "Todas las banderas adquiridas por el club",
+    "noFlags": "La colección está vacía.",
+    "addedBy": "Añadida por {{name}}",
+    "realProportions": "Proporciones reales"
+  },
+  "profile": {
+    "title": "Tu Tarjeta RAV",
+    "cardNumber": "Tarjeta #",
+    "memberSince": "Miembro desde",
+    "lastContribution": "Última contribución",
+    "totalFlags": "Total banderas",
+    "continentsTouched": "Continentes",
+    "achievements": "Logros",
+    "noAchievements": "Próximamente",
+    "editAvatar": "Cambiar avatar",
+    "chooseAvatar": "Elegir avatar",
+    "defaultAvatar": "Predeterminado (letra)",
+    "clubRoles": {
+      "CHAIRMAN": "Presidente",
+      "VICE_CHAIRMAN": "Vicepresidente",
+      "HONORARY_CHAIRMAN": "Presidente Honorario",
+      "TREASURER": "Tesorero",
+      "SECRETARY": "Secretario",
+      "ORDINARY_ASSOCIATE": "Socio Ordinario"
+    }
+  },
+  "global": {
+    "title": "Stats",
+    "subtitle": "Resumen del Club",
+    "totalFlags": "Banderas Totales",
+    "totalFlagsSubtitle": "Todas las banderas públicas",
+    "registeredMembers": "Socios Registrados",
+    "registeredMembersSubtitle": "Socios oficiales del club",
+    "contributors": "Colaboradores",
+    "contributorsSubtitle": "Todos los que han contribuido",
+    "yearlyActivity": "Actividad Anual",
+    "lgbtFlags": "LGBT+",
+    "lgbtFlagsSubtitle": "Banderas Pride & LGBT+",
+    "historicFlags": "Históricas",
+    "historicFlagsSubtitle": "Banderas históricas",
+    "notRecognizedFlags": "No Reconocidas",
+    "notRecognizedFlagsSubtitle": "No reconocidas internacionalmente",
+    "religiousFlags": "Religiosas",
+    "religiousFlagsSubtitle": "Banderas religiosas y espirituales"
+  },
+  "stats": {
+    "title": "Mis Estadísticas",
+    "subtitle": "Datos y Gráficos",
+    "userTitle": "Estadísticas de {{name}}",
+    "userSubtitle": "Datos y Gráficos",
+    "viewStats": "Ver estadísticas",
+    "continents": "Continentes Visitados",
+    "flagsTotal": "Total banderas",
+    "collectingActivity": "Actividad de Colección",
+    "yearlyActivity": "Actividad Anual",
+    "userFlagsMap": "Mis Contribuciones en el Mapa",
+    "userFlagsMapOther": "Contribuciones en el Mapa",
+    "userFlagsList": "Banderas de {{name}}"
+  }
+}

@@ -151,10 +151,9 @@ export function UserPanel() {
     navigate("/login");
   };
 
-  const toggleLanguage = () => {
-    const newLang = i18n.language === "en" ? "it" : "en";
-    i18n.changeLanguage(newLang);
-  };
+  const LANGUAGES = ["en", "it", "es", "tr"] as const;
+  const LANGUAGE_LABELS: Record<string, string> = { en: "EN", it: "IT", es: "ES", tr: "TR" };
+  const currentLang = LANGUAGES.find((l) => i18n.language.startsWith(l)) ?? "en";
 
   const handleAvatarSelect = async (avatarUrl: string | null) => {
     await updateMyAvatar({ variables: { avatarUrl } });
@@ -186,9 +185,15 @@ export function UserPanel() {
                   <Button variant="ghost" size="icon" disabled>
                     <Moon size={16} />
                   </Button>
-                  <Button variant="ghost" size="icon" disabled>
-                    <span className="text-xs">EN</span>
-                  </Button>
+                  <select
+                    value={currentLang}
+                    disabled
+                    className="text-xs font-semibold bg-transparent border-none outline-none text-foreground opacity-50"
+                  >
+                    {LANGUAGES.map((l) => (
+                      <option key={l} value={l}>{LANGUAGE_LABELS[l]}</option>
+                    ))}
+                  </select>
                   <Button variant="ghost" size="icon" disabled>
                     <LogOut size={16} />
                   </Button>
@@ -291,10 +296,17 @@ export function UserPanel() {
                   <Button variant="ghost" size="icon" onClick={toggle} aria-label="Toggle theme">
                     {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
                   </Button>
-                  {/* Language Toggle */}
-                  <Button variant="ghost" size="icon" onClick={toggleLanguage} aria-label="Toggle language">
-                    {i18n.language === "en" ? "IT" : "EN"}
-                  </Button>
+                  {/* Language Select */}
+                  <select
+                    value={currentLang}
+                    onChange={(e) => i18n.changeLanguage(e.target.value)}
+                    className="text-xs font-semibold bg-transparent border-none outline-none cursor-pointer text-foreground"
+                    aria-label="Select language"
+                  >
+                    {LANGUAGES.map((l) => (
+                      <option key={l} value={l}>{LANGUAGE_LABELS[l]}</option>
+                    ))}
+                  </select>
                   {/* Logout Button */}
                   <Button
                     variant="ghost"

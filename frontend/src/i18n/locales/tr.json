@@ -1,0 +1,145 @@
+{
+  "nav": {
+    "dashboard": "Ana Sayfa",
+    "ranking": "Stats",
+    "myStats": "İstatistiklerim",
+    "flags": "Bayraklar",
+    "events": "Etkinlikler",
+    "members": "Üyeler",
+    "logout": "Çıkış"
+  },
+  "auth": {
+    "login": "Giriş",
+    "register": "Kayıt ol",
+    "email": "E-posta",
+    "password": "Şifre",
+    "displayName": "Kullanıcı adı",
+    "loginButton": "Giriş yap",
+    "registerButton": "Hesap oluştur",
+    "noAccount": "Hesabın yok mu?",
+    "hasAccount": "Zaten hesabın var mı?",
+    "invalidEmail": "Geçerli bir e-posta adresi girin",
+    "forgotPassword": "Şifreni mi unuttun? Yöneticinden sıfırlamasını iste."
+  },
+  "dashboard": {
+    "title": "Ana Sayfa",
+    "lastFlag": "Son Eklenen",
+    "lastFlagSubtitle": "Koleksiyona en son eklenen",
+    "noFlagYet": "Henüz bayrak eklenmedi.",
+    "noDescription": "Açıklama mevcut değil.",
+    "addedBy": "Ekleyen: {{name}}",
+    "mostWantedFlag": "En Çok Aranan",
+    "mostWantedSubtitle": "Şu anki tek boynuzlu at",
+    "flagNews": "Son Haberler",
+    "flagNewsSubtitle": "Bayrak dünyasından en son haberler",
+    "newsFetchError": "Haberler yüklenemedi.",
+    "statistics": "Sıralama",
+    "statisticsSubtitle": "Değerli katkıda bulunanlarımız",
+    "viewStatistics": "İstatistikleri gör",
+    "flagsAcquired": "Edinilen bayraklar",
+    "maps": {
+      "countries": "Harita",
+      "subdivisions": "Bölgeler",
+      "cities": "Şehirler",
+      "nationalFlags": "Ulusal Bayraklar",
+      "allFlags": "Tümü"
+    }
+  },
+  "events": {
+    "title": "Etkinlikler",
+    "create": "Etkinlik oluştur",
+    "noEvents": "Henüz etkinlik yok.",
+    "fields": {
+      "title": "Başlık",
+      "description": "Açıklama",
+      "date": "Tarih",
+      "location": "Konum"
+    }
+  },
+  "common": {
+    "save": "Kaydet",
+    "cancel": "İptal",
+    "delete": "Sil",
+    "edit": "Düzenle",
+    "loading": "Yükleniyor...",
+    "noData": "Veri mevcut değil.",
+    "serverWakingUp": "Sunucu uyanıyor, lütfen bekleyin..."
+  },
+  "myFlags": {
+    "title": "Bayraklarım",
+    "description_one": "{{public}} herkese açık · {{secret}} gizli",
+    "secret": "Gizli",
+    "public": "Herkese açık",
+    "makePublic": "Herkese açık yap",
+    "noFlags": "Henüz bayrak eklemediniz."
+  },
+  "addFlagModal": {
+    "visibleToAll": "Herkese görünür",
+    "onlyYou": "Yalnızca sen",
+    "success": {
+      "title": "Başarılı",
+      "message": "Teşekkürler sayın {{user}}, ama her şeyden önce Al'a teşekkürler."
+    }
+  },
+  "flags": {
+    "title": "Koleksiyon",
+    "subtitle": "Kulübün edindiği tüm bayraklar",
+    "noFlags": "Koleksiyonda henüz bayrak yok.",
+    "addedBy": "Ekleyen: {{name}}",
+    "realProportions": "Gerçek oranlar"
+  },
+  "profile": {
+    "title": "RAV Kartın",
+    "cardNumber": "Kart #",
+    "memberSince": "Üyelik tarihi",
+    "lastContribution": "Son katkı",
+    "totalFlags": "Toplam bayrak",
+    "continentsTouched": "Kıtalar",
+    "achievements": "Başarılar",
+    "noAchievements": "Yakında",
+    "editAvatar": "Avatarı değiştir",
+    "chooseAvatar": "Avatar seç",
+    "defaultAvatar": "Varsayılan (harf)",
+    "clubRoles": {
+      "CHAIRMAN": "Başkan",
+      "VICE_CHAIRMAN": "Başkan Yardımcısı",
+      "HONORARY_CHAIRMAN": "Onursal Başkan",
+      "TREASURER": "Sayman",
+      "SECRETARY": "Sekreter",
+      "ORDINARY_ASSOCIATE": "Olağan Üye"
+    }
+  },
+  "global": {
+    "title": "Stats",
+    "subtitle": "Kulüp Genel Bakış",
+    "totalFlags": "Toplam Bayrak",
+    "totalFlagsSubtitle": "Koleksiyondaki tüm herkese açık bayraklar",
+    "registeredMembers": "Kayıtlı Üyeler",
+    "registeredMembersSubtitle": "Resmi kulüp üyeleri",
+    "contributors": "Katkıda Bulunanlar",
+    "contributorsSubtitle": "Katkıda bulunan herkes",
+    "yearlyActivity": "Yıllık Aktivite",
+    "lgbtFlags": "LGBT+",
+    "lgbtFlagsSubtitle": "Onur & LGBT+ bayrakları",
+    "historicFlags": "Tarihi",
+    "historicFlagsSubtitle": "Tarihi bayraklar",
+    "notRecognizedFlags": "Tanınmayan",
+    "notRecognizedFlagsSubtitle": "Uluslararası alanda tanınmayan",
+    "religiousFlags": "Dini",
+    "religiousFlagsSubtitle": "Dini ve manevi bayraklar"
+  },
+  "stats": {
+    "title": "İstatistiklerim",
+    "subtitle": "Veriler & Grafikler",
+    "userTitle": "{{name}} İstatistikleri",
+    "userSubtitle": "Veriler & Grafikler",
+    "viewStats": "İstatistikleri gör",
+    "continents": "Ziyaret Edilen Kıtalar",
+    "flagsTotal": "Toplam bayrak",
+    "collectingActivity": "Koleksiyon Aktivitesi",
+    "yearlyActivity": "Yıllık Aktivite",
+    "userFlagsMap": "Haritadaki Katkılarım",
+    "userFlagsMapOther": "Haritadaki Katkılar",
+    "userFlagsList": "{{name}} Bayrakları"
+  }
+}
