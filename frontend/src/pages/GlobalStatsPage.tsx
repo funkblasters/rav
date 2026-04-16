@@ -38,21 +38,39 @@ function StatCard({ title, subtitle, value }: { title: string; subtitle: string;
 function PropertyStatCard({ title, subtitle, value, imageUrl }: { title: string; subtitle: string; value: number | undefined; imageUrl: string }) {
   return (
     <Card className="flex-1">
-      <CardContent className="flex items-center justify-between px-4 py-6">
-        <div className="flex items-center gap-3">
-          <img
-            src={imageUrl}
-            alt={title}
-            className="w-10 h-10 rounded-full object-cover shrink-0 border"
-          />
-          <div className="flex flex-col gap-0.5">
-            <span className="text-sm font-semibold leading-tight">{title}</span>
-            <span className="text-xs text-muted-foreground">{subtitle}</span>
+      {/* Mobile: title on top, then image + number side by side */}
+      <CardContent className="px-4 py-4 sm:py-6">
+        {/* Mobile layout */}
+        <div className="flex flex-col gap-2 sm:hidden">
+          <span className="text-sm font-semibold leading-tight">{title}</span>
+          <div className="flex items-center justify-between">
+            <img
+              src={imageUrl}
+              alt={title}
+              className="w-10 h-10 rounded-full object-cover shrink-0 border"
+            />
+            <span className="text-4xl font-bold tabular-nums">
+              {value ?? "—"}
+            </span>
           </div>
         </div>
-        <span className="text-4xl font-bold tabular-nums shrink-0 ml-3">
-          {value ?? "—"}
-        </span>
+        {/* Desktop layout */}
+        <div className="hidden sm:flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <img
+              src={imageUrl}
+              alt={title}
+              className="w-10 h-10 rounded-full object-cover shrink-0 border"
+            />
+            <div className="flex flex-col gap-0.5">
+              <span className="text-sm font-semibold leading-tight">{title}</span>
+              <span className="text-xs text-muted-foreground">{subtitle}</span>
+            </div>
+          </div>
+          <span className="text-4xl font-bold tabular-nums shrink-0 ml-3">
+            {value ?? "—"}
+          </span>
+        </div>
       </CardContent>
     </Card>
   );
