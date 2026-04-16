@@ -73,20 +73,29 @@ function MemberFlagsSheet({
       <SheetContent side="bottom" className="max-h-[75dvh] flex flex-col" showCloseButton={false}>
         <SheetHeader className="shrink-0 border-b pb-3">
           <div className="flex items-center gap-3">
-            <SheetTitle className="flex-1 truncate">{member?.displayName}</SheetTitle>
+            {member && (
+              <AvatarDisplay
+                displayName={member.displayName}
+                avatarUrl={member.avatarUrl}
+                size="sm"
+              />
+            )}
+            <div className="flex-1 min-w-0 flex flex-col">
+              <SheetTitle className="truncate">{member?.displayName}</SheetTitle>
+              <SheetDescription>
+                {loading ? "…" : `${flags.length} flag${flags.length !== 1 ? "s" : ""}`}
+              </SheetDescription>
+            </div>
             <Button
               variant="default"
-              size="sm"
-              className="shrink-0 gap-1.5 font-bold"
+              size="lg"
+              className="shrink-0 gap-2 font-bold"
               onClick={handleViewStats}
             >
-              <BarChart2 size={14} />
+              <BarChart2 size={16} />
               {t("stats.viewStats")}
             </Button>
           </div>
-          <SheetDescription>
-            {loading ? "…" : `${flags.length} flag${flags.length !== 1 ? "s" : ""}`}
-          </SheetDescription>
         </SheetHeader>
 
         {loading ? (
@@ -220,12 +229,6 @@ export function Rankings() {
                 </List>
               </div>
 
-              {/* CTA - only on mobile/tablet */}
-              <div className="flex flex-col items-center justify-center mt-4 md:hidden">
-                <Button size="lg" onClick={() => navigate("/stats")}>
-                  View personal stats!
-                </Button>
-              </div>
             </div>
           </QueryStateRenderer>
         </CardContent>
