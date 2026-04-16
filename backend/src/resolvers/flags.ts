@@ -1,4 +1,5 @@
 import { randomUUID } from "crypto";
+import { Prisma } from "@prisma/client";
 import type { AppContext } from "../context.js";
 import { prisma } from "../db.js";
 import { countryNameToISOCode, subdivisionToCountryCode } from "../countryCodeMappings.js";
@@ -220,21 +221,13 @@ export const flagResolvers = {
       const flag = await prisma.flag.findUnique({ where: { id: args.id } });
       if (!flag) throw new Error("Flag not found");
 
-      const updateData: {
-        name?: string;
-        imageUrl?: string | null;
-        countryCode?: string;
-        subdivisionCode?: string | null;
-        continent?: string | null;
-        contributors?: { set: { id: string }[] };
-        properties?: { lgbt?: boolean | null; notRecognized?: boolean | null; religious?: boolean | null; historic?: boolean | null } | null;
-      } = {};
+      const updateData: Prisma.FlagUpdateInput = {};
       if (args.name !== undefined) updateData.name = args.name;
       if (args.imageUrl !== undefined) updateData.imageUrl = args.imageUrl ?? null;
       if (args.countryCode !== undefined) updateData.countryCode = args.countryCode;
       if (args.subdivisionCode !== undefined) updateData.subdivisionCode = args.subdivisionCode || null;
       if (args.continent !== undefined) updateData.continent = args.continent || null;
-      if (args.properties !== undefined) updateData.properties = args.properties ?? null;
+      if (args.properties !== undefined) updateData.properties = args.properties ?? Prisma.DbNull;
 
       if (args.contributorIds !== undefined) {
         if (args.contributorIds.length === 0) throw new Error("contributorIds must not be empty");
