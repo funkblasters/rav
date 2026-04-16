@@ -146,7 +146,7 @@ function CustomTooltip({
 }: {
   active?: boolean;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  payload?: any[];
+  payload?: readonly any[];
   label?: string;
   groups: Map<string, { contributors: Contributor[]; stripeColors: string[] }>;
 }) {
