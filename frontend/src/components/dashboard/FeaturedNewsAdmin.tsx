@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ExternalLink } from "lucide-react";
+import { getErrorMessage } from "@/lib/utils";
 
 const GET_FEATURED_NEWS = gql`
   query GetFeaturedNews {
@@ -49,12 +50,12 @@ export function FeaturedNewsAdmin() {
   const [setFeaturedNews, { loading: saving }] = useMutation(SET_FEATURED_NEWS, {
     ...refetch,
     onCompleted: () => { setForm(emptyForm); setError(null); },
-    onError: (e) => setError(e.message),
+    onError: (e) => setError(getErrorMessage(e)),
   });
 
   const [clearFeaturedNews, { loading: clearing }] = useMutation(CLEAR_FEATURED_NEWS, {
     ...refetch,
-    onError: (e) => setError(e.message),
+    onError: (e) => setError(getErrorMessage(e)),
   });
 
   const handleSubmit = (e: React.FormEvent) => {

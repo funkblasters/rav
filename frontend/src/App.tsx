@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ApolloProvider } from "@apollo/client";
 import { Toaster } from "sonner";
+import { lazy, Suspense } from "react";
 import { apolloClient } from "@/lib/apollo";
 import { AuthProvider } from "@/context/AuthContext";
 import { ThemeProvider, useTheme } from "@/context/ThemeContext";
@@ -9,13 +10,14 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { PublicRoute } from "@/components/PublicRoute";
 import { AdminRoute } from "@/components/AdminRoute";
 import { Layout } from "@/components/Layout";
-import { LoginPage } from "@/pages/LoginPage";
-import { RegisterPage } from "@/pages/RegisterPage";
-import { DashboardPage } from "@/pages/DashboardPage";
-import { StatsPage } from "@/pages/StatsPage";
-import { GlobalStatsPage } from "@/pages/GlobalStatsPage";
-import { FlagsPage } from "@/pages/FlagsPage";
-import { AdminPage } from "@/pages/AdminPage";
+
+const LoginPage = lazy(() => import("@/pages/LoginPage").then((m) => ({ default: m.LoginPage })));
+const RegisterPage = lazy(() => import("@/pages/RegisterPage").then((m) => ({ default: m.RegisterPage })));
+const DashboardPage = lazy(() => import("@/pages/DashboardPage").then((m) => ({ default: m.DashboardPage })));
+const StatsPage = lazy(() => import("@/pages/StatsPage").then((m) => ({ default: m.StatsPage })));
+const GlobalStatsPage = lazy(() => import("@/pages/GlobalStatsPage").then((m) => ({ default: m.GlobalStatsPage })));
+const FlagsPage = lazy(() => import("@/pages/FlagsPage").then((m) => ({ default: m.FlagsPage })));
+const AdminPage = lazy(() => import("@/pages/AdminPage").then((m) => ({ default: m.AdminPage })));
 
 function AppContent() {
   const { theme } = useTheme();
@@ -25,6 +27,7 @@ function AppContent() {
       <SlowLoadProvider>
       <AuthProvider>
         <BrowserRouter>
+          <Suspense>
           <Routes>
             <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
             <Route path="/register" element={<PublicRoute><RegisterPage /></PublicRoute>} />
@@ -55,6 +58,7 @@ function AppContent() {
             </Route>
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
+          </Suspense>
           <Toaster
             position="top-center"
             duration={6000}

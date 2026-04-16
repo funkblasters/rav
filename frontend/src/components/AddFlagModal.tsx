@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/context/AuthContext";
+import { getErrorMessage } from "@/lib/utils";
 
 interface FlagEntry {
   name: string;
@@ -449,7 +450,7 @@ export function AddFlagModal({ onClose }: Props) {
       });
       onClose();
     },
-    onError: (e) => setError(e.message),
+    onError: (e) => setError(getErrorMessage(e)),
   });
 
   const suggestions = query.length >= 2

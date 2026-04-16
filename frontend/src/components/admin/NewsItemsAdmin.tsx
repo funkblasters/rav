@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { getErrorMessage } from "@/lib/utils";
 
 interface NewsItem {
   id: string;
@@ -68,7 +69,7 @@ export function NewsItemsAdmin() {
   const [createNewsItem, { loading: creating }] = useMutation(CREATE_NEWS_ITEM, {
     ...refetchQ,
     onCompleted: () => { setForm(emptyForm); setError(null); },
-    onError: (e) => setError(e.message),
+    onError: (e) => setError(getErrorMessage(e)),
   });
 
   const [deleteNewsItem, { loading: deleting }] = useMutation(DELETE_NEWS_ITEM, {

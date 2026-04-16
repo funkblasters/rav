@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { getErrorMessage } from "@/lib/utils";
 
 const GET_MOST_WANTED = gql`
   query GetMostWanted {
@@ -59,12 +60,12 @@ export function MostWantedAdmin() {
   const [setMostWanted, { loading: saving }] = useMutation(SET_MOST_WANTED, {
     ...refetch,
     onCompleted: () => { setForm(emptyForm); setError(null); },
-    onError: (e) => setError(e.message),
+    onError: (e) => setError(getErrorMessage(e)),
   });
 
   const [clearMostWanted, { loading: clearing }] = useMutation(CLEAR_MOST_WANTED, {
     ...refetch,
-    onError: (e) => setError(e.message),
+    onError: (e) => setError(getErrorMessage(e)),
   });
 
   const handleSubmit = (e: React.FormEvent) => {

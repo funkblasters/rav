@@ -14,6 +14,7 @@ import { FlagImageEditor } from "@/components/admin/FlagImageEditor";
 import { DeleteFlagCard } from "@/components/admin/DeleteFlagCard";
 import { NewsItemsAdmin } from "@/components/admin/NewsItemsAdmin";
 import { tokenStore } from "@/lib/tokenStore";
+import { getErrorMessage } from "@/lib/utils";
 
 const CLUB_ROLES = [
   "ORDINARY_ASSOCIATE",
@@ -187,7 +188,7 @@ export function AdminPage() {
   const [addInvite, { loading: adding }] = useMutation(ADD_INVITE, {
     refetchQueries: [GET_PANEL],
     onCompleted: () => { setInviteForm(emptyInviteForm); setInviteError(null); },
-    onError: (e) => setInviteError(e.message),
+    onError: (e) => setInviteError(getErrorMessage(e)),
   });
 
   const [removeInvite] = useMutation(REMOVE_INVITE, { refetchQueries: [GET_PANEL] });
@@ -200,7 +201,7 @@ export function AdminPage() {
     },
     onError: (e, opts) => {
       const uid = opts?.variables?.userId as string;
-      setResetErrors((p) => ({ ...p, [uid]: e.message }));
+      setResetErrors((p) => ({ ...p, [uid]: getErrorMessage(e) }));
     },
   });
 
@@ -213,7 +214,7 @@ export function AdminPage() {
     },
     onError: (e, opts) => {
       const uid = opts?.variables?.userId as string;
-      setAssignErrors((p) => ({ ...p, [uid]: e.message }));
+      setAssignErrors((p) => ({ ...p, [uid]: getErrorMessage(e) }));
     },
   });
 

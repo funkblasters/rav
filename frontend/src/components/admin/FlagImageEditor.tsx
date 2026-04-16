@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { useQuery, useMutation, gql } from "@apollo/client";
 import { Check, X } from "lucide-react";
+import { getErrorMessage } from "@/lib/utils";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -121,7 +122,7 @@ function FlagEditPanel({
 
   const [updateFlag, { loading }] = useMutation(UPDATE_FLAG, {
     onCompleted: () => { setError(null); onSaved(); },
-    onError: (e) => setError(e.message),
+    onError: (e) => setError(getErrorMessage(e)),
     refetchQueries: ["GetAllFlagsAdmin", "GetFlags", "LastFlag", "GetMyFlags"],
   });
 

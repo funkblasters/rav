@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
+import { getErrorMessage } from "@/lib/utils";
 
 interface QueryStateRendererProps {
   loading?: boolean;
@@ -38,7 +39,7 @@ export function QueryStateRenderer({
       <div className="flex items-center justify-center h-full text-destructive text-sm">
         <div className="text-center">
           <p className="font-medium">Error</p>
-          <p className="text-xs text-muted-foreground mt-1">{error.message}</p>
+          <p className="text-xs text-muted-foreground mt-1">{getErrorMessage(error)}</p>
         </div>
       </div>
     );

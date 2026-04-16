@@ -10,6 +10,18 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          "vendor-react": ["react", "react-dom", "react-router-dom"],
+          "vendor-apollo": ["@apollo/client", "graphql"],
+          "vendor-charts": ["recharts"],
+          "vendor-maps": ["react-simple-maps"],
+        },
+      },
+    },
+  },
   server: {
     allowedHosts: ["saxophone-undoing-shuffling.ngrok-free.dev"],
     proxy: {

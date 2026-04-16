@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { MaritimeFlags } from "@/components/MaritimeFlags";
+import { getErrorMessage } from "@/lib/utils";
 
 const REGISTER = gql`
   mutation Register($email: String!, $password: String!, $displayName: String!) {
@@ -32,7 +33,7 @@ export function RegisterPage() {
       login(data.register.token, data.register.user);
       navigate("/");
     },
-    onError: (e) => setError(e.message),
+    onError: (e) => setError(getErrorMessage(e)),
   });
 
   const handleSubmit = (e: React.FormEvent) => {
