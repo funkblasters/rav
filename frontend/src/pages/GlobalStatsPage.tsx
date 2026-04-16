@@ -19,21 +19,27 @@ const GLOBAL_STATS = gql`
   }
 `;
 
-function useCountUp(target: number | undefined, duration = 400) {
+function useCountUp(target: number | undefined, duration = 1000) {
   const [count, setCount] = useState(0);
   const rafRef = useRef<number | null>(null);
   useEffect(() => {
     if (target === undefined) return;
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    let cancelled = false;
+    setCount(0);
     const start = performance.now();
     const tick = (now: number) => {
+      if (cancelled) return;
       const progress = Math.min((now - start) / duration, 1);
       const eased = 1 - Math.pow(1 - progress, 3);
-      setCount(Math.round(eased * target));
+      setCount(Math.max(0, Math.round(eased * target)));
       if (progress < 1) rafRef.current = requestAnimationFrame(tick);
     };
     rafRef.current = requestAnimationFrame(tick);
-    return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); };
+    return () => {
+      cancelled = true;
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
   }, [target, duration]);
   return count;
 }
@@ -42,13 +48,13 @@ function StatCard({ title, subtitle, value }: { title: string; subtitle: string;
   const count = useCountUp(value);
   return (
     <Card className="flex-1">
-      <CardContent className="flex items-center justify-between px-6 py-8">
+      <CardContent className="grid grid-cols-2 sm:flex sm:items-center sm:justify-between items-center px-6 py-8">
         <div className="flex flex-col gap-1">
           <span className="text-sm font-semibold leading-tight">{title}</span>
           <span className="text-xs text-muted-foreground">{subtitle}</span>
         </div>
-        <span className="text-5xl font-bold tabular-nums shrink-0">
-          {value === undefined ? "—" : count}
+        <span className="text-5xl font-bold tabular-nums text-right sm:text-left shrink-0">
+          {value === undefined ? 0 : count}
         </span>
       </CardContent>
     </Card>
@@ -71,7 +77,7 @@ function PropertyStatCard({ title, subtitle, value, imageUrl }: { title: string;
               className="w-10 h-10 rounded-full object-cover shrink-0 border"
             />
             <span className="text-4xl font-bold tabular-nums">
-              {value === undefined ? "—" : count}
+              {value === undefined ? 0 : count}
             </span>
           </div>
         </div>
@@ -89,7 +95,7 @@ function PropertyStatCard({ title, subtitle, value, imageUrl }: { title: string;
             </div>
           </div>
           <span className="text-4xl font-bold tabular-nums shrink-0 ml-3">
-            {value === undefined ? "—" : count}
+            {value === undefined ? 0 : count}
           </span>
         </div>
       </CardContent>
