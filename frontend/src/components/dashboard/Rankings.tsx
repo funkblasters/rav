@@ -70,7 +70,7 @@ function MemberFlagsSheet({
 
   return (
     <Sheet open={!!member} onOpenChange={(open) => { if (!open) onClose(); }}>
-      <SheetContent side="bottom" className="max-h-[75dvh] flex flex-col" showCloseButton={false}>
+      <SheetContent side="bottom" className="!h-[75dvh] flex flex-col" showCloseButton={false}>
         <SheetHeader className="shrink-0 border-b pb-3">
           <div className="flex items-center gap-3">
             {member && (
