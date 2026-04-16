@@ -143,7 +143,6 @@ function MemberFlagsSheet({
 
 export function Rankings() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const { user: currentUser } = useAuth();
   const { data, loading, error, refetch } = useQuery(TOP_MEMBERS);
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
