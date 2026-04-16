@@ -27,7 +27,11 @@ function AppContent() {
       <SlowLoadProvider>
       <AuthProvider>
         <BrowserRouter>
-          <Suspense>
+          <Suspense fallback={
+            <div className="fixed inset-0 flex items-center justify-center bg-background">
+              <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+            </div>
+          }>
           <Routes>
             <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
             <Route path="/register" element={<PublicRoute><RegisterPage /></PublicRoute>} />
