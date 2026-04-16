@@ -19,7 +19,8 @@
     "noAccount": "Don't have an account?",
     "hasAccount": "Already have an account?",
     "invalidEmail": "Please enter a valid email address",
-    "forgotPassword": "Forgot your password? Ask your admin to reset it."
+    "forgotPassword": "Forgot your password? Ask your admin to reset it.",
+    "logoutConfirm": "Are you sure you want to log out?"
   },
   "dashboard": {
     "title": "Dashboard",

@@ -17,6 +17,16 @@ import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const MY_PROFILE = gql`
   query MyProfile {
@@ -144,6 +154,8 @@ export function UserPanel() {
   });
 
   const profile = data?.myProfile;
+
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
 
   const handleLogout = () => {
     setOpen(false);
@@ -311,7 +323,7 @@ export function UserPanel() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={handleLogout}
+                    onClick={() => setShowLogoutDialog(true)}
                     aria-label="Logout"
                   >
                     <LogOut size={16} />
@@ -426,6 +438,23 @@ export function UserPanel() {
           ) : null}
         </SheetContent>
       </Sheet>
+
+      <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("nav.logout")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("auth.logoutConfirm")}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleLogout}>
+              {t("nav.logout")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }

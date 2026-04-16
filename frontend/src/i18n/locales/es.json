@@ -19,7 +19,8 @@
     "noAccount": "¿No tienes cuenta?",
     "hasAccount": "¿Ya tienes cuenta?",
     "invalidEmail": "Introduce un correo electrónico válido",
-    "forgotPassword": "¿Olvidaste tu contraseña? Pide al administrador que la restablezca."
+    "forgotPassword": "¿Olvidaste tu contraseña? Pide al administrador que la restablezca.",
+    "logoutConfirm": "¿Seguro que quieres cerrar sesión?"
   },
   "dashboard": {
     "title": "Inicio",

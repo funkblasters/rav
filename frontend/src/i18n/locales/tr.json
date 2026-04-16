@@ -19,7 +19,8 @@
     "noAccount": "Hesabın yok mu?",
     "hasAccount": "Zaten hesabın var mı?",
     "invalidEmail": "Geçerli bir e-posta adresi girin",
-    "forgotPassword": "Şifreni mi unuttun? Yöneticinden sıfırlamasını iste."
+    "forgotPassword": "Şifreni mi unuttun? Yöneticinden sıfırlamasını iste.",
+    "logoutConfirm": "Çıkış yapmak istediğine emin misin?"
   },
   "dashboard": {
     "title": "Ana Sayfa",

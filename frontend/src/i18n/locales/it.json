@@ -19,7 +19,8 @@
     "noAccount": "Non hai un account?",
     "hasAccount": "Hai già un account?",
     "invalidEmail": "Inserisci un indirizzo email valido",
-    "forgotPassword": "Password dimenticata? Chiedi all'amministratore di reimpostarla."
+    "forgotPassword": "Password dimenticata? Chiedi all'amministratore di reimpostarla.",
+    "logoutConfirm": "Sei sicuro di voler uscire?"
   },
   "dashboard": {
     "title": "Dashboard",
