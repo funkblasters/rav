@@ -167,6 +167,24 @@ type MemberStats {
   avatarUrl: String
 }
 
+type GlobalStats {
+  totalFlags: Int!
+  membersCount: Int!
+  registeredCount: Int!
+}
+
+type YearlyActivityContributor {
+  id: ID!
+  displayName: String!
+}
+
+type YearlyActivityEntry {
+  year: Int!
+  groupKey: String!
+  contributors: [YearlyActivityContributor!]!
+  count: Int!
+}
+
 ### ─── Queries ────────────────────────────────────────────────────────────────
 
 type Query {
@@ -189,6 +207,9 @@ type Query {
   newsItems(limit: Int): [NewsItem!]!
   featuredNewsItem: NewsItem
   topMembers(limit: Int): [MemberStats!]!
+  globalStats: GlobalStats!
+  globalContinentsBreakdown: [ContributionByContinent!]!
+  globalYearlyActivity: [YearlyActivityEntry!]!
   invites: [Invite!]!
   failedImports: [FailedImport!]!
 }

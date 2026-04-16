@@ -50,7 +50,7 @@ export function StatsPage() {
     ? userProfileData?.userProfile?.avatarUrl
     : myProfileData?.myProfile?.avatarUrl;
 
-  const title = userId ? (displayName ?? "…") : t("stats.title");
+  const title = displayName ?? "…";
   const subtitle = userId
     ? (displayName !== undefined ? t("stats.userSubtitle") : "")
     : t("stats.subtitle");

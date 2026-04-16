@@ -37,17 +37,17 @@ export function Layout() {
               RAV
             </Link>
 
-            {/* Stats Nav Item */}
+            {/* Global Stats Nav Item */}
             <Link
-              to="/stats"
+              to="/global"
               className={`flex items-center gap-2 px-2 py-1 rounded-md transition-colors ${
-                isActive("/stats")
+                isActive("/global")
                   ? "bg-accent text-accent-foreground"
                   : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
               }`}
             >
               <BarChart2 size={18} className="flex-shrink-0" />
-              <span className="hidden md:inline">{t("nav.ranking")}</span>
+              <span className="hidden md:inline">{t("global.title")}</span>
             </Link>
 
             {/* Flags Nav Item */}

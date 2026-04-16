@@ -26,6 +26,15 @@ const USER_PROFILE_CONTINENTS = gql`
   }
 `;
 
+const GLOBAL_CONTINENTS = gql`
+  query GlobalContinentsBreakdown {
+    globalContinentsBreakdown {
+      continent
+      count
+    }
+  }
+`;
+
 const CONTINENT_COLORS: Record<string, string> = {
   "africa":        "#ef4444", // red
   "europe":        "#3b82f6", // blue
@@ -49,17 +58,20 @@ const chartConfig = {
   },
 };
 
-export function ContinentsPieChart({ userId }: { userId?: string }) {
+export function ContinentsPieChart({ userId, global: isGlobal, innerRadius = 50, outerRadius = 80 }: { userId?: string; global?: boolean; innerRadius?: number; outerRadius?: number }) {
   const { t } = useTranslation();
 
-  const { data: myData, loading: myLoading } = useQuery(MY_PROFILE, { skip: !!userId });
+  const { data: myData, loading: myLoading } = useQuery(MY_PROFILE, { skip: !!userId || isGlobal });
   const { data: userData, loading: userLoading } = useQuery(USER_PROFILE_CONTINENTS, {
     variables: { userId },
-    skip: !userId,
+    skip: !userId || isGlobal,
   });
+  const { data: globalData, loading: globalLoading } = useQuery(GLOBAL_CONTINENTS, { skip: !isGlobal });
 
-  const loading = userId ? userLoading : myLoading;
-  const continents: ContinentData[] = userId
+  const loading = isGlobal ? globalLoading : userId ? userLoading : myLoading;
+  const continents: ContinentData[] = isGlobal
+    ? (globalData?.globalContinentsBreakdown ?? [])
+    : userId
     ? (userData?.userProfile?.contributionsByContinent ?? [])
     : (myData?.myProfile?.contributionsByContinent ?? []);
 
@@ -98,8 +110,8 @@ export function ContinentsPieChart({ userId }: { userId?: string }) {
                 nameKey="continent"
                 cx="50%"
                 cy="50%"
-                innerRadius={50}
-                outerRadius={80}
+                innerRadius={innerRadius}
+                outerRadius={outerRadius}
                 paddingAngle={2}
               >
                 {continents.map((c) => (

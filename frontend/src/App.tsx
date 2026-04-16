@@ -13,6 +13,7 @@ import { LoginPage } from "@/pages/LoginPage";
 import { RegisterPage } from "@/pages/RegisterPage";
 import { DashboardPage } from "@/pages/DashboardPage";
 import { StatsPage } from "@/pages/StatsPage";
+import { GlobalStatsPage } from "@/pages/GlobalStatsPage";
 import { FlagsPage } from "@/pages/FlagsPage";
 import { AdminPage } from "@/pages/AdminPage";
 
@@ -38,6 +39,7 @@ function AppContent() {
               <Route index element={<DashboardPage />} />
               <Route path="stats" element={<StatsPage />} />
               <Route path="stats/:userId" element={<StatsPage />} />
+              <Route path="global" element={<GlobalStatsPage />} />
               <Route path="flags" element={<FlagsPage />} />
               {/* TODO: add more routes (events, members) */}
             </Route>

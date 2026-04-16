@@ -83,6 +83,8 @@ const AVATAR_OPTIONS = [
   "https://upload.wikimedia.org/wikipedia/commons/f/f1/Roundel_of_Ecuador.svg",
   "https://upload.wikimedia.org/wikipedia/commons/7/7e/Roundel_of_the_Republic_of_China.svg",
   "https://upload.wikimedia.org/wikipedia/commons/8/8d/Roundel_of_Saudi_Arabia.svg",
+  "https://upload.wikimedia.org/wikipedia/commons/0/01/Roundel_of_South_Sudan_V2.svg",
+  "https://upload.wikimedia.org/wikipedia/commons/c/c0/Roundel_of_Mozambique_%281975%E2%80%932011%29.svg",
 ];
 
 function getAvatarColor(name: string): string {
@@ -376,6 +378,14 @@ export function UserPanel() {
                       </div>
                     </div>
                   </div>
+
+                  {/* Stats Button */}
+                  <button
+                    onClick={() => { setOpen(false); navigate("/stats"); }}
+                    className="w-full py-3 rounded-lg font-semibold text-sm bg-foreground text-background hover:opacity-90 transition-opacity"
+                  >
+                    {t("nav.myStats")}
+                  </button>
 
                   <Separator />
 

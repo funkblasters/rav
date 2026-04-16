@@ -2,6 +2,7 @@
   "nav": {
     "dashboard": "Dashboard",
     "ranking": "Stats",
+    "myStats": "Le mie Statistiche",
     "flags": "Bandiere",
     "events": "Eventi",
     "members": "Membri",
@@ -107,6 +108,17 @@
       "SECRETARY": "Segretario",
       "ORDINARY_ASSOCIATE": "Socio Ordinario"
     }
+  },
+  "global": {
+    "title": "Stats",
+    "subtitle": "Panoramica del Club",
+    "totalFlags": "Bandiere Totali",
+    "totalFlagsSubtitle": "Tutte le bandiere pubbliche",
+    "registeredMembers": "Soci Iscritti",
+    "registeredMembersSubtitle": "Soci ufficiali del club",
+    "contributors": "Contributori",
+    "contributorsSubtitle": "Tutti coloro che hanno contribuito",
+    "yearlyActivity": "Attività Annuale"
   },
   "stats": {
     "title": "Le Mie Statistiche",

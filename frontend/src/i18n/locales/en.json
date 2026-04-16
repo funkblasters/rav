@@ -2,6 +2,7 @@
   "nav": {
     "dashboard": "Dashboard",
     "ranking": "Stats",
+    "myStats": "My Stats",
     "flags": "Flags",
     "events": "Events",
     "members": "Members",
@@ -107,6 +108,17 @@
       "SECRETARY": "Secretary",
       "ORDINARY_ASSOCIATE": "Ordinary Associate"
     }
+  },
+  "global": {
+    "title": "Stats",
+    "subtitle": "Club Overview",
+    "totalFlags": "Total Flags",
+    "totalFlagsSubtitle": "All public flags in the collection",
+    "registeredMembers": "Registered Members",
+    "registeredMembersSubtitle": "Official club members",
+    "contributors": "Contributors",
+    "contributorsSubtitle": "Everyone who has contributed",
+    "yearlyActivity": "Yearly Activity"
   },
   "stats": {
     "title": "My Stats",
