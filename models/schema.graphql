@@ -71,6 +71,20 @@ type UserProfile {
 
 ### ─── Flag ───────────────────────────────────────────────────────────────────
 
+type FlagProperties {
+  lgbt: Boolean
+  notRecognized: Boolean
+  religious: Boolean
+  historic: Boolean
+}
+
+input FlagPropertiesInput {
+  lgbt: Boolean
+  notRecognized: Boolean
+  religious: Boolean
+  historic: Boolean
+}
+
 type Flag {
   id: ID!
   name: String!
@@ -89,6 +103,7 @@ type Flag {
   publishedAt: DateTime
   togetherWith: [User!]!
   contributors: [User!]!
+  properties: FlagProperties
 }
 
 type FlagPreview {
@@ -101,6 +116,7 @@ type FlagPreview {
   description: String
   togetherWith: [User!]!
   contributors: [User!]!
+  properties: FlagProperties
 }
 
 type FlagGeo {
@@ -171,6 +187,10 @@ type GlobalStats {
   totalFlags: Int!
   membersCount: Int!
   registeredCount: Int!
+  lgbtFlags: Int!
+  historicFlags: Int!
+  notRecognizedFlags: Int!
+  religiousFlags: Int!
 }
 
 type YearlyActivityContributor {
@@ -242,7 +262,7 @@ type Mutation {
   deleteFlag(id: ID!): Boolean!
   makePublic(flagId: ID!): Flag!
   updateFlagImageUrl(id: ID!, imageUrl: String): Flag!
-  updateFlag(id: ID!, name: String, imageUrl: String, countryCode: String, subdivisionCode: String, continent: String, contributorIds: [ID!]): Flag!
+  updateFlag(id: ID!, name: String, imageUrl: String, countryCode: String, subdivisionCode: String, continent: String, contributorIds: [ID!], properties: FlagPropertiesInput): Flag!
 
   addInvite(email: String!, clubRole: ClubRole!, cardNumber: String): Invite!
   removeInvite(email: String!): Boolean!

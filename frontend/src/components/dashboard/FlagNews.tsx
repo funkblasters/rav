@@ -2,7 +2,7 @@ import { useQuery, gql } from "@apollo/client";
 import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
 import { ExternalLink } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { QueryStateRenderer } from "@/components/QueryStateRenderer";
 
 const NEWS_ITEMS = gql`
@@ -47,9 +47,8 @@ export function FlagNews() {
 
   return (
     <Card className="h-full overflow-hidden flex flex-col">
-      <CardHeader className="pb-3">
+      <CardHeader className="pb-2 shrink-0">
         <CardTitle className="text-base font-semibold">{t("dashboard.flagNews")}</CardTitle>
-        <CardDescription>{t("dashboard.flagNewsSubtitle")}</CardDescription>
       </CardHeader>
       <CardContent className="p-0 flex-1 overflow-y-auto">
         <QueryStateRenderer
@@ -58,7 +57,6 @@ export function FlagNews() {
           empty={!items.length && !featured && !loading}
         >
           <div className="divide-y flex flex-col h-full">
-            {/* Featured News Item */}
             {featured && (
               <div className="flex gap-3 p-4 hover:bg-accent transition-colors group flex-shrink-0 border-b">
                 {featured.imageUrl && (
@@ -93,8 +91,6 @@ export function FlagNews() {
                 </a>
               </div>
             )}
-
-            {/* Regular News Items */}
             <ul className="divide-y flex-1 overflow-y-auto">
               {items.map((item) => (
                 <li key={item.id}>
@@ -104,7 +100,6 @@ export function FlagNews() {
                     rel="noopener noreferrer"
                     className="flex items-center gap-3 px-4 py-3 hover:bg-accent transition-colors group"
                   >
-                    {/* Thumbnail */}
                     {item.imageUrl && (
                       <img
                         src={item.imageUrl}
@@ -112,8 +107,6 @@ export function FlagNews() {
                         className="w-14 h-10 object-cover rounded shrink-0"
                       />
                     )}
-
-                    {/* Text */}
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium leading-snug line-clamp-2 group-hover:text-accent-foreground">
                         {item.title}
@@ -123,7 +116,6 @@ export function FlagNews() {
                         {new Date(item.pubDate).toLocaleDateString()}
                       </p>
                     </div>
-
                     <ExternalLink size={12} className="text-muted-foreground shrink-0" />
                   </a>
                 </li>

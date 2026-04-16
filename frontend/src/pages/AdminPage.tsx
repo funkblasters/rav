@@ -372,7 +372,10 @@ export function AdminPage() {
         <TabsContent value="news" className="mt-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-6xl">
             <NewsItemsAdmin />
-            <FeaturedNewsAdmin />
+            <div className="space-y-6">
+              <FeaturedNewsAdmin />
+              <MostWantedAdmin />
+            </div>
           </div>
         </TabsContent>
 
@@ -764,16 +767,9 @@ export function AdminPage() {
         </TabsContent>
 
         {/* ── FLAGS TAB ── */}
-        <TabsContent value="flags" className="mt-4">
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <MostWantedAdmin />
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FlagImageEditor />
-              <DeleteFlagCard />
-            </div>
-          </div>
+        <TabsContent value="flags" className="mt-4 space-y-6">
+          <FlagImageEditor />
+          <DeleteFlagCard />
         </TabsContent>
       </Tabs>
     </div>

@@ -52,6 +52,7 @@ model Flag {
 
   createdAt DateTime   @default(now())
   publishedAt DateTime?
+  properties  Json?
 
   @@map("flags")
 }

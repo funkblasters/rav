@@ -118,7 +118,15 @@
     "registeredMembersSubtitle": "Soci ufficiali del club",
     "contributors": "Contributori",
     "contributorsSubtitle": "Tutti coloro che hanno contribuito",
-    "yearlyActivity": "Attività Annuale"
+    "yearlyActivity": "Attività Annuale",
+    "lgbtFlags": "LGBT+",
+    "lgbtFlagsSubtitle": "Bandiere Pride & LGBT+",
+    "historicFlags": "Storiche",
+    "historicFlagsSubtitle": "Bandiere storiche",
+    "notRecognizedFlags": "Non Riconosciute",
+    "notRecognizedFlagsSubtitle": "Non riconosciute internazionalmente",
+    "religiousFlags": "Religiose",
+    "religiousFlagsSubtitle": "Bandiere religiose e spirituali"
   },
   "stats": {
     "title": "Le Mie Statistiche",

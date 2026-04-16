@@ -213,7 +213,7 @@ export const flagResolvers = {
     },
     updateFlag: async (
       _: unknown,
-      args: { id: string; name?: string; imageUrl?: string; countryCode?: string; subdivisionCode?: string; continent?: string; contributorIds?: string[] },
+      args: { id: string; name?: string; imageUrl?: string; countryCode?: string; subdivisionCode?: string; continent?: string; contributorIds?: string[]; properties?: { lgbt?: boolean | null; notRecognized?: boolean | null; religious?: boolean | null; historic?: boolean | null } | null },
       ctx: AppContext
     ) => {
       if (ctx.user?.role !== "ADMIN") throw new Error("Forbidden");
@@ -227,12 +227,14 @@ export const flagResolvers = {
         subdivisionCode?: string | null;
         continent?: string | null;
         contributors?: { set: { id: string }[] };
+        properties?: { lgbt?: boolean | null; notRecognized?: boolean | null; religious?: boolean | null; historic?: boolean | null } | null;
       } = {};
       if (args.name !== undefined) updateData.name = args.name;
       if (args.imageUrl !== undefined) updateData.imageUrl = args.imageUrl ?? null;
       if (args.countryCode !== undefined) updateData.countryCode = args.countryCode;
       if (args.subdivisionCode !== undefined) updateData.subdivisionCode = args.subdivisionCode || null;
       if (args.continent !== undefined) updateData.continent = args.continent || null;
+      if (args.properties !== undefined) updateData.properties = args.properties ?? null;
 
       if (args.contributorIds !== undefined) {
         if (args.contributorIds.length === 0) throw new Error("contributorIds must not be empty");
@@ -327,5 +329,15 @@ export const flagResolvers = {
       (flag.contributors ?? []).filter((c) => c.id !== flag.addedById),
     contributors: (flag: { contributors?: { id: string; displayName: string }[] }) =>
       flag.contributors ?? [],
+    properties: (flag: { properties?: unknown }) => {
+      if (!flag.properties || typeof flag.properties !== "object") return null;
+      const p = flag.properties as Record<string, unknown>;
+      return {
+        lgbt: p.lgbt ?? null,
+        notRecognized: p.notRecognized ?? null,
+        religious: p.religious ?? null,
+        historic: p.historic ?? null,
+      };
+    },
   },
 };
