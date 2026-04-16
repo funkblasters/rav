@@ -113,6 +113,9 @@ export function ContinentsPieChart({ userId, global: isGlobal, innerRadius = 50,
                 innerRadius={innerRadius}
                 outerRadius={outerRadius}
                 paddingAngle={2}
+                isAnimationActive
+                animationDuration={500}
+                animationEasing="ease-out"
               >
                 {continents.map((c) => (
                   <Cell key={`cell-${c.continent}`} fill={CONTINENT_COLORS[c.continent] ?? DEFAULT_COLOR} />

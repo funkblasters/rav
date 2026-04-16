@@ -1,6 +1,6 @@
 import { useQuery, gql } from "@apollo/client";
 import { useTranslation } from "react-i18next";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { ContinentsPieChart } from "@/components/stats/ContinentsPieChart";
 import { GlobalStackedBarChart } from "@/components/stats/GlobalStackedBarChart";
@@ -19,7 +19,27 @@ const GLOBAL_STATS = gql`
   }
 `;
 
+function useCountUp(target: number | undefined, duration = 400) {
+  const [count, setCount] = useState(0);
+  const rafRef = useRef<number | null>(null);
+  useEffect(() => {
+    if (target === undefined) return;
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    const start = performance.now();
+    const tick = (now: number) => {
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setCount(Math.round(eased * target));
+      if (progress < 1) rafRef.current = requestAnimationFrame(tick);
+    };
+    rafRef.current = requestAnimationFrame(tick);
+    return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); };
+  }, [target, duration]);
+  return count;
+}
+
 function StatCard({ title, subtitle, value }: { title: string; subtitle: string; value: number | undefined }) {
+  const count = useCountUp(value);
   return (
     <Card className="flex-1">
       <CardContent className="flex items-center justify-between px-6 py-8">
@@ -28,7 +48,7 @@ function StatCard({ title, subtitle, value }: { title: string; subtitle: string;
           <span className="text-xs text-muted-foreground">{subtitle}</span>
         </div>
         <span className="text-5xl font-bold tabular-nums shrink-0">
-          {value ?? "—"}
+          {value === undefined ? "—" : count}
         </span>
       </CardContent>
     </Card>
@@ -36,6 +56,7 @@ function StatCard({ title, subtitle, value }: { title: string; subtitle: string;
 }
 
 function PropertyStatCard({ title, subtitle, value, imageUrl }: { title: string; subtitle: string; value: number | undefined; imageUrl: string }) {
+  const count = useCountUp(value);
   return (
     <Card className="flex-1">
       {/* Mobile: title on top, then image + number side by side */}
@@ -50,7 +71,7 @@ function PropertyStatCard({ title, subtitle, value, imageUrl }: { title: string;
               className="w-10 h-10 rounded-full object-cover shrink-0 border"
             />
             <span className="text-4xl font-bold tabular-nums">
-              {value ?? "—"}
+              {value === undefined ? "—" : count}
             </span>
           </div>
         </div>
@@ -68,7 +89,7 @@ function PropertyStatCard({ title, subtitle, value, imageUrl }: { title: string;
             </div>
           </div>
           <span className="text-4xl font-bold tabular-nums shrink-0 ml-3">
-            {value ?? "—"}
+            {value === undefined ? "—" : count}
           </span>
         </div>
       </CardContent>
