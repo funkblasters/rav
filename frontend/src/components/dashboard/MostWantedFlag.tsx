@@ -1,8 +1,9 @@
 import { useQuery, gql } from "@apollo/client";
 import { useTranslation } from "react-i18next";
-import { useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { QueryStateRenderer } from "@/components/QueryStateRenderer";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useFocusRefetch } from "@/hooks/useFocusRefetch";
 
 const MOST_WANTED_FLAG = gql`
   query MostWantedFlag {
@@ -21,11 +22,7 @@ export function MostWantedFlag() {
   const { data, loading, error, refetch } = useQuery(MOST_WANTED_FLAG);
   const flag = data?.mostWantedFlag;
 
-  useEffect(() => {
-    const handleFocus = () => refetch();
-    window.addEventListener("focus", handleFocus);
-    return () => window.removeEventListener("focus", handleFocus);
-  }, [refetch]);
+  useFocusRefetch(refetch);
 
   return (
     <Card className="h-full flex flex-col overflow-hidden">
@@ -34,16 +31,26 @@ export function MostWantedFlag() {
         <CardDescription>{t("dashboard.mostWantedSubtitle")}</CardDescription>
       </CardHeader>
       <CardContent className="p-0 flex-1 min-h-0 overflow-hidden flex flex-col">
+        {loading ? (
+          <div className="flex flex-col h-full min-h-0">
+            <Skeleton className="flex-1 min-h-0 rounded-none" />
+            <div className="p-4 border-t space-y-2 shrink-0">
+              <Skeleton className="h-4 w-3/4" />
+              <Skeleton className="h-3 w-full" />
+              <Skeleton className="h-3 w-1/3" />
+            </div>
+          </div>
+        ) : (
         <QueryStateRenderer
-          loading={loading}
+          loading={false}
           error={error}
-          empty={!flag && !loading}
+          empty={!flag}
           emptyMessage={t("common.noData")}
         >
           {flag && (
             <div className="flex flex-col h-full min-h-0">
               {/* Top: Flag image — 3/4 of height */}
-              <div className="flex-1 min-h-0 overflow-hidden rounded-t-lg">
+              <div className="flex-1 min-h-0 overflow-hidden rounded-t-lg bg-muted">
                 {flag.imageUrl ? (
                   <img
                     src={flag.imageUrl}
@@ -70,6 +77,7 @@ export function MostWantedFlag() {
             </div>
           )}
         </QueryStateRenderer>
+        )}
       </CardContent>
     </Card>
   );

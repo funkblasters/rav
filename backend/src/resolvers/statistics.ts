@@ -6,25 +6,30 @@ export const statisticsResolvers = {
     topMembers: async (_: unknown, args: { limit?: number }, ctx: AppContext) => {
       if (!ctx.user) throw new Error("Unauthenticated");
       const users = await prisma.user.findMany({
-        include: {
-          contributedFlags: {
-            where: { isPublic: true },
-            select: { id: true },
+        select: {
+          id: true,
+          displayName: true,
+          clubRole: true,
+          avatarUrl: true,
+          _count: {
+            select: {
+              contributedFlags: { where: { isPublic: true } },
+            },
           },
         },
+        orderBy: {
+          contributedFlags: { _count: "desc" },
+        },
+        ...(args.limit ? { take: args.limit } : {}),
       });
 
-      const usersWithCounts = users.map((u) => ({
+      return users.map((u) => ({
         id: u.id,
         displayName: u.displayName,
         clubRole: u.clubRole,
-        flagsCount: u.contributedFlags.length,
+        flagsCount: u._count.contributedFlags,
         avatarUrl: u.avatarUrl,
       }));
-
-      usersWithCounts.sort((a, b) => b.flagsCount - a.flagsCount);
-
-      return args.limit ? usersWithCounts.slice(0, args.limit) : usersWithCounts;
     },
 
     globalStats: async (_: unknown, __: unknown, ctx: AppContext) => {

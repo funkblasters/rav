@@ -1,5 +1,5 @@
 import { useQuery, gql, useApolloClient } from "@apollo/client";
-import { useEffect } from "react";
+import { useCallback } from "react";
 import { LastFlagAdded } from "@/components/dashboard/LastFlagAdded";
 import { MostWantedFlag } from "@/components/dashboard/MostWantedFlag";
 import { FlagNews } from "@/components/dashboard/FlagNews";
@@ -7,6 +7,7 @@ import { Rankings } from "@/components/dashboard/Rankings";
 import { DashboardCountryMap } from "@/components/dashboard/DashboardCountryMap";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { useTranslation } from "react-i18next";
+import { useFocusRefetch } from "@/hooks/useFocusRefetch";
 
 // ISO 3166-1 alpha-2 to numeric ID mapping - Complete list
 const COUNTRY_CODE_TO_NUMERIC: Record<string, string> = {
@@ -75,24 +76,14 @@ export function DashboardPage() {
   const client = useApolloClient();
   const { data, refetch } = useQuery(FLAGS_GEO);
 
-  // Refetch all dashboard queries on mount and window focus
-  useEffect(() => {
+  const refetchAll = useCallback(() => {
     refetch();
-    // Refetch other dashboard queries
     client.refetchQueries({
       include: ["LastFlag", "MostWantedFlag", "FlagNews", "Statistics", "TopMembers", "MyProfile", "GetFlags"],
     });
-
-    const handleFocus = () => {
-      refetch();
-      client.refetchQueries({
-        include: ["LastFlag", "MostWantedFlag", "FlagNews", "Statistics", "TopMembers", "MyProfile", "GetFlags"],
-      });
-    };
-
-    window.addEventListener("focus", handleFocus);
-    return () => window.removeEventListener("focus", handleFocus);
   }, [refetch, client]);
+
+  useFocusRefetch(refetchAll);
 
   // Map ISO alpha-2 country codes to numeric IDs for highlighting
   // National flags only (default view)

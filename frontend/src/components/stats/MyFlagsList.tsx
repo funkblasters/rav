@@ -1,8 +1,8 @@
 import { useQuery, useMutation, gql } from "@apollo/client";
 import { useTranslation } from "react-i18next";
-import { useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useFocusRefetch } from "@/hooks/useFocusRefetch";
 
 const MY_FLAGS = gql`
   query GetMyFlags {
@@ -69,8 +69,28 @@ export function MyFlagsList({ userId, displayName }: { userId?: string; displayN
   // Own flags query
   const { data: myData, loading: myLoading, refetch } = useQuery(MY_FLAGS, { skip: !!userId });
   const [makePublic, { loading: publishing }] = useMutation(MAKE_PUBLIC, {
-    refetchQueries: ["GetMyFlags", "TopMembers", "MyProfile", "LastFlag", "MostWantedFlag", "FlagsGeo", "NewsItems", "GetFlags"],
-    awaitRefetchQueries: true,
+    refetchQueries: ["TopMembers", "MyProfile", "LastFlag", "FlagsGeo", "GetFlags"],
+    update(cache, { data }) {
+      const updated = data?.makePublic;
+      if (!updated) return;
+      cache.modify({
+        id: cache.identify({ __typename: "Flag", id: updated.id }),
+        fields: { isPublic: () => true },
+      });
+    },
+    optimisticResponse: ({ flagId }) => ({
+      makePublic: {
+        __typename: "Flag",
+        id: flagId,
+        isPublic: true,
+        name: "",
+        imageUrl: null,
+        acquiredAt: "",
+        description: null,
+        addedBy: null,
+        togetherWith: [],
+      },
+    }),
   });
 
   // Other user's flags query
@@ -79,13 +99,7 @@ export function MyFlagsList({ userId, displayName }: { userId?: string; displayN
     skip: !userId,
   });
 
-  useEffect(() => {
-    if (userId) return;
-    refetch();
-    const handleFocus = () => refetch();
-    window.addEventListener("focus", handleFocus);
-    return () => window.removeEventListener("focus", handleFocus);
-  }, [refetch, userId]);
+  useFocusRefetch(refetch);
 
   if (userId) {
     const userFlags: UserFlag[] = userData?.flagsByUser ?? [];
@@ -117,6 +131,7 @@ export function MyFlagsList({ userId, displayName }: { userId?: string; displayN
                     <img
                       src={flag.imageUrl}
                       alt={flag.name}
+                      loading="lazy"
                       className="w-12 h-8 object-cover rounded shrink-0"
                     />
                   ) : (
@@ -217,6 +232,7 @@ export function MyFlagsList({ userId, displayName }: { userId?: string; displayN
                     <img
                       src={flag.imageUrl}
                       alt={flag.name}
+                      loading="lazy"
                       className="w-12 h-8 object-cover rounded shrink-0"
                     />
                   ) : (

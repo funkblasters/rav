@@ -125,6 +125,30 @@ function getContinentFromFlag(countryCode: string | null | undefined, subdivisio
   return "Other";
 }
 
+type FlagRow = { acquiredAt: Date; continent: string | null; countryCode: string; subdivisionCode: string | null };
+
+function computeFlagStats(flags: FlagRow[]) {
+  const lastContribution =
+    flags.length > 0
+      ? flags.reduce((latest, flag) =>
+          flag.acquiredAt > latest.acquiredAt ? flag : latest
+        ).acquiredAt
+      : null;
+
+  const continentMap = new Map<string, number>();
+  flags.forEach((flag) => {
+    const continent = flag.continent ?? getContinentFromFlag(flag.countryCode, flag.subdivisionCode);
+    continentMap.set(continent, (continentMap.get(continent) ?? 0) + 1);
+  });
+
+  const contributionsByContinent = Array.from(continentMap.entries())
+    .filter(([continent]) => continent !== "Other")
+    .map(([continent, count]) => ({ continent, count }))
+    .sort((a, b) => b.count - a.count);
+
+  return { flagsCount: flags.length, lastContribution, contributionsByContinent };
+}
+
 export const userResolvers = {
   Query: {
     // SECURITY: Removed public "users" query that exposed all emails
@@ -142,24 +166,7 @@ export const userResolvers = {
         where: { contributors: { some: { id: user.id } }, isPublic: true },
       });
 
-      const flagsCount = allFlags.length;
-      const lastContribution =
-        allFlags.length > 0
-          ? allFlags.reduce((latest, flag) =>
-              flag.acquiredAt > latest.acquiredAt ? flag : latest
-            ).acquiredAt
-          : null;
-
-      const continentMap = new Map<string, number>();
-      allFlags.forEach((flag) => {
-        const continent = flag.continent ?? getContinentFromFlag(flag.countryCode, flag.subdivisionCode);
-        continentMap.set(continent, (continentMap.get(continent) ?? 0) + 1);
-      });
-
-      const contributionsByContinent = Array.from(continentMap.entries())
-        .filter(([continent]) => continent !== "Other")
-        .map(([continent, count]) => ({ continent, count }))
-        .sort((a, b) => b.count - a.count);
+      const { flagsCount, lastContribution, contributionsByContinent } = computeFlagStats(allFlags);
 
       return {
         id: user.id,
@@ -182,31 +189,12 @@ export const userResolvers = {
       const user = await prisma.user.findUnique({ where: { id: ctx.user.id } });
       if (!user) return null;
 
-      // All flags where this user is a contributor
+      // All flags where this user is a contributor (including private)
       const allFlags = await prisma.flag.findMany({
         where: { contributors: { some: { id: user.id } } },
       });
 
-      // Compute stats
-      const flagsCount = allFlags.length;
-      const lastContribution =
-        allFlags.length > 0
-          ? allFlags.reduce((latest, flag) =>
-              flag.acquiredAt > latest.acquiredAt ? flag : latest
-            ).acquiredAt
-          : null;
-
-      // Group contributions by continent
-      const continentMap = new Map<string, number>();
-      allFlags.forEach((flag) => {
-        const continent = flag.continent ?? getContinentFromFlag(flag.countryCode, flag.subdivisionCode);
-        continentMap.set(continent, (continentMap.get(continent) ?? 0) + 1);
-      });
-
-      const contributionsByContinent = Array.from(continentMap.entries())
-        .filter(([continent]) => continent !== "Other") // Exclude LGBT/cultural flags
-        .map(([continent, count]) => ({ continent, count }))
-        .sort((a, b) => b.count - a.count);
+      const { flagsCount, lastContribution, contributionsByContinent } = computeFlagStats(allFlags);
 
       return {
         id: user.id,
@@ -237,24 +225,7 @@ export const userResolvers = {
         where: { contributors: { some: { id: user.id } } },
       });
 
-      const flagsCount = allFlags.length;
-      const lastContribution =
-        allFlags.length > 0
-          ? allFlags.reduce((latest, flag) =>
-              flag.acquiredAt > latest.acquiredAt ? flag : latest
-            ).acquiredAt
-          : null;
-
-      const continentMap = new Map<string, number>();
-      allFlags.forEach((flag) => {
-        const continent = flag.continent ?? getContinentFromFlag(flag.countryCode, flag.subdivisionCode);
-        continentMap.set(continent, (continentMap.get(continent) ?? 0) + 1);
-      });
-
-      const contributionsByContinent = Array.from(continentMap.entries())
-        .filter(([continent]) => continent !== "Other")
-        .map(([continent, count]) => ({ continent, count }))
-        .sort((a, b) => b.count - a.count);
+      const { flagsCount, lastContribution, contributionsByContinent } = computeFlagStats(allFlags);
 
       return {
         id: user.id,

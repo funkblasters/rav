@@ -1,9 +1,10 @@
 import { useQuery, gql } from "@apollo/client";
 import { useTranslation } from "react-i18next";
-import { useEffect } from "react";
 import { ExternalLink } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { QueryStateRenderer } from "@/components/QueryStateRenderer";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useFocusRefetch } from "@/hooks/useFocusRefetch";
 
 const NEWS_ITEMS = gql`
   query NewsItems {
@@ -28,11 +29,7 @@ export function FlagNews() {
   const { t } = useTranslation();
   const { data, loading, error, refetch } = useQuery(NEWS_ITEMS);
 
-  useEffect(() => {
-    const handleFocus = () => refetch();
-    window.addEventListener("focus", handleFocus);
-    return () => window.removeEventListener("focus", handleFocus);
-  }, [refetch]);
+  useFocusRefetch(refetch);
 
   const items: Array<{
     id: string;
@@ -51,10 +48,23 @@ export function FlagNews() {
         <CardTitle className="text-base font-semibold">{t("dashboard.flagNews")}</CardTitle>
       </CardHeader>
       <CardContent className="p-0 flex-1 overflow-y-auto">
+        {loading ? (
+          <div className="divide-y">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="flex gap-3 p-4">
+                <Skeleton className="w-14 h-10 rounded shrink-0" />
+                <div className="flex-1 space-y-2">
+                  <Skeleton className="h-3 w-full" />
+                  <Skeleton className="h-3 w-2/3" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
         <QueryStateRenderer
-          loading={loading}
+          loading={false}
           error={error}
-          empty={!items.length && !featured && !loading}
+          empty={!items.length && !featured}
         >
           <div className="divide-y flex flex-col h-full">
             {featured && (
@@ -63,6 +73,7 @@ export function FlagNews() {
                   <img
                     src={featured.imageUrl}
                     alt={featured.title}
+                    loading="lazy"
                     className="w-24 h-24 object-cover rounded shrink-0"
                   />
                 )}
@@ -104,6 +115,7 @@ export function FlagNews() {
                       <img
                         src={item.imageUrl}
                         alt={item.title}
+                        loading="lazy"
                         className="w-14 h-10 object-cover rounded shrink-0"
                       />
                     )}
@@ -123,6 +135,7 @@ export function FlagNews() {
             </ul>
           </div>
         </QueryStateRenderer>
+        )}
       </CardContent>
     </Card>
   );

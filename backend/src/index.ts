@@ -197,41 +197,46 @@ app.get(
       return;
     }
 
-    const flags = await prisma.flag.findMany({
-      include: { contributors: { select: { displayName: true } } },
-      orderBy: { acquiredAt: "asc" },
-    });
-
-    const ExcelJS = (await import("exceljs")).default;
-    const workbook = new ExcelJS.Workbook();
-    const sheet = workbook.addWorksheet("Flags");
-
-    sheet.columns = [
-      { header: "flag",         key: "flag",         width: 40 },
-      { header: "date",         key: "date",         width: 12 },
-      { header: "contributors", key: "contributors", width: 40 },
-      { header: "continent",    key: "continent",    width: 16 },
-      { header: "is_variant",   key: "is_variant",   width: 12 },
-    ];
-
-    for (const flag of flags) {
-      const date = flag.acquiredAt.toISOString().slice(0, 10); // YYYY-MM-DD
-      const contributors = flag.contributors.map((c) => c.displayName).join(", ");
-      const isVariant = flag.subdivisionCode != null ? "TRUE" : "FALSE";
-      sheet.addRow({
-        flag: flag.name,
-        date,
-        contributors,
-        continent: flag.continent ?? "",
-        is_variant: isVariant,
+    try {
+      const flags = await prisma.flag.findMany({
+        include: { contributors: { select: { displayName: true } } },
+        orderBy: { acquiredAt: "asc" },
       });
-    }
 
-    const buffer = await workbook.xlsx.writeBuffer();
-    const filename = `rav-flags-${new Date().toISOString().slice(0, 10)}.xlsx`;
-    res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
-    res.send(Buffer.from(buffer));
+      const ExcelJS = (await import("exceljs")).default;
+      const workbook = new ExcelJS.Workbook();
+      const sheet = workbook.addWorksheet("Flags");
+
+      sheet.columns = [
+        { header: "flag",         key: "flag",         width: 40 },
+        { header: "date",         key: "date",         width: 12 },
+        { header: "contributors", key: "contributors", width: 40 },
+        { header: "continent",    key: "continent",    width: 16 },
+        { header: "is_variant",   key: "is_variant",   width: 12 },
+      ];
+
+      for (const flag of flags) {
+        const date = flag.acquiredAt.toISOString().slice(0, 10); // YYYY-MM-DD
+        const contributors = flag.contributors.map((c) => c.displayName).join(", ");
+        const isVariant = flag.subdivisionCode != null ? "TRUE" : "FALSE";
+        sheet.addRow({
+          flag: flag.name,
+          date,
+          contributors,
+          continent: flag.continent ?? "",
+          is_variant: isVariant,
+        });
+      }
+
+      const buffer = await workbook.xlsx.writeBuffer();
+      const filename = `rav-flags-${new Date().toISOString().slice(0, 10)}.xlsx`;
+      res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+      res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+      res.send(Buffer.from(buffer));
+    } catch (err) {
+      console.error("Export failed:", err);
+      res.status(500).json({ error: "Export failed" });
+    }
   }
 );
 

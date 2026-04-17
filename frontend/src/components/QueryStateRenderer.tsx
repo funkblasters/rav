@@ -7,23 +7,27 @@ interface QueryStateRendererProps {
   error?: Error | null;
   empty?: boolean;
   emptyMessage?: string;
+  /** Optional skeleton to show while loading instead of the default spinner. */
+  skeleton?: ReactNode;
   children: ReactNode;
 }
 
 /**
  * Standardized loading/error/empty state renderer for all data-fetching sections.
- * Shows loading spinner, error message, or empty state before rendering content.
+ * Shows loading spinner (or a custom skeleton), error message, or empty state before rendering content.
  */
 export function QueryStateRenderer({
   loading,
   error,
   empty,
   emptyMessage,
+  skeleton,
   children,
 }: QueryStateRendererProps) {
   const { t } = useTranslation();
 
   if (loading) {
+    if (skeleton) return <>{skeleton}</>;
     return (
       <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
         <div className="text-center">

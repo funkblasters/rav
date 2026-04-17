@@ -145,6 +145,11 @@ export const flagResolvers = {
       }
       // If a flag with the same identity already exists, add the new people as
       // contributors to that record rather than inserting a duplicate row.
+      // By design, multiple users can acquire the same flag independently —
+      // they are all linked as contributors on the same Flag record.
+      // No unique DB constraint is enforced here; this check-then-write is
+      // intentionally not atomic because concurrent duplicate submissions are
+      // not a concern for this low-traffic app.
       const existingFlag = await prisma.flag.findFirst({
         where: { countryCode, subdivisionCode },
         include: { contributors: { select: { id: true } } },
@@ -153,7 +158,7 @@ export const flagResolvers = {
       if (existingFlag) {
         const alreadyContributor = existingFlag.contributors.some((c) => c.id === ownerId);
         if (alreadyContributor) {
-          throw new Error("Hai già questa bandiera nella tua collezione");
+          throw new Error("You already have this flag in your collection");
         }
 
         const newContributorIds = [
@@ -222,6 +227,7 @@ export const flagResolvers = {
       if (!flag) throw new Error("Flag not found");
 
       const updateData: Prisma.FlagUpdateInput = {};
+      // No empty-string validation for name/countryCode — this mutation is admin-only.
       if (args.name !== undefined) updateData.name = args.name;
       if (args.imageUrl !== undefined) updateData.imageUrl = args.imageUrl ?? null;
       if (args.countryCode !== undefined) updateData.countryCode = args.countryCode;

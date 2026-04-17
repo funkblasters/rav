@@ -1,8 +1,9 @@
 import { useQuery, gql } from "@apollo/client";
 import { useTranslation } from "react-i18next";
-import { useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { QueryStateRenderer } from "@/components/QueryStateRenderer";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useFocusRefetch } from "@/hooks/useFocusRefetch";
 
 const LAST_FLAG = gql`
   query LastFlag {
@@ -23,11 +24,7 @@ export function LastFlagAdded() {
   const { data, loading, error, refetch } = useQuery(LAST_FLAG);
   const flag = data?.lastFlag;
 
-  useEffect(() => {
-    const handleFocus = () => refetch();
-    window.addEventListener("focus", handleFocus);
-    return () => window.removeEventListener("focus", handleFocus);
-  }, [refetch]);
+  useFocusRefetch(refetch);
 
   return (
     <Card className="h-full flex flex-col overflow-hidden">
@@ -36,16 +33,26 @@ export function LastFlagAdded() {
         <CardDescription>{t("dashboard.lastFlagSubtitle")}</CardDescription>
       </CardHeader>
       <CardContent className="p-0 flex-1 min-h-0 overflow-hidden flex flex-col">
+        {loading ? (
+          <div className="flex flex-col h-full min-h-0">
+            <Skeleton className="flex-1 min-h-0 rounded-none" />
+            <div className="p-4 border-t space-y-2 shrink-0">
+              <Skeleton className="h-4 w-3/4" />
+              <Skeleton className="h-3 w-1/2" />
+              <Skeleton className="h-3 w-1/3" />
+            </div>
+          </div>
+        ) : (
         <QueryStateRenderer
-          loading={loading}
+          loading={false}
           error={error}
-          empty={!flag && !loading}
+          empty={!flag}
           emptyMessage={t("dashboard.noFlagYet")}
         >
           {flag && (
             <div className="flex flex-col h-full min-h-0">
               {/* Top: Flag image — 3/4 of height */}
-              <div className="flex-1 min-h-0 overflow-hidden rounded-t-lg">
+              <div className="flex-1 min-h-0 overflow-hidden rounded-t-lg bg-muted">
                 {flag.imageUrl ? (
                   <img
                     src={flag.imageUrl}
@@ -74,6 +81,7 @@ export function LastFlagAdded() {
             </div>
           )}
         </QueryStateRenderer>
+        )}
       </CardContent>
     </Card>
   );

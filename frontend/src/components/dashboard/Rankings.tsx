@@ -1,7 +1,7 @@
 import { useQuery, gql } from "@apollo/client";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { BarChart2, ChevronRight } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,8 @@ import { ClubRoleBadge } from "@/components/ClubRoleBadge";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { useAuth } from "@/context/AuthContext";
 import { AvatarDisplay } from "@/components/UserPanel";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useFocusRefetch } from "@/hooks/useFocusRefetch";
 
 const TOP_MEMBERS = gql`
   query TopMembers {
@@ -122,7 +124,7 @@ function MemberFlagsSheet({
                     src={flag.imageUrl}
                     alt={flag.name}
                     loading="lazy"
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover bg-muted"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center p-1">
@@ -149,11 +151,7 @@ export function Rankings() {
 
   const members: Member[] = data?.topMembers ?? [];
 
-  useEffect(() => {
-    const handleFocus = () => refetch();
-    window.addEventListener("focus", handleFocus);
-    return () => window.removeEventListener("focus", handleFocus);
-  }, [refetch]);
+  useFocusRefetch(refetch);
 
   const handleMemberClick = (member: Member) => {
     setSelectedMember(member);
@@ -167,10 +165,22 @@ export function Rankings() {
           <CardDescription>{t("dashboard.statisticsSubtitle")}</CardDescription>
         </CardHeader>
         <CardContent className="p-0 flex-1 min-h-0 overflow-hidden flex flex-col">
+          {loading ? (
+            <div className="p-4 space-y-3">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="flex items-center gap-3">
+                  <Skeleton className="h-4 w-4 shrink-0" />
+                  <Skeleton className="h-7 w-7 rounded-full shrink-0" />
+                  <Skeleton className="h-4 flex-1" />
+                  <Skeleton className="h-5 w-8 shrink-0" />
+                </div>
+              ))}
+            </div>
+          ) : (
           <QueryStateRenderer
-            loading={loading}
+            loading={false}
             error={error}
-            empty={!members.length && !loading}
+            empty={!members.length}
           >
             <div className="p-4 h-full flex flex-col">
               {/* Ranking List */}
@@ -230,6 +240,7 @@ export function Rankings() {
 
             </div>
           </QueryStateRenderer>
+          )}
         </CardContent>
       </Card>
 
