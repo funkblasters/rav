@@ -10,9 +10,7 @@ import http from "http";
 import { typeDefs } from "./schema.js";
 import { resolvers } from "./resolvers/index.js";
 import { buildContext } from "./context.js";
-import { importFlags } from "./import.js";
 import { prisma } from "./db.js";
-import ExcelJS from "exceljs";
 
 const port = Number(process.env.PORT ?? 4000);
 const frontendUrl = process.env.FRONTEND_URL;
@@ -164,6 +162,7 @@ app.post(
     }
 
     try {
+      const { importFlags } = await import("./import.js");
       const result = await importFlags(req.file.buffer);
       res.json(result);
     } catch (err) {
@@ -203,6 +202,7 @@ app.get(
       orderBy: { acquiredAt: "asc" },
     });
 
+    const ExcelJS = (await import("exceljs")).default;
     const workbook = new ExcelJS.Workbook();
     const sheet = workbook.addWorksheet("Flags");
 
