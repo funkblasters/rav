@@ -187,21 +187,34 @@ export function Rankings() {
             <div className="p-4 h-full flex flex-col">
               {/* Ranking List */}
               <div className="overflow-y-auto flex-1">
+                {(() => {
+                const denseRanks: number[] = [];
+                for (let i = 0; i < members.length; i++) {
+                  if (i === 0) { denseRanks.push(1); continue; }
+                  denseRanks.push(
+                    members[i].flagsCount === members[i - 1].flagsCount
+                      ? denseRanks[i - 1]
+                      : i + 1
+                  );
+                }
+                return (
                 <List>
-                  {members.map((member, idx) => (
+                  {members.map((member, idx) => {
+                    const denseRank = denseRanks[idx];
+                    return (
                     <ListItem
                       key={member.id}
-                      className={`space-x-2 cursor-pointer select-none ${idx < 3 ? "rank-shine" : ""}`}
+                      className={`space-x-2 cursor-pointer select-none ${denseRank <= 3 ? "rank-shine" : ""}`}
                       onClick={() => handleMemberClick(member)}
                     >
                       {/* Rank */}
                       <span className={`flex-shrink-0 w-6 text-center text-sm font-bold ${
-                        idx === 0 ? "text-yellow-500" :
-                        idx === 1 ? "text-slate-400" :
-                        idx === 2 ? "text-amber-700" :
+                        denseRank === 1 ? "text-yellow-500" :
+                        denseRank === 2 ? "text-slate-400" :
+                        denseRank === 3 ? "text-amber-700" :
                         "text-muted-foreground"
                       }`}>
-                        #{idx + 1}
+                        #{denseRank}
                       </span>
 
                       {/* Avatar */}
@@ -236,8 +249,11 @@ export function Rankings() {
                         <ChevronRight size={16} className="text-muted-foreground" />
                       </div>
                     </ListItem>
-                  ))}
+                    );
+                  })}
                 </List>
+                );
+                })()}
               </div>
 
             </div>

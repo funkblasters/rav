@@ -16,20 +16,30 @@ export const statisticsResolvers = {
               contributedFlags: { where: { isPublic: true } },
             },
           },
+          contributedFlags: {
+            where: { isPublic: true },
+            select: { acquiredAt: true },
+          },
         },
-        orderBy: {
-          contributedFlags: { _count: "desc" },
-        },
-        ...(args.limit ? { take: args.limit } : {}),
       });
 
-      return users.map((u) => ({
+      users.sort((a, b) => {
+        const countDiff = b._count.contributedFlags - a._count.contributedFlags;
+        if (countDiff !== 0) return countDiff;
+        const maxDate = (flags: { acquiredAt: Date }[]) =>
+          flags.reduce((max, f) => (f.acquiredAt > max ? f.acquiredAt : max), new Date(0));
+        return maxDate(b.contributedFlags).getTime() - maxDate(a.contributedFlags).getTime();
+      });
+
+      const result = users.map((u) => ({
         id: u.id,
         displayName: u.displayName,
         clubRole: u.clubRole,
         flagsCount: u._count.contributedFlags,
         avatarUrl: u.avatarUrl,
       }));
+
+      return args.limit ? result.slice(0, args.limit) : result;
     },
 
     globalStats: async (_: unknown, __: unknown, ctx: AppContext) => {
