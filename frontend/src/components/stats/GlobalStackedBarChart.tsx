@@ -234,12 +234,11 @@ export function GlobalStackedBarChart() {
               />
               {groupKeys.map((key, i) => (
                 <Bar
-                  key={key}
+                  key={`${key}-${inView ? 1 : 0}`}
                   dataKey={key}
                   name={groupLabel(groups.get(key)!.contributors)}
                   stackId="a"
                   fill={`url(#${patternPrefix}-${i})`}
-                  key={`${key}-${inView ? 1 : 0}`}
                   animationBegin={0}
                   animationDuration={300}
                   animationEasing="ease-out"
