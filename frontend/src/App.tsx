@@ -27,14 +27,10 @@ function AppContent() {
       <SlowLoadProvider>
       <AuthProvider>
         <BrowserRouter>
-          <Suspense fallback={
-            <div className="fixed inset-0 flex items-center justify-center bg-background">
-              <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-            </div>
-          }>
           <Routes>
-            <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />
-            <Route path="/register" element={<PublicRoute><RegisterPage /></PublicRoute>} />
+            {/* Login / register are outside the Layout — wrap them individually */}
+            <Route path="/login" element={<PublicRoute><Suspense fallback={null}><LoginPage /></Suspense></PublicRoute>} />
+            <Route path="/register" element={<PublicRoute><Suspense fallback={null}><RegisterPage /></Suspense></PublicRoute>} />
             <Route
               path="/"
               element={
@@ -62,7 +58,6 @@ function AppContent() {
             </Route>
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
-          </Suspense>
           <Toaster
             position="top-center"
             duration={6000}

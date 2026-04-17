@@ -1,6 +1,6 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, Suspense } from "react";
 import { BarChart2, Flag, Settings } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
@@ -85,9 +85,11 @@ export function Layout() {
       </header>
 
       <main className="flex-1 min-h-0 flex flex-col container py-8 mt-14 overflow-y-auto">
-        <div key={location.pathname} className="page-enter flex flex-col flex-1 min-h-0">
-          <Outlet />
-        </div>
+        <Suspense fallback={null}>
+          <div key={location.pathname} className="page-enter flex flex-col flex-1 min-h-0">
+            <Outlet />
+          </div>
+        </Suspense>
       </main>
       {user && !isActive("/admin") && <AddFlagButton />}
     </div>

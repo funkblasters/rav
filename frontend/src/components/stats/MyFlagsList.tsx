@@ -140,7 +140,7 @@ export function MyFlagsList({ userId, displayName }: { userId?: string; displayN
                   <div className="min-w-0 flex-1">
                     <p className="font-medium text-sm truncate">{flag.name}</p>
                     <p className="text-xs text-muted-foreground">
-                      {new Date(flag.acquiredAt).toLocaleDateString()}
+                      {new Date(flag.acquiredAt).getFullYear()}
                     </p>
                   </div>
                 </div>
@@ -198,7 +198,7 @@ export function MyFlagsList({ userId, displayName }: { userId?: string; displayN
                     <div className="min-w-0">
                       <p className="font-medium text-sm truncate">{flag.name}</p>
                       <p className="text-xs text-muted-foreground">
-                        {new Date(flag.acquiredAt).toLocaleDateString()}
+                        {new Date(flag.acquiredAt).getFullYear()}
                       </p>
                     </div>
                   </div>
@@ -241,7 +241,7 @@ export function MyFlagsList({ userId, displayName }: { userId?: string; displayN
                   <div className="min-w-0 flex-1">
                     <p className="font-medium text-sm truncate">{flag.name}</p>
                     <p className="text-xs text-muted-foreground">
-                      {new Date(flag.acquiredAt).toLocaleDateString()}
+                      {new Date(flag.acquiredAt).getFullYear()}
                     </p>
                   </div>
                 </div>
