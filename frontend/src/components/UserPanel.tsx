@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/context/AuthContext";
+import { MaritimeFlags } from "@/components/MaritimeFlags";
 import { useTheme } from "@/context/ThemeContext";
 import {
   AlertDialog,
@@ -436,6 +437,9 @@ export function UserPanel() {
               </ScrollArea>
             )
           ) : null}
+          <div className="shrink-0 flex justify-center pb-6 pt-4 border-t">
+            <MaritimeFlags text="GRAZIEAAL" size="sm" />
+          </div>
         </SheetContent>
       </Sheet>
 
