@@ -17,6 +17,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/context/AuthContext";
 import { MaritimeFlags } from "@/components/MaritimeFlags";
+import { useModalHistory } from "@/hooks/useModalHistory";
 import { useTheme } from "@/context/ThemeContext";
 import {
   AlertDialog,
@@ -149,6 +150,7 @@ export function UserPanel() {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);
+  useModalHistory(open, () => { setOpen(false); setShowAvatarPicker(false); });
   const { data, loading } = useQuery(MY_PROFILE, { skip: !open });
   const [updateMyAvatar] = useMutation(UPDATE_MY_AVATAR, {
     refetchQueries: [{ query: MY_PROFILE }, "TopMembers"],

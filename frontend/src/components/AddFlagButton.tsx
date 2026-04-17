@@ -1,5 +1,6 @@
 import { useState, lazy, Suspense, useEffect } from "react";
 import { Plus } from "lucide-react";
+import { useModalHistory } from "@/hooks/useModalHistory";
 
 const AddFlagModal = lazy(() =>
   import("./AddFlagModal").then((m) => ({ default: m.AddFlagModal }))
@@ -8,6 +9,7 @@ const AddFlagModal = lazy(() =>
 export function AddFlagButton() {
   const [open, setOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  useModalHistory(open, () => setOpen(false));
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {

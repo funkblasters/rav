@@ -13,6 +13,7 @@ import { useAuth } from "@/context/AuthContext";
 import { AvatarDisplay } from "@/components/UserPanel";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useFocusRefetch } from "@/hooks/useFocusRefetch";
+import { useModalHistory } from "@/hooks/useModalHistory";
 
 const TOP_MEMBERS = gql`
   query TopMembers {
@@ -148,6 +149,7 @@ export function Rankings() {
   const { user: currentUser } = useAuth();
   const { data, loading, error, refetch } = useQuery(TOP_MEMBERS);
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
+  useModalHistory(!!selectedMember, () => setSelectedMember(null));
 
   const members: Member[] = data?.topMembers ?? [];
 
