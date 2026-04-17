@@ -172,7 +172,7 @@ function FlagEditPanel({
   };
 
   return (
-    <div className="flex flex-col h-full overflow-y-auto space-y-3 pl-4 border-l">
+    <div className="flex flex-col h-full overflow-y-auto space-y-3 md:pl-4 md:border-l pt-4 md:pt-0 border-t md:border-t-0">
       {/* Preview */}
       <div className="flex justify-center pt-1">
         {previewUrl ? (
@@ -318,7 +318,7 @@ export function FlagImageEditor() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Immagini bandiere</CardTitle>
+        <CardTitle>Flag Editor</CardTitle>
         <CardDescription>
           Modifica le proprietà di qualsiasi bandiera nella collezione.
           {!loading && noImage.length > 0 && (
@@ -329,9 +329,9 @@ export function FlagImageEditor() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className={`flex gap-4 ${selectedFlag ? "min-h-[600px]" : ""}`}>
+        <div className={`flex flex-col md:flex-row gap-4 ${selectedFlag ? "md:min-h-[600px]" : ""}`}>
           {/* Left: search + list */}
-          <div className={`flex flex-col gap-3 ${selectedFlag ? "w-1/2" : "w-full"}`}>
+          <div className={`flex flex-col gap-3 ${selectedFlag ? "md:w-1/2" : "w-full"}`}>
             <Input
               placeholder="Cerca per nome bandiera o membro..."
               value={search}
@@ -399,7 +399,7 @@ export function FlagImageEditor() {
 
           {/* Right: edit panel */}
           {selectedFlag && (
-            <div className="w-1/2">
+            <div className="md:w-1/2">
               <FlagEditPanel
                 key={selectedFlag.id}
                 flag={selectedFlag}

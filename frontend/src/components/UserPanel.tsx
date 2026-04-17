@@ -193,22 +193,24 @@ export function UserPanel() {
           </SheetHeader>
 
           {loading ? (
-            <ScrollArea className="flex-1 h-0 relative">
-              <div className="space-y-6 px-6 py-0 w-full pt-12">
-                {/* Settings Button Group - Positioned Absolute Top Right */}
-                <div className="absolute top-0 right-0 flex items-center gap-1 p-2 shrink-0 z-10">
-                  <Button variant="ghost" size="icon" disabled>
-                    <Moon size={16} />
-                  </Button>
-                  <select
-                    value={currentLang}
-                    disabled
-                    className="text-xs font-semibold bg-transparent border-none outline-none text-foreground opacity-50"
-                  >
-                    {LANGUAGES.map((l) => (
-                      <option key={l} value={l}>{LANGUAGE_LABELS[l]}</option>
-                    ))}
-                  </select>
+            <ScrollArea className="flex-1 h-0">
+              <div className="space-y-6 px-6 py-0 w-full">
+                {/* Controls row */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1">
+                    <Button variant="ghost" size="icon" disabled>
+                      <Moon size={16} />
+                    </Button>
+                    <select
+                      value={currentLang}
+                      disabled
+                      className="text-xs font-semibold bg-transparent border-none outline-none text-foreground opacity-50"
+                    >
+                      {LANGUAGES.map((l) => (
+                        <option key={l} value={l}>{LANGUAGE_LABELS[l]}</option>
+                      ))}
+                    </select>
+                  </div>
                   <Button variant="ghost" size="icon" disabled>
                     <LogOut size={16} />
                   </Button>
@@ -304,35 +306,34 @@ export function UserPanel() {
               </ScrollArea>
             ) : (
               /* ── Normal Profile View ── */
-              <ScrollArea className="flex-1 h-0 relative animate-in fade-in duration-150">
-                {/* Settings Button Group - Positioned Absolute Top Right */}
-                <div className="absolute top-0 right-0 flex items-center gap-1 p-2 shrink-0 z-10">
-                  {/* Theme Toggle */}
-                  <Button variant="ghost" size="icon" onClick={toggle} aria-label={t("common.toggleTheme")}>
-                    {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
-                  </Button>
-                  {/* Language Select */}
-                  <select
-                    value={currentLang}
-                    onChange={(e) => i18n.changeLanguage(e.target.value)}
-                    className="text-xs font-semibold bg-transparent border-none outline-none cursor-pointer text-foreground"
-                    aria-label={t("common.selectLanguage")}
-                  >
-                    {LANGUAGES.map((l) => (
-                      <option key={l} value={l}>{LANGUAGE_LABELS[l]}</option>
-                    ))}
-                  </select>
-                  {/* Logout Button */}
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setShowLogoutDialog(true)}
-                    aria-label="Logout"
-                  >
-                    <LogOut size={16} />
-                  </Button>
-                </div>
-                <div className="space-y-6 px-6 py-0 w-full pt-12">
+              <ScrollArea className="flex-1 h-0 animate-in fade-in duration-150">
+                <div className="space-y-6 px-6 py-0 w-full">
+                  {/* Controls row */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1">
+                      <Button variant="ghost" size="icon" onClick={toggle} aria-label={t("common.toggleTheme")}>
+                        {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+                      </Button>
+                      <select
+                        value={currentLang}
+                        onChange={(e) => i18n.changeLanguage(e.target.value)}
+                        className="text-xs font-semibold bg-transparent border-none outline-none cursor-pointer text-foreground"
+                        aria-label={t("common.selectLanguage")}
+                      >
+                        {LANGUAGES.map((l) => (
+                          <option key={l} value={l}>{LANGUAGE_LABELS[l]}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setShowLogoutDialog(true)}
+                      aria-label="Logout"
+                    >
+                      <LogOut size={16} />
+                    </Button>
+                  </div>
                   {/* Card Face */}
                   <div className="w-full flex flex-col items-center justify-center space-y-4 text-center">
                     {/* Avatar with edit button */}
