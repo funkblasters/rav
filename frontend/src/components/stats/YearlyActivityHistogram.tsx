@@ -127,7 +127,8 @@ export function YearlyActivityHistogram({ userId }: { userId?: string }) {
                 dataKey="count"
                 fill="#3b82f6"
                 radius={[4, 4, 0, 0]}
-                isAnimationActive={false}
+                animationDuration={800}
+                animationEasing="ease-out"
               />
             </BarChart>
           </ResponsiveContainer>

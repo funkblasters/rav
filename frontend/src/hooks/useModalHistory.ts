@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 /**
  * Pushes a history entry when a modal/drawer opens so that pressing the
@@ -42,4 +42,12 @@ export function useModalHistory(open: boolean, onClose: () => void) {
       byBackRef.current = false;
     }
   }, [open]);
+
+  // Call this before closing + navigating away so history.back() is skipped.
+  // Pair with navigate(path, { replace: true }) to keep history clean.
+  const suppress = useCallback(() => {
+    byBackRef.current = true;
+  }, []);
+
+  return { suppress };
 }

@@ -1,12 +1,13 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useMutation, useQuery, gql } from "@apollo/client";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
-import { X, Check, ChevronDown } from "lucide-react";
+import { Check, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useAuth } from "@/context/AuthContext";
 import { getErrorMessage } from "@/lib/utils";
 
@@ -374,10 +375,12 @@ const ADD_FLAG = gql`
 `;
 
 interface Props {
-  onClose: () => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
-export function AddFlagModal({ onClose }: Props) {
+export function AddFlagModal({ open, onOpenChange }: Props) {
+  const onClose = () => onOpenChange(false);
   const { t } = useTranslation();
   const { user } = useAuth();
   const isAdmin = user?.role === "ADMIN";
@@ -531,21 +534,6 @@ export function AddFlagModal({ onClose }: Props) {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const handleBackdropClick = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
-      if (e.target === e.currentTarget) onClose();
-    },
-    [onClose]
-  );
-
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    document.addEventListener("keydown", handler);
-    return () => document.removeEventListener("keydown", handler);
-  }, [onClose]);
-
   const userFlags = myFlagsData?.myFlags ?? [];
   const userFlagKeys = new Set(
     userFlags.map((f: { countryCode: string; subdivisionCode?: string }) =>
@@ -564,7 +552,7 @@ export function AddFlagModal({ onClose }: Props) {
     // Check if user already has this exact country/subdivision combination
     const flagKey = `${countryCode}|${subdivisionCode ?? ""}`;
     if (userFlagKeys.has(flagKey)) {
-      setError("Hai già questa bandiera nella tua collezione");
+      setError(t("addFlagModal.alreadyOwned"));
       return;
     }
 
@@ -600,33 +588,21 @@ export function AddFlagModal({ onClose }: Props) {
   const previewUrl = effectiveSelected?.imageUrl ?? null;
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
-      onClick={handleBackdropClick}
-    >
-      <div className="relative bg-background rounded-xl shadow-xl w-full max-w-md dark:border dark:border-slate-700">
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b">
-          <h2 className="text-lg font-semibold">Aggiungi bandiera</h2>
-          <button
-            onClick={onClose}
-            className="rounded-md p-1 hover:bg-accent transition-colors"
-            aria-label="Close"
-          >
-            <X size={18} />
-          </button>
-        </div>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="p-0 gap-0 max-w-md">
+        <DialogHeader>
+          <DialogTitle>{t("addFlagModal.title")}</DialogTitle>
+        </DialogHeader>
 
-        {/* Body */}
-        <form onSubmit={handleSubmit} className="px-6 pt-5 pb-6 space-y-4 max-h-[calc(100vh-200px)] overflow-y-auto">
+        <form id="add-flag-form" onSubmit={handleSubmit} className="px-6 pt-5 pb-6 space-y-4 max-h-[calc(100vh-200px)] overflow-y-auto">
 
           {/* Flag name typeahead */}
           <div className="space-y-1">
-            <Label>Nome *</Label>
+            <Label>{t("addFlagModal.flagName")} *</Label>
             <div className="relative">
               <Input
                 ref={inputRef}
-                placeholder="Cerca una bandiera..."
+                placeholder={t("addFlagModal.searchPlaceholder")}
                 value={query}
                 onChange={(e) => handleQueryChange(e.target.value)}
                 onFocus={() => query.length >= 2 && setShowSuggestions(true)}
@@ -667,11 +643,11 @@ export function AddFlagModal({ onClose }: Props) {
                   className="text-xs text-muted-foreground hover:text-foreground underline underline-offset-2 transition-colors"
                   onClick={handleEnterManualMode}
                 >
-                  Bandiera non trovata? Aggiungi manualmente
+                  {t("addFlagModal.notFound")}
                 </button>
               )}
               {showLoadingMessage && flagsLoading && (
-                <p className="text-xs text-muted-foreground">Caricamento bandiere...</p>
+                <p className="text-xs text-muted-foreground">{t("addFlagModal.loadingFlags")}</p>
               )}
             </div>
           </div>
@@ -680,31 +656,31 @@ export function AddFlagModal({ onClose }: Props) {
           {isManualMode && !flagsLoading && (
             <div className="space-y-3 rounded-md border border-dashed p-3">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Inserimento manuale</span>
+                <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("addFlagModal.manualEntry")}</span>
                 <button
                   type="button"
                   className="text-xs text-muted-foreground hover:text-foreground underline underline-offset-2 transition-colors"
                   onClick={handleExitManualMode}
                 >
-                  Torna alla ricerca
+                  {t("addFlagModal.backToSearch")}
                 </button>
               </div>
               <div className="space-y-1">
-                <Label>Continente *</Label>
+                <Label>{t("addFlagModal.continent")} *</Label>
                 <select
                   value={manualContinent}
                   onChange={(e) => { setManualContinent(e.target.value); setManualCountry(""); }}
                   className="w-full h-9 rounded-md border border-input bg-background px-3 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
                   required
                 >
-                  <option value="">Seleziona continente...</option>
+                  <option value="">{t("addFlagModal.selectContinent")}</option>
                   {continentKeys.map((c) => (
                     <option key={c} value={c}>{formatContinent(c)}</option>
                   ))}
                 </select>
               </div>
               <div className="space-y-1">
-                <Label>Paese *</Label>
+                <Label>{t("addFlagModal.country")} *</Label>
                 <select
                   value={manualCountry}
                   onChange={(e) => setManualCountry(e.target.value)}
@@ -712,7 +688,7 @@ export function AddFlagModal({ onClose }: Props) {
                   disabled={!manualContinent}
                   required
                 >
-                  <option value="">Seleziona paese...</option>
+                  <option value="">{t("addFlagModal.selectCountry")}</option>
                   {(countriesByContinent[manualContinent] ?? []).map((country) => (
                     <option key={country} value={country}>{country}</option>
                   ))}
@@ -732,7 +708,7 @@ export function AddFlagModal({ onClose }: Props) {
             ) : (
               <div className="h-20 w-[180px] rounded border bg-muted flex items-center justify-center">
                 <span className="text-xs text-muted-foreground">
-                  {effectiveSelected ? effectiveSelected.name : "Anteprima bandiera"}
+                  {effectiveSelected ? effectiveSelected.name : t("addFlagModal.flagPreview")}
                 </span>
               </div>
             )}
@@ -740,7 +716,7 @@ export function AddFlagModal({ onClose }: Props) {
 
           {/* Date */}
           <div className="space-y-1">
-            <Label>Data acquisizione *</Label>
+            <Label>{t("addFlagModal.acquisitionDate")} *</Label>
             <Input
               ref={dateInputRef}
               type="date"
@@ -754,13 +730,13 @@ export function AddFlagModal({ onClose }: Props) {
           {/* Admin: user picker */}
           {isAdmin && usersData?.users?.length > 0 && (
             <div className="space-y-1">
-              <Label>Aggiunta da</Label>
+              <Label>{t("addFlagModal.addedBy")}</Label>
               <select
                 value={addedByUserId}
                 onChange={(e) => setAddedByUserId(e.target.value)}
                 className="w-full h-9 rounded-md border border-input bg-background px-3 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
               >
-                <option value="">— me stesso —</option>
+                <option value="">{t("addFlagModal.myself")}</option>
                 {usersData.users.map((u: { id: string; displayName: string }) => (
                   <option key={u.id} value={u.id}>{u.displayName}</option>
                 ))}
@@ -770,7 +746,7 @@ export function AddFlagModal({ onClose }: Props) {
 
           {/* Together with: user picker (optional) */}
           <div className="space-y-2">
-            <Label>Insieme a <span className="text-muted-foreground">(opzionale)</span></Label>
+            <Label>{t("addFlagModal.togetherWith")} <span className="text-muted-foreground">{t("addFlagModal.optional")}</span></Label>
             <div className="space-y-2">
               {/* Selected users as badges */}
               {togetherWithUserIds.length > 0 && (
@@ -802,7 +778,7 @@ export function AddFlagModal({ onClose }: Props) {
                 >
                   <input
                     type="text"
-                    placeholder="Cerca un membro..."
+                    placeholder={t("addFlagModal.searchMember")}
                     value={togetherWithSearch}
                     onChange={(e) => setTogetherWithSearch(e.target.value)}
                     className="flex-1 bg-transparent outline-none text-sm placeholder:text-muted-foreground"
@@ -837,7 +813,7 @@ export function AddFlagModal({ onClose }: Props) {
                           </button>
                         ))
                     ) : (
-                      <p className="px-3 py-2 text-xs text-muted-foreground">Caricamento utenti...</p>
+                      <p className="px-3 py-2 text-xs text-muted-foreground">{t("addFlagModal.loadingUsers")}</p>
                     )}
                   </div>
                 )}
@@ -872,17 +848,17 @@ export function AddFlagModal({ onClose }: Props) {
           </div>
 
           {error && <p className="text-xs text-destructive">{error}</p>}
-
-          <div className="flex justify-end gap-2 pt-2">
-            <Button type="button" variant="ghost" onClick={onClose}>
-              Annulla
-            </Button>
-            <Button type="submit" disabled={loading || !effectiveSelected || !date}>
-              Aggiungi
-            </Button>
-          </div>
         </form>
-      </div>
-    </div>
+
+        <DialogFooter>
+          <Button type="button" variant="ghost" onClick={onClose}>
+            {t("addFlagModal.cancel")}
+          </Button>
+          <Button type="submit" form="add-flag-form" disabled={loading || !effectiveSelected || !date}>
+            {t("addFlagModal.add")}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

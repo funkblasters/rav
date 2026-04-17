@@ -104,10 +104,10 @@ function getAvatarColor(name: string): string {
   return AVATAR_COLORS[hash % AVATAR_COLORS.length];
 }
 
-function formatDate(dateString: string | null): string {
+function formatDate(dateString: string | null, locale: string): string {
   if (!dateString) return "—";
   const date = new Date(dateString);
-  return date.toLocaleDateString("en-US", {
+  return date.toLocaleDateString(locale, {
     year: "numeric",
     month: "short",
     day: "numeric",
@@ -150,7 +150,7 @@ export function UserPanel() {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);
-  useModalHistory(open, () => { setOpen(false); setShowAvatarPicker(false); });
+  const { suppress } = useModalHistory(open, () => { setOpen(false); setShowAvatarPicker(false); });
   const { data, loading } = useQuery(MY_PROFILE, { skip: !open });
   const [updateMyAvatar] = useMutation(UPDATE_MY_AVATAR, {
     refetchQueries: [{ query: MY_PROFILE }, "TopMembers"],
@@ -260,7 +260,7 @@ export function UserPanel() {
           ) : profile ? (
             showAvatarPicker ? (
               /* ── Avatar Picker ── */
-              <ScrollArea className="flex-1 h-0">
+              <ScrollArea className="flex-1 h-0 animate-in fade-in duration-150">
                 <div className="px-6 py-4 space-y-4">
                   <div className="flex items-center gap-2">
                     <Button variant="ghost" size="icon" onClick={() => setShowAvatarPicker(false)}>
@@ -304,11 +304,11 @@ export function UserPanel() {
               </ScrollArea>
             ) : (
               /* ── Normal Profile View ── */
-              <ScrollArea className="flex-1 h-0 relative">
+              <ScrollArea className="flex-1 h-0 relative animate-in fade-in duration-150">
                 {/* Settings Button Group - Positioned Absolute Top Right */}
                 <div className="absolute top-0 right-0 flex items-center gap-1 p-2 shrink-0 z-10">
                   {/* Theme Toggle */}
-                  <Button variant="ghost" size="icon" onClick={toggle} aria-label="Toggle theme">
+                  <Button variant="ghost" size="icon" onClick={toggle} aria-label={t("common.toggleTheme")}>
                     {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
                   </Button>
                   {/* Language Select */}
@@ -316,7 +316,7 @@ export function UserPanel() {
                     value={currentLang}
                     onChange={(e) => i18n.changeLanguage(e.target.value)}
                     className="text-xs font-semibold bg-transparent border-none outline-none cursor-pointer text-foreground"
-                    aria-label="Select language"
+                    aria-label={t("common.selectLanguage")}
                   >
                     {LANGUAGES.map((l) => (
                       <option key={l} value={l}>{LANGUAGE_LABELS[l]}</option>
@@ -377,7 +377,7 @@ export function UserPanel() {
                       </div>
                       <div className="flex flex-col items-center space-y-1 border-t pt-2">
                         <div className="text-xs text-muted-foreground">
-                          {formatDate(profile.lastContribution)}
+                          {formatDate(profile.lastContribution, i18n.language)}
                         </div>
                         <p className="text-xs text-muted-foreground text-center">
                           {t("profile.lastContribution")}
@@ -397,7 +397,7 @@ export function UserPanel() {
                       </div>
                       <div className="flex flex-col items-center space-y-1 border-t pt-2">
                         <div className="text-xs text-muted-foreground">
-                          {formatDate(profile.createdAt)}
+                          {formatDate(profile.createdAt, i18n.language)}
                         </div>
                         <p className="text-xs text-muted-foreground text-center">
                           {t("profile.memberSince")}
@@ -408,7 +408,7 @@ export function UserPanel() {
 
                   {/* Stats Button */}
                   <button
-                    onClick={() => { setOpen(false); navigate("/stats"); }}
+                    onClick={() => { suppress(); setOpen(false); navigate("/stats", { replace: true }); }}
                     className="w-full py-3 rounded-lg font-semibold text-sm bg-foreground text-background hover:opacity-90 transition-opacity"
                   >
                     {t("nav.myStats")}

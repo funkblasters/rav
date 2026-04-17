@@ -237,7 +237,9 @@ export function GlobalStackedBarChart() {
                   name={groupLabel(groups.get(key)!.contributors)}
                   stackId="a"
                   fill={`url(#${patternPrefix}-${i})`}
-                  isAnimationActive={false}
+                  animationBegin={0}
+                  animationDuration={300}
+                  animationEasing="ease-out"
                   radius={i === groupKeys.length - 1 ? [4, 4, 0, 0] : [0, 0, 0, 0]}
                 />
               ))}

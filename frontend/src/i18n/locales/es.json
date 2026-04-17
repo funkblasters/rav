@@ -1,12 +1,13 @@
 {
   "nav": {
     "dashboard": "Inicio",
-    "ranking": "Stats",
+    "ranking": "Estadísticas",
     "myStats": "Mis Estadísticas",
     "flags": "Banderas",
     "events": "Eventos",
     "members": "Miembros",
-    "logout": "Cerrar sesión"
+    "logout": "Cerrar sesión",
+    "admin": "Admin"
   },
   "auth": {
     "login": "Iniciar sesión",
@@ -64,7 +65,9 @@
     "edit": "Editar",
     "loading": "Cargando...",
     "noData": "Sin datos disponibles.",
-    "serverWakingUp": "El servidor se está iniciando, por favor espera..."
+    "serverWakingUp": "El servidor se está iniciando, por favor espera...",
+    "toggleTheme": "Cambiar tema",
+    "selectLanguage": "Seleccionar idioma"
   },
   "myFlags": {
     "title": "Mis Banderas",
@@ -80,7 +83,30 @@
     "success": {
       "title": "Éxito",
       "message": "Gracias estimado {{user}}, pero sobre todo gracias a Al."
-    }
+    },
+    "title": "Añadir bandera",
+    "close": "Cerrar",
+    "flagName": "Nombre",
+    "searchPlaceholder": "Buscar una bandera...",
+    "notFound": "¿Bandera no encontrada? Añadir manualmente",
+    "loadingFlags": "Cargando banderas...",
+    "manualEntry": "Entrada manual",
+    "backToSearch": "Volver a la búsqueda",
+    "continent": "Continente",
+    "selectContinent": "Seleccionar continente...",
+    "country": "País",
+    "selectCountry": "Seleccionar país...",
+    "flagPreview": "Vista previa",
+    "acquisitionDate": "Fecha de adquisición",
+    "addedBy": "Añadida por",
+    "myself": "— yo mismo —",
+    "togetherWith": "Junto con",
+    "optional": "(opcional)",
+    "searchMember": "Buscar un miembro...",
+    "loadingUsers": "Cargando usuarios...",
+    "cancel": "Cancelar",
+    "add": "Añadir",
+    "alreadyOwned": "Ya tienes esta bandera en tu colección"
   },
   "flags": {
     "title": "Colección",

@@ -1,12 +1,14 @@
 import { useState, lazy, Suspense, useEffect } from "react";
 import { Plus } from "lucide-react";
 import { useModalHistory } from "@/hooks/useModalHistory";
+import { useTranslation } from "react-i18next";
 
 const AddFlagModal = lazy(() =>
   import("./AddFlagModal").then((m) => ({ default: m.AddFlagModal }))
 );
 
 export function AddFlagButton() {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   useModalHistory(open, () => setOpen(false));
@@ -19,17 +21,13 @@ export function AddFlagButton() {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  const handleClick = () => {
-    setOpen(true);
-  };
-
   return (
     <>
       <button
-        onClick={handleClick}
+        onClick={() => setOpen(true)}
         onMouseEnter={() => !isMobile && setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        aria-label="Aggiungi bandiera"
+        aria-label={t("addFlagModal.title")}
         className="fixed bottom-6 right-6 z-40 rounded-full bg-primary text-primary-foreground shadow-lg hover:bg-primary/90 h-16 overflow-hidden flex items-center"
         style={{
           width: isMobile || !isHovered ? "64px" : "200px",
@@ -46,15 +44,13 @@ export function AddFlagButton() {
             transition: "opacity 700ms ease-out",
           }}
         >
-          Aggiungi bandiera
+          {t("addFlagModal.title")}
         </span>
       </button>
 
-      {open && (
-        <Suspense fallback={null}>
-          <AddFlagModal onClose={() => setOpen(false)} />
-        </Suspense>
-      )}
+      <Suspense fallback={null}>
+        <AddFlagModal open={open} onOpenChange={setOpen} />
+      </Suspense>
     </>
   );
 }

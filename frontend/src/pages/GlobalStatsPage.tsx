@@ -64,13 +64,13 @@ function StatCard({ title, subtitle, value }: { title: string; subtitle: string;
 function PropertyStatCard({ title, subtitle, value, imageUrl }: { title: string; subtitle: string; value: number | undefined; imageUrl: string }) {
   const count = useCountUp(value);
   return (
-    <Card className="flex-1">
+    <Card className="flex-1 flex flex-col">
       {/* Mobile: title on top, then image + number side by side */}
-      <CardContent className="px-4 py-4 sm:py-6">
+      <CardContent className="px-4 py-4 sm:py-6 flex flex-col flex-1">
         {/* Mobile layout */}
-        <div className="flex flex-col gap-2 sm:hidden">
+        <div className="flex flex-col flex-1 sm:hidden">
           <span className="text-sm font-semibold leading-tight">{title}</span>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mt-auto pt-2">
             <img
               src={imageUrl}
               alt={title}

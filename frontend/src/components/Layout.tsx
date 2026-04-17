@@ -52,7 +52,7 @@ export function Layout() {
               }`}
             >
               <BarChart2 size={18} className="flex-shrink-0" />
-              <span className="hidden md:inline">{t("global.title")}</span>
+              <span className="hidden md:inline">{t("nav.ranking")}</span>
             </Link>
 
             {/* Flags Nav Item */}
@@ -65,7 +65,7 @@ export function Layout() {
               }`}
             >
               <Flag size={18} className="flex-shrink-0" />
-              <span className="hidden md:inline">Flags</span>
+              <span className="hidden md:inline">{t("nav.flags")}</span>
             </Link>
 
             {/* Admin Nav Item - only visible for admins */}
@@ -79,7 +79,7 @@ export function Layout() {
                 }`}
               >
                 <Settings size={18} className="flex-shrink-0" />
-                <span className="hidden md:inline">Admin</span>
+                <span className="hidden md:inline">{t("nav.admin")}</span>
               </Link>
             )}
           </nav>

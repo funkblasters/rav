@@ -6,7 +6,8 @@
     "flags": "Flags",
     "events": "Events",
     "members": "Members",
-    "logout": "Logout"
+    "logout": "Logout",
+    "admin": "Admin"
   },
   "auth": {
     "login": "Login",
@@ -64,7 +65,9 @@
     "edit": "Edit",
     "loading": "Loading...",
     "noData": "No data available.",
-    "serverWakingUp": "Server is waking up, please wait..."
+    "serverWakingUp": "Server is waking up, please wait...",
+    "toggleTheme": "Toggle theme",
+    "selectLanguage": "Select language"
   },
   "myFlags": {
     "title": "My Flags",
@@ -80,7 +83,30 @@
     "success": {
       "title": "Success",
       "message": "Thank you esteemed {{user}}, but thank you Al, above all."
-    }
+    },
+    "title": "Add Flag",
+    "close": "Close",
+    "flagName": "Name",
+    "searchPlaceholder": "Search a flag...",
+    "notFound": "Flag not found? Add manually",
+    "loadingFlags": "Loading flags...",
+    "manualEntry": "Manual entry",
+    "backToSearch": "Back to search",
+    "continent": "Continent",
+    "selectContinent": "Select continent...",
+    "country": "Country",
+    "selectCountry": "Select country...",
+    "flagPreview": "Flag preview",
+    "acquisitionDate": "Acquisition date",
+    "addedBy": "Added by",
+    "myself": "— myself —",
+    "togetherWith": "Together with",
+    "optional": "(optional)",
+    "searchMember": "Search a member...",
+    "loadingUsers": "Loading users...",
+    "cancel": "Cancel",
+    "add": "Add",
+    "alreadyOwned": "You already have this flag in your collection"
   },
   "flags": {
     "title": "Collection",

@@ -1,12 +1,13 @@
 {
   "nav": {
     "dashboard": "Ana Sayfa",
-    "ranking": "Stats",
+    "ranking": "İstatistikler",
     "myStats": "İstatistiklerim",
     "flags": "Bayraklar",
     "events": "Etkinlikler",
     "members": "Üyeler",
-    "logout": "Çıkış"
+    "logout": "Çıkış",
+    "admin": "Admin"
   },
   "auth": {
     "login": "Giriş",
@@ -64,7 +65,9 @@
     "edit": "Düzenle",
     "loading": "Yükleniyor...",
     "noData": "Veri mevcut değil.",
-    "serverWakingUp": "Sunucu uyanıyor, lütfen bekleyin..."
+    "serverWakingUp": "Sunucu uyanıyor, lütfen bekleyin...",
+    "toggleTheme": "Temayı değiştir",
+    "selectLanguage": "Dil seç"
   },
   "myFlags": {
     "title": "Bayraklarım",
@@ -80,7 +83,30 @@
     "success": {
       "title": "Başarılı",
       "message": "Teşekkürler sayın {{user}}, ama her şeyden önce Al'a teşekkürler."
-    }
+    },
+    "title": "Bayrak ekle",
+    "close": "Kapat",
+    "flagName": "Ad",
+    "searchPlaceholder": "Bayrak ara...",
+    "notFound": "Bayrak bulunamadı? Manuel ekle",
+    "loadingFlags": "Bayraklar yükleniyor...",
+    "manualEntry": "Manuel giriş",
+    "backToSearch": "Aramaya dön",
+    "continent": "Kıta",
+    "selectContinent": "Kıta seç...",
+    "country": "Ülke",
+    "selectCountry": "Ülke seç...",
+    "flagPreview": "Bayrak önizleme",
+    "acquisitionDate": "Edinme tarihi",
+    "addedBy": "Ekleyen",
+    "myself": "— kendim —",
+    "togetherWith": "Birlikte",
+    "optional": "(isteğe bağlı)",
+    "searchMember": "Üye ara...",
+    "loadingUsers": "Kullanıcılar yükleniyor...",
+    "cancel": "İptal",
+    "add": "Ekle",
+    "alreadyOwned": "Bu bayrak zaten koleksiyonunuzda var"
   },
   "flags": {
     "title": "Koleksiyon",
