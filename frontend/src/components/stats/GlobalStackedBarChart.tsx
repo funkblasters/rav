@@ -4,6 +4,7 @@ import { ChartContainer } from "@/components/ui/chart";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip } from "recharts";
 import { useTranslation } from "react-i18next";
 import { useId } from "react";
+import { useInView } from "@/hooks/useInView";
 
 const GLOBAL_YEARLY_ACTIVITY = gql`
   query GlobalYearlyActivity {
@@ -178,6 +179,7 @@ export function GlobalStackedBarChart() {
   const { t } = useTranslation();
   const { data, loading } = useQuery(GLOBAL_YEARLY_ACTIVITY);
   const patternPrefix = useId().replace(/:/g, "");
+  const { ref, inView } = useInView();
 
   if (loading) {
     return (
@@ -203,7 +205,7 @@ export function GlobalStackedBarChart() {
   );
 
   return (
-    <Card className="flex flex-col h-full overflow-hidden">
+    <Card ref={ref} className="flex flex-col h-full overflow-hidden">
       <CardHeader className="pb-2 shrink-0">
         <CardTitle className="text-sm font-semibold">{t("global.yearlyActivity")}</CardTitle>
       </CardHeader>
@@ -237,6 +239,7 @@ export function GlobalStackedBarChart() {
                   name={groupLabel(groups.get(key)!.contributors)}
                   stackId="a"
                   fill={`url(#${patternPrefix}-${i})`}
+                  key={`${key}-${inView ? 1 : 0}`}
                   animationBegin={0}
                   animationDuration={300}
                   animationEasing="ease-out"

@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
 import { useTranslation } from "react-i18next";
+import { useInView } from "@/hooks/useInView";
 
 const MY_FLAGS = gql`
   query GetMyFlags {
@@ -70,6 +71,7 @@ export function YearlyActivityHistogram({ userId }: { userId?: string }) {
     skip: !userId,
   });
 
+  const { ref, inView } = useInView();
   const loading = userId ? userLoading : myLoading;
   const flags: Flag[] = userId ? (userData?.flagsByUser ?? []) : (myData?.myFlags ?? []);
   const chartData = buildChartData(flags);
@@ -90,7 +92,7 @@ export function YearlyActivityHistogram({ userId }: { userId?: string }) {
   const totalFlags = chartData.reduce((sum, d) => sum + d.count, 0);
 
   return (
-    <Card className="flex flex-col h-full overflow-hidden">
+    <Card ref={ref} className="flex flex-col h-full overflow-hidden">
       <CardHeader className="pb-2 shrink-0">
         <CardTitle className="text-sm font-semibold">{t("stats.yearlyActivity")}</CardTitle>
         <CardDescription className="text-xs">
@@ -124,6 +126,7 @@ export function YearlyActivityHistogram({ userId }: { userId?: string }) {
                 content={<ChartTooltipContent hideLabel />}
               />
               <Bar
+                key={inView ? 1 : 0}
                 dataKey="count"
                 fill="#3b82f6"
                 radius={[4, 4, 0, 0]}
