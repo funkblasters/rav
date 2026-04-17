@@ -71,7 +71,7 @@ export function StatsPage() {
       </div>
 
       {/* Mobile Layout — stacked */}
-      <div className="flex-1 min-h-0 flex flex-col gap-6 px-4 pb-4 overflow-y-auto lg:hidden">
+      <div className="flex-1 min-h-0 flex flex-col gap-6 px-4 pb-8 overflow-y-auto lg:hidden">
         <div className="min-h-[320px]">
           <ContinentsPieChart userId={userId} />
         </div>
@@ -88,7 +88,7 @@ export function StatsPage() {
 
       {/* Desktop Layout — grid with areas */}
       <div
-        className="hidden lg:grid flex-1 min-h-0 gap-6 px-4 pb-4 overflow-hidden"
+        className="hidden lg:grid flex-1 min-h-0 gap-6 px-4 pb-8 overflow-hidden"
         style={{
           gridTemplateColumns: "1fr 1fr 1fr",
           gridTemplateRows: "1fr 1fr",

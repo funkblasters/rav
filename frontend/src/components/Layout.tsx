@@ -24,6 +24,12 @@ export function Layout() {
     }
   }, [isSlow, t]);
 
+  const mainRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    mainRef.current?.scrollTo({ top: 0 });
+  }, [location.pathname]);
+
   const isActive = (path: string) => location.pathname === path;
 
   return (
@@ -84,7 +90,7 @@ export function Layout() {
         </div>
       </header>
 
-      <main className="flex-1 min-h-0 flex flex-col container py-8 mt-14 overflow-y-auto">
+      <main ref={mainRef} className="flex-1 min-h-0 flex flex-col container py-8 mt-14 overflow-y-auto">
         <Suspense fallback={null}>
           <div key={location.pathname} className="page-enter flex flex-col flex-1 min-h-0">
             <Outlet />

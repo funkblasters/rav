@@ -87,7 +87,8 @@
     "subtitle": "Todas las banderas adquiridas por el club",
     "noFlags": "La colección está vacía.",
     "addedBy": "Añadida por {{name}}",
-    "realProportions": "Proporciones reales"
+    "realProportions": "Proporciones reales",
+    "searchPlaceholder": "Buscar banderas..."
   },
   "profile": {
     "title": "Tu Tarjeta RAV",

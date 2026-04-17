@@ -87,7 +87,8 @@
     "subtitle": "Tutte le bandiere acquisite dal club",
     "noFlags": "La collezione è ancora vuota.",
     "addedBy": "Aggiunta da {{name}}",
-    "realProportions": "Proporzioni reali"
+    "realProportions": "Proporzioni reali",
+    "searchPlaceholder": "Cerca bandiere..."
   },
   "profile": {
     "title": "La Tua Tessera RAV",

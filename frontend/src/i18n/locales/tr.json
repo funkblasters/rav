@@ -87,7 +87,8 @@
     "subtitle": "Kulübün edindiği tüm bayraklar",
     "noFlags": "Koleksiyonda henüz bayrak yok.",
     "addedBy": "Ekleyen: {{name}}",
-    "realProportions": "Gerçek oranlar"
+    "realProportions": "Gerçek oranlar",
+    "searchPlaceholder": "Bayrak ara..."
   },
   "profile": {
     "title": "RAV Kartın",
