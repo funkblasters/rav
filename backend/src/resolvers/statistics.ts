@@ -46,7 +46,7 @@ export const statisticsResolvers = {
       if (!ctx.user) throw new Error("Unauthenticated");
       const [totalFlags, membersCount, registeredCount, lgbtFlags, historicFlags, notRecognizedFlags, religiousFlags] = await Promise.all([
         prisma.flag.count({ where: { isPublic: true } }),
-        prisma.user.count({ where: { status: { not: "EXTERNAL" } } }),
+        prisma.user.count({ where: { contributedFlags: { some: { isPublic: true } } } }),
         prisma.user.count({ where: { status: "REGISTERED" } }),
         prisma.flag.count({ where: { isPublic: true, properties: { path: ["lgbt"], equals: true } } }),
         prisma.flag.count({ where: { isPublic: true, properties: { path: ["historic"], equals: true } } }),

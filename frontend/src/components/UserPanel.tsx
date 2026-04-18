@@ -291,9 +291,11 @@ export function UserPanel() {
                       <button
                         key={url}
                         onClick={() => handleAvatarSelect(url)}
-                        className={`relative aspect-square rounded-full overflow-hidden border-2 transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary ${profile.avatarUrl === url ? "border-primary shadow-md" : "border-transparent"}`}
+                        className={`relative aspect-square rounded-full border-2 transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary ${profile.avatarUrl === url ? "border-primary shadow-md" : "border-transparent"}`}
                       >
-                        <img src={url} alt="" className="w-full h-full object-contain" />
+                        <span className="absolute inset-0 rounded-full overflow-hidden flex items-center justify-center">
+                          <img src={url} alt="" className="w-full h-full object-contain" />
+                        </span>
                         {profile.avatarUrl === url && (
                           <div className="absolute inset-0 flex items-center justify-center bg-primary/20 rounded-full">
                             <Check size={16} className="text-primary" />

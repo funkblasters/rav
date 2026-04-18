@@ -787,7 +787,7 @@ export function AddFlagModal({ open, onOpenChange }: Props) {
                 </button>
 
                 {showTogetherWithDropdown && (
-                  <div className="absolute z-10 top-full mt-1 w-full bg-background border rounded-md shadow-md max-h-64 overflow-y-auto">
+                  <div className="absolute z-10 bottom-full mb-1 w-full bg-background border rounded-md shadow-md overflow-y-auto" style={{ maxHeight: "calc(4.5 * 2.25rem)" }}>
                     {usersData?.users ? (
                       usersData.users
                         .filter((u: { id: string; displayName: string }) => u.id !== user?.id)
