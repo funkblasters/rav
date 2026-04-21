@@ -1,5 +1,6 @@
 import type { AppContext } from "../context.js";
 import { prisma } from "../db.js";
+import { validateString, INPUT_LIMITS } from "../validation.js";
 
 // Country code to continent mapping
 const COUNTRY_TO_CONTINENT: Record<string, string> = {
@@ -213,6 +214,37 @@ export const userResolvers = {
   },
 
   Mutation: {
+    updateMyDisplayName: async (_: unknown, args: { displayName: string }, ctx: AppContext) => {
+      if (!ctx.user) throw new Error("Unauthenticated");
+
+      validateString(args.displayName, INPUT_LIMITS.displayName, "displayName", true);
+
+      const user = await prisma.user.update({
+        where: { id: ctx.user.id },
+        data: { displayName: args.displayName.trim() },
+      });
+
+      const allFlags = await prisma.flag.findMany({
+        where: { contributors: { some: { id: user.id } } },
+      });
+
+      const { flagsCount, lastContribution, contributionsByContinent } = computeFlagStats(allFlags);
+
+      return {
+        id: user.id,
+        displayName: user.displayName,
+        email: user.email,
+        role: user.role,
+        clubRole: user.clubRole,
+        cardNumber: user.cardNumber,
+        avatarUrl: user.avatarUrl,
+        createdAt: user.createdAt,
+        flagsCount,
+        lastContribution,
+        contributionsByContinent,
+      };
+    },
+
     updateMyAvatar: async (_: unknown, args: { avatarUrl?: string | null }, ctx: AppContext) => {
       if (!ctx.user) throw new Error("Unauthenticated");
 
