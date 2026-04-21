@@ -23,6 +23,7 @@ interface AuthContextValue {
   isAuthenticated: boolean;
   login: (token: string, user: AuthUser) => void;
   logout: () => void;
+  updateDisplayName: (displayName: string) => void;
 }
 
 const REFRESH = gql`
@@ -67,6 +68,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(newUser);
   }, []);
 
+  const updateDisplayName = useCallback((displayName: string) => {
+    setUser((prev) => prev ? { ...prev, displayName } : prev);
+  }, []);
+
   const logout = useCallback(() => {
     apolloClient
       .mutate({ mutation: LOGOUT })
@@ -80,7 +85,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, isLoading, isAuthenticated: !!user, login, logout }}
+      value={{ user, isLoading, isAuthenticated: !!user, login, logout, updateDisplayName }}
     >
       {children}
     </AuthContext.Provider>

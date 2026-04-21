@@ -2,7 +2,7 @@ import { useQuery, useMutation, gql } from "@apollo/client";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Sun, Moon, LogOut, User, Pencil, ArrowLeft, Check } from "lucide-react";
+import { Sun, Moon, LogOut, User, Pencil, ArrowLeft, Check, X } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -56,6 +56,15 @@ const UPDATE_MY_AVATAR = gql`
     updateMyAvatar(avatarUrl: $avatarUrl) {
       id
       avatarUrl
+    }
+  }
+`;
+
+const UPDATE_MY_DISPLAY_NAME = gql`
+  mutation UpdateMyDisplayName($displayName: String!) {
+    updateMyDisplayName(displayName: $displayName) {
+      id
+      displayName
     }
   }
 `;
@@ -145,14 +154,19 @@ export function AvatarDisplay({ displayName, avatarUrl, size = "lg" }: AvatarDis
 
 export function UserPanel() {
   const { t, i18n } = useTranslation();
-  const { user, logout } = useAuth();
+  const { user, logout, updateDisplayName } = useAuth();
   const { theme, toggle } = useTheme();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);
-  const { suppress } = useModalHistory(open, () => { setOpen(false); setShowAvatarPicker(false); });
+  const [editingName, setEditingName] = useState(false);
+  const [nameInput, setNameInput] = useState("");
+  const { suppress } = useModalHistory(open, () => { setOpen(false); setShowAvatarPicker(false); setEditingName(false); });
   const { data, loading } = useQuery(MY_PROFILE, { skip: !open });
   const [updateMyAvatar] = useMutation(UPDATE_MY_AVATAR, {
+    refetchQueries: [{ query: MY_PROFILE }, "TopMembers"],
+  });
+  const [updateMyDisplayName, { loading: savingName }] = useMutation(UPDATE_MY_DISPLAY_NAME, {
     refetchQueries: [{ query: MY_PROFILE }, "TopMembers"],
   });
 
@@ -173,6 +187,19 @@ export function UserPanel() {
   const handleAvatarSelect = async (avatarUrl: string | null) => {
     await updateMyAvatar({ variables: { avatarUrl } });
     setShowAvatarPicker(false);
+  };
+
+  const handleStartEditName = () => {
+    setNameInput(profile?.displayName ?? "");
+    setEditingName(true);
+  };
+
+  const handleSaveName = async () => {
+    const trimmed = nameInput.trim();
+    if (!trimmed || trimmed === profile?.displayName) { setEditingName(false); return; }
+    await updateMyDisplayName({ variables: { displayName: trimmed } });
+    updateDisplayName(trimmed);
+    setEditingName(false);
   };
 
   return (
@@ -351,9 +378,35 @@ export function UserPanel() {
                     </div>
 
                     {/* Name */}
-                    <h2 className="text-3xl font-bold leading-tight">
-                      {profile.displayName}
-                    </h2>
+                    {editingName ? (
+                      <div className="flex items-center gap-2">
+                        <input
+                          autoFocus
+                          value={nameInput}
+                          onChange={(e) => setNameInput(e.target.value)}
+                          onKeyDown={(e) => { if (e.key === "Enter") handleSaveName(); if (e.key === "Escape") setEditingName(false); }}
+                          maxLength={100}
+                          className="text-2xl font-bold text-center bg-transparent border-b border-primary outline-none w-48"
+                        />
+                        <button onClick={handleSaveName} disabled={savingName} className="text-primary hover:opacity-70 transition-opacity">
+                          <Check size={18} />
+                        </button>
+                        <button onClick={() => setEditingName(false)} className="text-muted-foreground hover:opacity-70 transition-opacity">
+                          <X size={18} />
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <h2 className="text-3xl font-bold leading-tight">{profile.displayName}</h2>
+                        <button
+                          onClick={handleStartEditName}
+                          className="text-muted-foreground hover:text-foreground transition-colors"
+                          aria-label={t("profile.editDisplayName")}
+                        >
+                          <Pencil size={14} />
+                        </button>
+                      </div>
+                    )}
 
                     {/* Card Number */}
                     <div className="font-mono text-xs text-muted-foreground bg-secondary px-3 py-2 rounded">

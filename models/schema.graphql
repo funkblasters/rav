@@ -282,6 +282,7 @@ type Mutation {
   clearFeaturedNews: Boolean!
 
   updateMyAvatar(avatarUrl: String): UserProfile!
+  updateMyDisplayName(displayName: String!): UserProfile!
 
   refresh: AuthPayload!
   logout: Boolean!
